@@ -2,6 +2,7 @@ package model;
 import java.util.HashMap;
 import java.util.Map;
 import view.View;
+import org.tinylog.Logger;
 
 public class CourseManager {
     /* + CourseManager(view: View)

@@ -24,4 +24,5 @@ public class Main {
             view.displayException(e);
         }
     }
+
 }

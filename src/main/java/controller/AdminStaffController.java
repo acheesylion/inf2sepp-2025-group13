@@ -6,6 +6,7 @@ import model.*;
 import view.View;
 
 
+
 import java.io.IOException;
 
 public class AdminStaffController extends StaffController {
@@ -166,8 +167,12 @@ public class AdminStaffController extends StaffController {
 
 
         String[] course_info_names = {"courseCode", "name", "description", "requiresComputers", "courseOrganiserName", "courseOrganiserEmail", "courseSecretaryName", "courseSecretaryEmail", "requiredTutorials", "requiredLabs"};
+        CourseInfo temp = new CourseInfo();
         for (int i = 0; i < course_info_names.length; i++) {
-            view.getInput(String.format("Enter %s!", course_info_names[i]));
+            String item = view.getInput(String.format("Enter %s!", course_info_names[i]));
+            temp.setitem(i,item);
         }
+
+
     }
 }
