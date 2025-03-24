@@ -2,7 +2,7 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
-
+// hi this is nic ahahaha
 public class Course {
         // Instance variables
         private String courseCode;
