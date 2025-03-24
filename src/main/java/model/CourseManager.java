@@ -36,6 +36,18 @@ studentEmail: String
 
     public boolean addCourse(String code, String name, String description, boolean requiresComputers, String COName, String COEmail, String CSName, String CSEmail,
                       int requiredTutorials, int requiredLabs ){
+        if (code == null || code.isEmpty() || name == null || name.isEmpty() ||
+                description == null || description.isEmpty() || COName == null || COName.isEmpty() ||
+                COEmail == null || COEmail.isEmpty() || CSName == null || CSName.isEmpty() ||
+                CSEmail == null || CSEmail.isEmpty() || requiredTutorials < 0 || requiredLabs < 0) {
+//INCOMPLETE
+            // Log the failure (Assuming log method is defined elsewhere)
+           // log(System.currentTimeMillis(), email, "addCourse", code,
+            //        "FAILURE (Error: Required course info not provided)");
+
+            return false; // Indicate failure
+        }
+
         return (true);
     }
 }

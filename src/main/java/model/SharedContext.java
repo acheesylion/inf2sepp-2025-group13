@@ -51,4 +51,8 @@ public class SharedContext {
     public Set<String> usersSubscribedToFAQTopic(String topic) {
         return faqTopicsUpdateSubscribers.getOrDefault(topic, new HashSet<>());
     }
+
+    public CourseManager getCourseManager(){
+        return new CourseManager();
+    }
 }

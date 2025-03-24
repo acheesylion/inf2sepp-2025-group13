@@ -173,6 +173,24 @@ public class AdminStaffController extends StaffController {
             temp.setitem(i,item);
         }
 
+        String email = sharedContext.getCurrentUserEmail();
+
+        CourseManager courseManager = sharedContext.getCourseManager();
+// String code, String name, String description, boolean requiresComputers, String COName, String COEmail, String CSName, String CSEmail,
+//                      int requiredTutorials, int requiredLabs
+        courseManager.addCourse(
+                temp.getCourseCode(),
+                temp.getName(),
+                temp.getDescription(),
+                temp.getRequiresComputers(),  // Assuming this is a method, otherwise use a getter
+                temp.getCourseOrganiserName(),
+                temp.getCourseOrganiserEmail(),
+                temp.getCourseSecretaryName(),
+                temp.getCourseSecretaryEmail(),
+                temp.getRequiredTutorials(),
+                temp.getRequiredLabs()
+        );
+
 
     }
 }

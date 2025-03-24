@@ -4,26 +4,26 @@ public class CourseInfo {
     private String courseCode;
     private String name;
     private String description;
-    private String requiresComputers;  // This can be a boolean, but keeping it as String for now
+    private boolean requiresComputers;  // This can be a boolean, but keeping it as String for now
     private String courseOrganiserName;
     private String courseOrganiserEmail;
     private String courseSecretaryName;
     private String courseSecretaryEmail;
-    private String requiredTutorials;  // This can be an integer, but keeping it as String for now
-    private String requiredLabs;  // This can be an integer, but keeping it as String for now
+    private int requiredTutorials;  // This can be an integer, but keeping it as String for now
+    private int requiredLabs;  // This can be an integer, but keeping it as String for now
 
     // Constructor to initialize all private fields
     public CourseInfo() {
         this.courseCode = "";
         this.name = "";
         this.description = "";
-        this.requiresComputers = "";
+        this.requiresComputers = false;
         this.courseOrganiserName = "";
         this.courseOrganiserEmail = "";
         this.courseSecretaryName = "";
         this.courseSecretaryEmail = "";
-        this.requiredTutorials = "";
-        this.requiredLabs = "";
+        this.requiredTutorials = 0;
+        this.requiredLabs = 0;
     }
     public void setitem(int num, String item){
         switch (num){
@@ -37,7 +37,7 @@ public class CourseInfo {
                 this.description = item;
                 break;
             case 3:
-                this.requiresComputers = item;
+                this.requiresComputers = Boolean.parseBoolean(item);
                 break;
             case 4:
                 this.courseOrganiserName = item;
@@ -52,10 +52,10 @@ public class CourseInfo {
                 this.courseSecretaryEmail = item;
                 break;
             case 8:
-                this.requiredTutorials = item;
+                this.requiredTutorials = Integer.parseInt(item);
                 break;
             case 9:
-                this.requiredLabs = item;
+                this.requiredLabs = Integer.parseInt(item);
                 break;
 
         }
@@ -84,11 +84,11 @@ public class CourseInfo {
         this.description = description;
     }
 
-    public String getRequiresComputers() {
+    public boolean getRequiresComputers() {
         return requiresComputers;
     }
 
-    public void setRequiresComputers(String requiresComputers) {
+    public void setRequiresComputers(boolean requiresComputers) {
         this.requiresComputers = requiresComputers;
     }
 
@@ -124,19 +124,19 @@ public class CourseInfo {
         this.courseSecretaryEmail = courseSecretaryEmail;
     }
 
-    public String getRequiredTutorials() {
+    public int getRequiredTutorials() {
         return requiredTutorials;
     }
 
-    public void setRequiredTutorials(String requiredTutorials) {
+    public void setRequiredTutorials(int requiredTutorials) {
         this.requiredTutorials = requiredTutorials;
     }
 
-    public String getRequiredLabs() {
+    public int getRequiredLabs() {
         return requiredLabs;
     }
 
-    public void setRequiredLabs(String requiredLabs) {
+    public void setRequiredLabs(int requiredLabs) {
         this.requiredLabs = requiredLabs;
     }
 }
