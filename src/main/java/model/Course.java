@@ -2,9 +2,13 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
-
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.UUID;
 public class Course {
         // Instance variables
+
+        private ArrayList<Activity> activites = new ArrayList<Activity>();
         private String courseCode;
         private String name;
         private String description;
@@ -35,8 +39,19 @@ public class Course {
 
         // Methods to manage activities
         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
-                                LocalTime endTime, String location, DayOfWeek day) {
-            // Implement the functionality to add an activity
+                                LocalTime endTime, String location, DayOfWeek day, boolean extra, String type) {
+            int id = Integer.parseInt(UUID.randomUUID().toString().replace("-", ""));
+            activites.add(new Lecture(id, startDate, startTime, endDate, endTime, location, day, extra));
+
+
+        }
+         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
+                            LocalTime endTime, String location, DayOfWeek day, int extra, String type) {
+
+             int id = Integer.parseInt(UUID.randomUUID().toString().replace("-", ""));
+             if (Objects.equals(type, "lab")){activites.add(new Lab(id, startDate, startTime, endDate, endTime, location, day, extra));}
+             if (Objects.equals(type, "tutorial")){activites.add(new Tutorial(id, startDate, startTime, endDate, endTime, location, day, extra));}
+
         }
 
         public void removeActivities() {

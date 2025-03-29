@@ -173,7 +173,7 @@ public class AdminStaffController extends StaffController {
             temp.setitem(i,item);
         }
 
-        String email = sharedContext.getCurrentUserEmail();
+        String currentemail = sharedContext.getCurrentUserEmail();
 
         CourseManager courseManager = sharedContext.getCourseManager();
 // String code, String name, String description, boolean requiresComputers, String COName, String COEmail, String CSName, String CSEmail,
@@ -188,9 +188,16 @@ public class AdminStaffController extends StaffController {
                 temp.getCourseSecretaryName(),
                 temp.getCourseSecretaryEmail(),
                 temp.getRequiredTutorials(),
-                temp.getRequiredLabs()
+                temp.getRequiredLabs(), currentemail , temp // these last two are passed for logger purposes
         );
 
+        //sendEmail(email, courseOrganiserEmail, "Course Created - " + courseCode,
+        //"A course has been provided with the following details: " +
+        //courseInfo)
+
+        email.sendEmail(currentemail, temp.getCourseOrganiserName(),
+                "Course Created - " + temp.getCourseCode(),
+                "A course has been provided with the following details: " + temp.getCourseInfo());
 
     }
 }

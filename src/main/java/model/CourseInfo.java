@@ -60,6 +60,18 @@ public class CourseInfo {
 
         }
     }
+
+    public String getCourseInfo() {
+        return String.format(
+                "Course Code: %s\nName: %s\nDescription: %s\nRequires Computers: %b\n" +
+                        "Course Organiser: %s (%s)\nCourse Secretary: %s (%s)\n" +
+                        "Required Tutorials: %d\nRequired Labs: %d",
+                courseCode, name, description, requiresComputers,
+                courseOrganiserName, courseOrganiserEmail,
+                courseSecretaryName, courseSecretaryEmail,
+                requiredTutorials, requiredLabs
+        );
+    }
     public String getCourseCode() {
         return courseCode;
     }
