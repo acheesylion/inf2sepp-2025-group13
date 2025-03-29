@@ -42,6 +42,12 @@ studentEmail: String
         studentTimetables = new HashMap<>();
     }
 
+    public void viewCourses(){
+        for (Course course : courses.values()){
+            view.displayCourse(course);
+        }
+    }
+
     public boolean checkCourseCode(String courseCode){
         // TODO idk what makes a course valid
         return (true);

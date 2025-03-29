@@ -8,12 +8,15 @@ public class SharedContext {
 
     public final List<Inquiry> inquiries;
     public final FAQ faq;
+
+    public final CourseManager courseManager;
     private final Map<String, Set<String>> faqTopicsUpdateSubscribers;
 
     public SharedContext() {
         this.currentUser = new Guest();
         this.inquiries = new ArrayList<>();
         faq = new FAQ();
+        courseManager = new CourseManager();
         faqTopicsUpdateSubscribers = new HashMap<>();
     }
 
@@ -53,6 +56,6 @@ public class SharedContext {
     }
 
     public CourseManager getCourseManager(){
-        return new CourseManager();
+        return courseManager;
     }
 }
