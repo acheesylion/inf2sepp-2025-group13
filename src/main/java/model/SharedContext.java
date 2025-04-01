@@ -1,6 +1,7 @@
 package model;
 
 import java.util.*;
+import view.View;
 
 public class SharedContext {
     public static final String ADMIN_STAFF_EMAIL = "inquiries@hindeburg.ac.nz";
@@ -12,12 +13,15 @@ public class SharedContext {
     public final CourseManager courseManager;
     private final Map<String, Set<String>> faqTopicsUpdateSubscribers;
 
-    public SharedContext() {
+    protected final View view;
+
+    public SharedContext(View view) {
         this.currentUser = new Guest();
         this.inquiries = new ArrayList<>();
         faq = new FAQ();
-        courseManager = new CourseManager();
+        courseManager = new CourseManager(view);
         faqTopicsUpdateSubscribers = new HashMap<>();
+        this.view = view;
     }
 
     public FAQ getFAQ() {

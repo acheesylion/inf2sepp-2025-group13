@@ -13,48 +13,38 @@ public class CourseInfo {
     private int requiredLabs;  // This can be an integer, but keeping it as String for now
 
     // Constructor to initialize all private fields
-    public CourseInfo() {
-        this.courseCode = "";
-        this.name = "";
-        this.description = "";
-        this.requiresComputers = false;
-        this.courseOrganiserName = "";
-        this.courseOrganiserEmail = "";
-        this.courseSecretaryName = "";
-        this.courseSecretaryEmail = "";
-        this.requiredTutorials = 0;
-        this.requiredLabs = 0;
-    }
-    public void setitem(int num, String item){
-        switch (num){
-            case 0:
+    public CourseInfo(){}
+
+    public void setField(String fieldName, String item){
+        switch (fieldName){
+            case "courseCode":
                 this.courseCode = item;
                 break;
-            case 1:
+            case "name":
                 this.name = item;
                 break;
-            case 2:
+            case "description":
                 this.description = item;
                 break;
-            case 3:
+            case "requiresComputers":
                 this.requiresComputers = Boolean.parseBoolean(item);
                 break;
-            case 4:
+            case "courseOrganiserName":
                 this.courseOrganiserName = item;
                 break;
-            case 5:
+            case "courseOrganiserEmail":
                 this.courseOrganiserEmail = item;
                 break;
-            case 6:
+            case "courseSecretaryName":
                 this.courseSecretaryName = item;
                 break;
-            case 7:
+            case "courseSecretaryEmail":
                 this.courseSecretaryEmail = item;
                 break;
-            case 8:
+            case "requiredTutorials":
                 this.requiredTutorials = Integer.parseInt(item);
                 break;
-            case 9:
+            case "requiredLabs":
                 this.requiredLabs = Integer.parseInt(item);
                 break;
 

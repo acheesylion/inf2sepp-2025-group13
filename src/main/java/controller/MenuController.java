@@ -20,6 +20,9 @@ public class MenuController extends Controller {
         LOGOUT,
         CONSULT_FAQ,
         CONTACT_STAFF,
+        VIEW_COURSES,
+        VIEW_SPECIFIC_COURSE,
+        MANAGE_TIMETABLE,
     }
 
     public enum TeachingStaffMainMenuOption {
@@ -31,6 +34,7 @@ public class MenuController extends Controller {
         LOGOUT,
         MANAGE_QUERIES,
         MANAGE_FAQ,
+        MANAGE_COURSES
     }
 
     public void mainMenu() {
@@ -69,6 +73,7 @@ public class MenuController extends Controller {
             case LOGIN -> new GuestController(sharedContext, view, auth, email).login();
             case CONSULT_FAQ -> new InquirerController(sharedContext, view, auth, email).consultFAQ();
             case CONTACT_STAFF -> new InquirerController(sharedContext, view, auth, email).contactStaff();
+
         }
         return false;
     }
@@ -83,6 +88,7 @@ public class MenuController extends Controller {
             case LOGOUT -> new AuthenticatedUserController(sharedContext, view, auth, email).logout();
             case CONSULT_FAQ -> new InquirerController(sharedContext, view, auth, email).consultFAQ();
             case CONTACT_STAFF -> new InquirerController(sharedContext, view, auth, email).contactStaff();
+            case MANAGE_TIMETABLE -> new StudentController(sharedContext, view, auth, email).manageTimetable();
         }
         return false;
     }
@@ -110,6 +116,7 @@ public class MenuController extends Controller {
             case LOGOUT -> new AuthenticatedUserController(sharedContext, view, auth, email).logout();
             case MANAGE_FAQ -> new AdminStaffController(sharedContext, view, auth, email).manageFAQ();
             case MANAGE_QUERIES -> new AdminStaffController(sharedContext, view, auth, email).manageInquiries();
+            case MANAGE_COURSES -> new AdminStaffController(sharedContext, view, auth, email).manageCourses();
         }
         return false;
     }

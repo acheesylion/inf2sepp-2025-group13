@@ -3,12 +3,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
 public class Course {
         // Instance variables
-
-        private ArrayList<Activity> activites = new ArrayList<Activity>();
+        private List<Activity> activities;
         private String courseCode;
         private String name;
         private String description;
@@ -35,22 +36,26 @@ public class Course {
             this.courseSecretaryEmail = courseSecretaryEmail;
             this.requiredTutorials = requiredTutorials;
             this.requiredLabs = requiredLabs;
+            this.activities = new ArrayList<>();
+
         }
 
         // Methods to manage activities
         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
-                                LocalTime endTime, String location, DayOfWeek day, boolean extra, String type) {
-            int id = Integer.parseInt(UUID.randomUUID().toString().replace("-", ""));
-            activites.add(new Lecture(id, startDate, startTime, endDate, endTime, location, day, extra));
+                                LocalTime endTime, String location, DayOfWeek day, boolean isRecorded, String type) {
 
+            int id = UUID.randomUUID().hashCode();
+
+            activities.add(new Lecture(id, startDate, startTime, endDate, endTime, location, day, isRecorded));
 
         }
-         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
-                            LocalTime endTime, String location, DayOfWeek day, int extra, String type) {
 
-             int id = Integer.parseInt(UUID.randomUUID().toString().replace("-", ""));
-             if (Objects.equals(type, "lab")){activites.add(new Lab(id, startDate, startTime, endDate, endTime, location, day, extra));}
-             if (Objects.equals(type, "tutorial")){activites.add(new Tutorial(id, startDate, startTime, endDate, endTime, location, day, extra));}
+         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
+                            LocalTime endTime, String location, DayOfWeek day, int capacity, String type) {
+
+             int id = UUID.randomUUID().hashCode();
+             if (Objects.equals(type, "lab")){activities.add(new Lab(id, startDate, startTime, endDate, endTime, location, day, capacity));}
+             if (Objects.equals(type, "tutorial")){activities.add(new Tutorial(id, startDate, startTime, endDate, endTime, location, day, capacity));}
 
         }
 
