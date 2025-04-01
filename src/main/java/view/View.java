@@ -1,5 +1,6 @@
 package view;
 
+import model.Course;
 import model.FAQ;
 import model.FAQSection;
 import model.Inquiry;
@@ -16,4 +17,6 @@ public interface View {
     void displayFAQ(FAQ faq);
     void displayFAQSection(FAQSection section);
     void displayInquiry(Inquiry inquiry);
+
+    void displayCourse(Course course);
 }

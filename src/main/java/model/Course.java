@@ -2,9 +2,14 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Course {
         // Instance variables
+        private List<Activity> activities;
         private String courseCode;
         private String name;
         private String description;
@@ -31,12 +36,27 @@ public class Course {
             this.courseSecretaryEmail = courseSecretaryEmail;
             this.requiredTutorials = requiredTutorials;
             this.requiredLabs = requiredLabs;
+            this.activities = new ArrayList<>();
+
         }
 
         // Methods to manage activities
         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
-                                LocalTime endTime, String location, DayOfWeek day) {
-            // Implement the functionality to add an activity
+                                LocalTime endTime, String location, DayOfWeek day, boolean isRecorded, String type) {
+
+            int id = UUID.randomUUID().hashCode();
+
+            activities.add(new Lecture(id, startDate, startTime, endDate, endTime, location, day, isRecorded));
+
+        }
+
+         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
+                            LocalTime endTime, String location, DayOfWeek day, int capacity, String type) {
+
+             int id = UUID.randomUUID().hashCode();
+             if (Objects.equals(type, "lab")){activities.add(new Lab(id, startDate, startTime, endDate, endTime, location, day, capacity));}
+             if (Objects.equals(type, "tutorial")){activities.add(new Tutorial(id, startDate, startTime, endDate, endTime, location, day, capacity));}
+
         }
 
         public void removeActivities() {
@@ -52,9 +72,13 @@ public class Course {
             return false;
         }
 
-        public String getActivitiesAsString() {
+        public List<String> getActivitiesAsString() {
             // Implement functionality to return activities as a String
-            return "";
+            List<String> activityList = new ArrayList<>();
+            for (Activity activity : activities) {
+                activityList.add(activity == null ? "null" : activity.toString());
+            }
+            return activityList;
         }
 
         public boolean isUnrecordedLecture(int activityId) {
