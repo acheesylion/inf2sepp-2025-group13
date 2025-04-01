@@ -1,4 +1,5 @@
 package model;
+import java.sql.SQLOutput;
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.DayOfWeek;
@@ -192,9 +193,8 @@ public class CourseManager {
             return;
         }
 
-        boolean courseCodeIsValid = checkCourseCode(info.getCourseCode());
 
-        if (!courseCodeIsValid){
+        if (!checkCourseCode(info.getCourseCode())){
             //System.currentTimeMillis(),email,"addCourse",courseInfo,"FAILURE"+" (Error: Provided courseCode is invalid)")
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: Provided courseCode is invalid)",
                     System.currentTimeMillis(), email, info.getCourseInfo() );
@@ -223,6 +223,7 @@ public class CourseManager {
 
         addActivitiesToCourse(newCourse, view);
         courses.add(newCourse);
+
         Logger.info("{}, {}, addCourse, {} SUCCESS (New course added)", System.currentTimeMillis(), email, info.getCourseInfo() );
         view.displaySuccess("Course has been successfully created");
 
@@ -236,11 +237,14 @@ public class CourseManager {
 
         courses.add(course1);
     }
+
     public void addCourseToStudentTimetable(String studentEmail, String courseCode) {
-        if(hasCourse(courseCode)){
-            System.out.println("has course already");
+        if(!hasCourse(courseCode)){
+            Logger.error("{}, {}, addCoursetoStudentTimetable, {} FAILURE (Error: Incorrect course code provided  )",
+                    System.currentTimeMillis(), studentEmail, courseCode );
+            view.displayError("\"Incorrect course code");
         } else {
-            view.displayError("Required course info not provided");
+            System.out.println("test");
         }
     }
 }
