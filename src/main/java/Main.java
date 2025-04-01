@@ -17,11 +17,12 @@ public class Main {
         try {
             AuthenticationService auth = new MockAuthenticationService();
             EmailService email = new MockEmailService();
-            SharedContext sharedContext = new SharedContext();
+            SharedContext sharedContext = new SharedContext(view);
             MenuController menus = new MenuController(sharedContext, view, auth, email);
             menus.mainMenu();
         } catch (URISyntaxException | IOException | ParseException | NullPointerException e) {
             view.displayException(e);
         }
     }
+
 }
