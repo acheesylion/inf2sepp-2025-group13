@@ -40,6 +40,7 @@ public class TimeSlot {
         return this.courseCode.equals(courseCode);
     }
 
+
     // Checks if the TimeSlot has the given activity ID
     public boolean hasActivityId(int id) {
         return this.activityId == id;

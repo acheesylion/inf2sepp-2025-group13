@@ -58,4 +58,13 @@ public class StudentController extends Controller {
 
     private void viewTimeTable() {}
 
+    private void chooseActivityForCourse() {
+        view.displayInfo("=== Choose Activity for Course ===");
+        String courseCode = view.getInput("Enter the course code: ");
+        int activityID = Integer.parseInt(view.getInput("Enter the Activity ID: "));
+        String email = sharedContext.getCurrentUserEmail();
+        CourseManager courseManager = sharedContext.getCourseManager();
+        courseManager.chooseActivityForCourse(email, courseCode, activityID);
+    }
+
 }

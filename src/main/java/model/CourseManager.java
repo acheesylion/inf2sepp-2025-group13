@@ -42,6 +42,21 @@ public class CourseManager {
         this.view = view;
     }
 
+    public void chooseActivityForCourse(String studentEmail, String courseCode, int activityId){
+        //find student timetable using email
+        //succsess = timetable(chooseActivity(courseCode, activityId)
+        // if sucsess { log suscesfuuly choose activity}
+
+        // !!this would be in timetable !!
+        // for timeslot in timetable
+            // if timeslot has course code (course code) and has activity id
+                // is chosen
+                    // log already chosen
+                // isnot chosen then
+                    //  set timeslot.status to chosen
+
+    }
+
     public void viewCourses(){
         //changed from (Course course : courses.values())
         for (Course course : courses){
