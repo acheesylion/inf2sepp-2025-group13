@@ -72,9 +72,13 @@ public class Course {
             return false;
         }
 
-        public String getActivitiesAsString() {
+        public List<String> getActivitiesAsString() {
             // Implement functionality to return activities as a String
-            return "";
+            List<String> activityList = new ArrayList<>();
+            for (Activity activity : activities) {
+                activityList.add(activity == null ? "null" : activity.toString());
+            }
+            return activityList;
         }
 
         public boolean isUnrecordedLecture(int activityId) {

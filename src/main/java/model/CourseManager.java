@@ -4,9 +4,7 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.DayOfWeek;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import view.TextUserInterface;
 import view.View;
@@ -230,21 +228,104 @@ public class CourseManager {
     }
 
     public void testAddCourse(){
-        Course course1 = new Course("INFR29381", "informatics 2d reasoning and agents",
-                "very hard course", true, "Boris Johnson",
-                "boris_johnson@gmail.com", "Hanna Johnson",
-                "hanna_johnson@gmail.com", 2, 3);
+        CourseInfo newCourseInfo = new CourseInfo();
 
-        courses.add(course1);
+        String[] courseInfoNames = {
+                "courseCode",
+                "name",
+                "description",
+                "requiresComputers",
+                "courseOrganiserName",
+                "courseOrganiserEmail",
+                "courseSecretaryName",
+                "courseSecretaryEmail",
+                "requiredTutorials",
+                "requiredLabs"
+        };
+
+        List<String> courseInfoValues = Arrays.asList(
+                "INFR29381",
+                "informatics 2d reasoning and agents",
+                "very hard course",
+                "true",
+                "Boris Johnson",
+                "boris_johnson@gmail.com",
+                "Hanna Johnson",
+                "hanna_johnson@gmail.com",
+                "2",
+                "3"
+        );
+
+        // Create a map to hold the course information
+        Map<String, String> courseInfoMap = new HashMap<>();
+
+        // Ensure that keys and values have the same size
+        if (courseInfoNames.length != courseInfoValues.size()) {
+            throw new IllegalArgumentException("Keys and values must be of the same length.");
+        }
+
+        // Map each key to its corresponding value
+        for (int i = 0; i < courseInfoNames.length; i++) {
+            courseInfoMap.put(courseInfoNames[i], courseInfoValues.get(i));
+        }
+
+        for (Map.Entry<String, String> entry : courseInfoMap.entrySet()) {
+            newCourseInfo.setField(entry.getKey(), entry.getValue());
+        }
+
+        Course newCourse = new Course(
+                newCourseInfo.getCourseCode(), newCourseInfo.getName(), newCourseInfo.getDescription(), newCourseInfo.getRequiresComputers(),
+                newCourseInfo.getCourseOrganiserName(), newCourseInfo.getCourseOrganiserEmail(),
+                newCourseInfo.getCourseSecretaryName(), newCourseInfo.getCourseSecretaryEmail(),
+                newCourseInfo.getRequiredTutorials(), newCourseInfo.getRequiredLabs()
+        );
+
+        LocalDate startDate1 = LocalDate.of(2025, 4, 2);
+        LocalTime startTime1 = LocalTime.of(9, 0);
+        LocalDate endDate1 = LocalDate.of(2025, 4, 2);
+        LocalTime endTime1 = LocalTime.of(11, 0);
+        String location1 = "Room 101";
+        DayOfWeek day1 = DayOfWeek.WEDNESDAY;
+        int capacity1 = 20;
+        String type1 = "lab";
+
+        newCourse.addActivity(startDate1, startTime1, endDate1, endTime1, location1, day1, capacity1, type1);
+
+        LocalDate startDate2 = LocalDate.of(2025, 4, 3);
+        LocalTime startTime2 = LocalTime.of(14, 0);
+        LocalDate endDate2 = LocalDate.of(2025, 4, 3);
+        LocalTime endTime2 = LocalTime.of(16, 0);
+        String location2 = "Room 202";
+        DayOfWeek day2 = DayOfWeek.THURSDAY;
+        int capacity2 = 15;
+        String type2 = "tutorial";
+
+        newCourse.addActivity(startDate2, startTime2, endDate2, endTime2, location2, day2, capacity2, type2);
+
+        courses.add(newCourse);
+    }
+
+    public Course getCourseByCode(List<Course> courses, String courseCode) {
+        for (Course course : courses) {
+            if (course.getCourseCode().equalsIgnoreCase(courseCode)) {
+                return course;
+            }
+        }
+        return null; // Return null if no matching course is found.
     }
 
     public void addCourseToStudentTimetable(String studentEmail, String courseCode) {
         if(!hasCourse(courseCode)){
             Logger.error("{}, {}, addCoursetoStudentTimetable, {} FAILURE (Error: Incorrect course code provided  )",
                     System.currentTimeMillis(), studentEmail, courseCode );
-            view.displayError("\"Incorrect course code");
+            view.displayError("Incorrect course code");
         } else {
-            System.out.println("test");
+            Course courseToBeAdded = getCourseByCode(courses, courseCode);
+            List<String> fullActivityDetailsAsString = courseToBeAdded.getActivitiesAsString();
+
         }
+//        for (Timetable timetable : timetables) {
+//        }
+
     }
 }
