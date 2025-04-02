@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class Course {
         // Instance variables
-        private List<Activity> activities;
+        private final List<Activity> activities;
         private String courseCode;
         private String name;
         private String description;

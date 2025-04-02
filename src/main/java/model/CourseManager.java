@@ -294,7 +294,20 @@ public class CourseManager {
 
             } else {
                 // No conflict found
-                userTimetable.addTimeSlot(activity, courseCode);
+
+                Activity copyActivity = null;
+
+                if (activity instanceof Lab) {
+                    copyActivity = new Lab((Lab) activity);
+                } else if (activity instanceof Tutorial) {
+                    copyActivity = new Tutorial((Tutorial) activity);
+                } else if (activity instanceof Lecture) {
+                    copyActivity = new Lecture((Lecture) activity);
+                } else {
+                    System.out.println("Unsupported activity type.");
+                    return;
+                }
+                userTimetable.addTimeSlot(copyActivity, courseCode);
 
 
             }

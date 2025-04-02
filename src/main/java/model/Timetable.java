@@ -19,17 +19,15 @@ public class Timetable {
 
 
 
-    public void addTimeSlot(DayOfWeek day, LocalDate startDate, LocalTime startTime,
-                            LocalDate endDate, LocalTime endTime, String courseCode, int activityId) {
-        // When adding a new time slot, we default its status to UNCHOSEN.
-        TimeSlot newSlot = new TimeSlot(day, startDate, startTime, endDate, endTime,
-                courseCode, activityId, TimeSlotStatus.UNCHOSEN);
-        timeSlots.add(newSlot);
-    }
-
     public void addTimeSlot(Activity activity, String courseCode) {
         // When adding a new time slot, we default its status to UNCHOSEN.
-        TimeSlot newSlot = new TimeSlot(activity, courseCode,TimeSlotStatus.UNCHOSEN);
+
+        TimeSlot newSlot = null;
+        if (activity instanceof Lab) {
+            newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.CHOSEN);
+        } else {
+            newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
+        }
         timeSlots.add(newSlot);
     }
 
