@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class Course {
         // Instance variables
-        private List<Activity> activities;
+        private final List<Activity> activities;
         private String courseCode;
         private String name;
         private String description;
@@ -73,13 +73,27 @@ public class Course {
             return false;
         }
 
-        public String getActivitiesAsString() {
+        public List<String> getActivitiesAsString() {
             // Implement functionality to return activities as a String
-            return "";
+            List<String> activityList = new ArrayList<>();
+            for (Activity activity : activities) {
+                activityList.add(activity == null ? "null" : activity.toString());
+            }
+            return activityList;
+        }
+
+        public List<Activity> getActivities() {
+            return activities;
         }
 
         public boolean isUnrecordedLecture(int activityId) {
-            // Implement the functionality to check if the activity with the given ID is an unrecorded lecture
+            for (Activity activity : activities) {
+                if (activity.hasId(activityId)){
+                    if (activity instanceof Lecture) {
+                        return ((Lecture) activity).getRecorded();
+                    }
+                }
+            }
             return false;
         }
 

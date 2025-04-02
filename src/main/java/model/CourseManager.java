@@ -4,107 +4,28 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.DayOfWeek;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import view.TextUserInterface;
 import view.View;
 import org.tinylog.Logger;
 
-/* + CourseManager(view: View)
-+ addCourse(
-code: String, name: String, description: String, requiresComputers:boolean, COName: String, COEmail: String, CSName: String, CSEmail: String,reqTuorials: int, reqLabs: int): boolean
-+ checkCourseCode(courseCode: String): boolean
-+ removeCourse(courseCode: String): String[]
-+ addCourseToStudentTimetable(studentEmail : String, courseCode: String)
-+chooseActivityForCourse(
-studentEmail: String,
-courseCode:String, activityId: int)
-- hasCourse(courseCode: String): boolean
-+ viewCourses(): String
-+ viewCourse(courseCode:String):String
-- checkChosenTutorials(courseCode: String, timetable: Timetable): boolean
-- checkChosenLabs(courseCode: String, timetable: Timetable): boolean
-- getTimetable(studentEmail: String): Timetable
-+ viewTimetable(
-studentEmail: String
-)
-*/
-public class CourseManager {
-    // Map to store courses by course code
-    private final List<Course> courses;
-    protected final View view;
 
-    // Map to store students' timetables by email
-//    private Map<String, Timetable> studentTimetables;
+public class CourseManager {
+
+    private final List<Course> courses;
+    private final List<Timetable> timetables;
+    View view;
+
 
     public CourseManager(View view) {
         this.courses = new ArrayList<>();
+        this.timetables = new ArrayList<>();
         this.view = view;
     }
 
-    public void viewCourses(){
-        //changed from (Course course : courses.values())
-        for (Course course : courses){
-            view.displayCourse(course);
-        }
-    }
-
-    public boolean checkCourseCode(String courseCode){
-        return courseCode.matches("^[A-Z]{4}\\d{5}$");
-    }
-
-    private boolean hasCourse(String courseCode){
-        for (Course course : courses) {
-            if (course.hasCode(courseCode)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    private int readInteger(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                view.displayInfo("Invalid integer. Please try again.");
-            }
-        }
-    }
-    private LocalDate readDate(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            try {
-                return LocalDate.parse(input);
-            } catch (DateTimeParseException e) {
-                view.displayInfo("Invalid date format. Please use YYYY-MM-DD.");
-            }
-        }
-    }
-    private LocalTime readTime(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            try {
-                return LocalTime.parse(input);
-            } catch (DateTimeParseException e) {
-                view.displayInfo("Invalid time format. Please use HH:MM.");
-            }
-        }
-    }
-    private boolean readBoolean(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
-                return Boolean.parseBoolean(input);
-            } else {
-                view.displayInfo("Invalid input. Please enter true or false.");
-            }
-        }
-    }
     private boolean nullCourseInfo(CourseInfo temp){
         String code = temp.getCourseCode();
         String name = temp.getName();
@@ -126,8 +47,7 @@ public class CourseManager {
                 CSEmail != null && !CSEmail.isEmpty() &&
                 requiredTutorials >= 0 && requiredLabs >= 0;
     }
-
-    public void addActivitiesToCourse(Course new_course, View view) {
+    private void addActivitiesToCourse(Course new_course, View view) {
         int numActivities = readInteger(view, "Enter how many activities you wish to add: ");
 
         for (int i = 0; i < numActivities; i++) {
@@ -183,9 +103,7 @@ public class CourseManager {
 
         }
     }
-
-    public void addCourse(String email, CourseInfo info)
-    {
+    public void addCourse(String email, CourseInfo info) {
         if (!nullCourseInfo(info)) {
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: Required course info not provided)",
                     System.currentTimeMillis(), email, info.getCourseInfo() );
@@ -215,7 +133,8 @@ public class CourseManager {
         view.displayInfo("=== Add Course - Activities===");
 
         Course newCourse = new Course(
-                info.getCourseCode(), info.getName(), info.getDescription(), info.getRequiresComputers(),
+                info.getCourseCode(), info.getName(),
+                info.getDescription(), info.getRequiresComputers(),
                 info.getCourseOrganiserName(), info.getCourseOrganiserEmail(),
                 info.getCourseSecretaryName(), info.getCourseSecretaryEmail(),
                 info.getRequiredTutorials(), info.getRequiredLabs()
@@ -229,22 +148,249 @@ public class CourseManager {
 
     }
 
-    public void testAddCourse(){
-        Course course1 = new Course("INFR29381", "informatics 2d reasoning and agents",
-                "very hard course", true, "Boris Johnson",
-                "boris_johnson@gmail.com", "Hanna Johnson",
-                "hanna_johnson@gmail.com", 2, 3);
+    public void viewCourses() {
+        if (courses.isEmpty()) {
+            view.displayError("No courses found");
+        } else {
+            for (Course course : courses){
+                view.displayInfo("-------------------------");
+                view.displayCourse(course);
+                view.displayInfo("-------------------------");
+            }
+        }
 
-        courses.add(course1);
     }
 
-    public void addCourseToStudentTimetable(String studentEmail, String courseCode) {
-        if(!hasCourse(courseCode)){
-            Logger.error("{}, {}, addCoursetoStudentTimetable, {} FAILURE (Error: Incorrect course code provided  )",
-                    System.currentTimeMillis(), studentEmail, courseCode );
-            view.displayError("\"Incorrect course code");
+    public void viewCourse(String courseCode) {
+        if (!hasCourse(courseCode)) {
+            view.displayError("Incorrect course code");
         } else {
-            System.out.println("test");
+            Course findCourse = getCourseByCode(courseCode);
+            view.displayCourse(findCourse);
+        }
+
+    }
+
+    public boolean checkCourseCode(String courseCode){return courseCode.matches("^[A-Z]{4}\\d{5}$");}
+
+    private boolean hasCourse(String courseCode) {
+        for (Course course : courses) {
+            if (course.hasCode(courseCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Timetable getTimetable(String studentEmail) {
+        return timetables.stream()
+                .filter(t -> t.hasStudentEmail(studentEmail))
+                .findFirst()
+                .orElseGet(() -> {
+                    Timetable newTimetable = new Timetable(studentEmail);
+                    timetables.add(newTimetable);
+                    return newTimetable;
+                });
+    }
+
+    private int readInteger(View view, String prompt) {
+        while (true) {
+            String input = view.getInput(prompt);
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                view.displayInfo("Invalid integer. Please try again.");
+            }
         }
     }
+    private LocalDate readDate(View view, String prompt) {
+        while (true) {
+            String input = view.getInput(prompt);
+            try {
+                return LocalDate.parse(input);
+            } catch (DateTimeParseException e) {
+                view.displayInfo("Invalid date format. Please use YYYY-MM-DD.");
+            }
+        }
+    }
+    private LocalTime readTime(View view, String prompt) {
+        while (true) {
+            String input = view.getInput(prompt);
+            try {
+                return LocalTime.parse(input);
+            } catch (DateTimeParseException e) {
+                view.displayInfo("Invalid time format. Please use HH:MM.");
+            }
+        }
+    }
+    private boolean readBoolean(View view, String prompt) {
+        while (true) {
+            String input = view.getInput(prompt);
+            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
+                return Boolean.parseBoolean(input);
+            } else {
+                view.displayInfo("Invalid input. Please enter true or false.");
+            }
+        }
+    }
+
+    public Course getCourseByCode(String courseCode) {
+        for (Course course : courses) {
+            if (course.getCourseCode().equalsIgnoreCase(courseCode)) {
+                return course;
+            }
+        }
+        return null; // Return null if no matching course is found.
+    }
+
+
+    public boolean checkChosenTutorials(String courseCode, Timetable timetable) {
+        if (timetable == null || courseCode == null) {
+            return false;
+        }
+        if (!timetable.hasSlotsForCourse(courseCode)) {
+            return false;
+        }
+        Course course = getCourseByCode(courseCode);
+        int requiredTutorials = course.getRequiredTutorials();
+
+        return true;
+    }
+
+
+
+    public void addCourseToStudentTimetable(String studentEmail, String courseCode) {
+        if (!hasCourse(courseCode)) {
+            Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Error: Incorrect course code provided  )",
+                    System.currentTimeMillis(), studentEmail, courseCode);
+            view.displayError("Incorrect course code");
+            return;
+        }
+
+        Course courseToBeAdded = getCourseByCode(courseCode);
+        Timetable userTimetable = getTimetable(studentEmail);
+        for (Activity activity : courseToBeAdded.getActivities()) {
+            String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
+                    activity.getStartDate(), activity.getStartTime(),
+                    activity.getEndDate(), activity.getEndTime()
+            );
+            // If there is a conflict
+            if (conflictingCourseCodeAndActivityId.length > 0) {
+                String conflictCourseCode = conflictingCourseCodeAndActivityId[0];
+                String conflictActivityId = conflictingCourseCodeAndActivityId[1];
+                boolean unrecordedLecture1 = courseToBeAdded.isUnrecordedLecture(activity.getId());
+                Course conflictingCourse = getCourseByCode(conflictCourseCode);
+                boolean unrecordedLecture2 = conflictingCourse.isUnrecordedLecture(Integer.parseInt(conflictActivityId));
+
+                if (unrecordedLecture1 && unrecordedLecture2) {
+                    Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Error: at least one clash with an unrecorded lecture)",
+                            System.currentTimeMillis(), studentEmail, courseCode);
+                    view.displayError("You have at least one clash with an unrecorded lecture. The course cannot be added to your timetable.");
+                } else {
+                    Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Warning: at least one clash with another activity)",
+                            System.currentTimeMillis(), studentEmail, courseCode);
+                    view.displayError("You have at least one clash with another activity");
+                }
+
+            } else {
+                // No conflict found
+
+                Activity copyActivity = null;
+
+                if (activity instanceof Lab) {
+                    copyActivity = new Lab((Lab) activity);
+                } else if (activity instanceof Tutorial) {
+                    copyActivity = new Tutorial((Tutorial) activity);
+                } else if (activity instanceof Lecture) {
+                    copyActivity = new Lecture((Lecture) activity);
+                } else {
+                    System.out.println("Unsupported activity type.");
+                    return;
+                }
+                userTimetable.addTimeSlot(copyActivity, courseCode);
+
+
+            }
+        }
+    }
+
+    public void testAddCourse(){
+        CourseInfo newCourseInfo = new CourseInfo();
+
+        String[] courseInfoNames = {
+                "courseCode",
+                "name",
+                "description",
+                "requiresComputers",
+                "courseOrganiserName",
+                "courseOrganiserEmail",
+                "courseSecretaryName",
+                "courseSecretaryEmail",
+                "requiredTutorials",
+                "requiredLabs"
+        };
+
+        List<String> courseInfoValues = Arrays.asList(
+                "INFR29381",
+                "informatics 2d reasoning and agents",
+                "very hard course",
+                "true",
+                "Boris Johnson",
+                "boris_johnson@gmail.com",
+                "Hanna Johnson",
+                "hanna_johnson@gmail.com",
+                "2",
+                "3"
+        );
+
+        // Create a map to hold the course information
+        Map<String, String> courseInfoMap = new HashMap<>();
+
+        // Ensure that keys and values have the same size
+        if (courseInfoNames.length != courseInfoValues.size()) {
+            throw new IllegalArgumentException("Keys and values must be of the same length.");
+        }
+
+        // Map each key to its corresponding value
+        for (int i = 0; i < courseInfoNames.length; i++) {
+            courseInfoMap.put(courseInfoNames[i], courseInfoValues.get(i));
+        }
+
+        for (Map.Entry<String, String> entry : courseInfoMap.entrySet()) {
+            newCourseInfo.setField(entry.getKey(), entry.getValue());
+        }
+
+        Course newCourse = new Course(
+                newCourseInfo.getCourseCode(), newCourseInfo.getName(), newCourseInfo.getDescription(), newCourseInfo.getRequiresComputers(),
+                newCourseInfo.getCourseOrganiserName(), newCourseInfo.getCourseOrganiserEmail(),
+                newCourseInfo.getCourseSecretaryName(), newCourseInfo.getCourseSecretaryEmail(),
+                newCourseInfo.getRequiredTutorials(), newCourseInfo.getRequiredLabs()
+        );
+
+        LocalDate startDate1 = LocalDate.of(2025, 4, 2);
+        LocalTime startTime1 = LocalTime.of(9, 0);
+        LocalDate endDate1 = LocalDate.of(2025, 4, 2);
+        LocalTime endTime1 = LocalTime.of(11, 0);
+        String location1 = "Room 101";
+        DayOfWeek day1 = DayOfWeek.WEDNESDAY;
+        int capacity1 = 20;
+        String type1 = "lab";
+
+        newCourse.addActivity(startDate1, startTime1, endDate1, endTime1, location1, day1, capacity1, type1);
+
+        LocalDate startDate2 = LocalDate.of(2025, 4, 3);
+        LocalTime startTime2 = LocalTime.of(14, 0);
+        LocalDate endDate2 = LocalDate.of(2025, 4, 3);
+        LocalTime endTime2 = LocalTime.of(16, 0);
+        String location2 = "Room 202";
+        DayOfWeek day2 = DayOfWeek.THURSDAY;
+        int capacity2 = 15;
+        String type2 = "tutorial";
+
+        newCourse.addActivity(startDate2, startTime2, endDate2, endTime2, location2, day2, capacity2, type2);
+
+        courses.add(newCourse);
+    }
+
+    public void chooseActivityForCourse(String studentEmail, String courseCode, int activityId) {return;}
 }
