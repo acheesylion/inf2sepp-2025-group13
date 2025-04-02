@@ -15,7 +15,7 @@ public class Lecture extends Activity {
     }
 
     public boolean getRecorded() {
-        return recorded;
+        return (this.recorded);
     }
 
     public void setRecorded(boolean recorded) {

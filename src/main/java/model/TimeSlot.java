@@ -12,7 +12,6 @@ public class TimeSlot {
     private LocalDate endDate;
     private LocalTime endTime;
 
-    // Public fields as indicated by '+' in UML (or accessed via getters/setters)
     public String courseCode;
     public int activityId;
     public TimeSlotStatus status;
@@ -32,6 +31,18 @@ public class TimeSlot {
         this.status = status;
     }
 
+    public TimeSlot(Activity activity, String courseCode, TimeSlotStatus status) {
+        // Use Activity getters to initialize the time-related fields.
+        this(activity.getDay(),
+                activity.getStartDate(),
+                activity.getStartTime(),
+                activity.getEndDate(),
+                activity.getEndTime(),
+                courseCode,
+                activity.getId(), // Use the activity's id for the timeslot's activityId.
+                status);
+    }
+
     // Checks if the TimeSlot has the given course code
     public boolean hasCourseCode(String courseCode) {
         if (this.courseCode == null) {
@@ -41,14 +52,18 @@ public class TimeSlot {
     }
 
     // Checks if the TimeSlot has the given activity ID
-    public boolean hasActivityId(int id) {
-        return this.activityId == id;
-    }
+    public boolean hasActivityId(int id) {return this.activityId == id;}
 
     // Returns true if the status of the TimeSlot is CHOSEN
-    public boolean isChosen() {
-        return this.status == TimeSlotStatus.CHOSEN;
-    }
+    public boolean isChosen() {return this.status == TimeSlotStatus.CHOSEN;}
+    public void setStatus(TimeSlotStatus status) {this.status = status;}
+    public LocalDate getStartDate() {return startDate;}
+    public LocalTime getStartTime() {return startTime;}
+    public LocalDate getEndDate() {return endDate;}
+    public LocalTime getEndTime() {return endTime;}
+
+    public int getActivityId() {return activityId;}
+    public String getCourseCode() {return courseCode;}
 
     // Provides a string representation of the TimeSlot
     @Override

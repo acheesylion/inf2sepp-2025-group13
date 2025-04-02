@@ -81,8 +81,18 @@ public class Course {
             return activityList;
         }
 
+        public List<Activity> getActivities() {
+            return activities;
+        }
+
         public boolean isUnrecordedLecture(int activityId) {
-            // Implement the functionality to check if the activity with the given ID is an unrecorded lecture
+            for (Activity activity : activities) {
+                if (activity.hasId(activityId)){
+                    if (activity instanceof Lecture) {
+                        return ((Lecture) activity).getRecorded();
+                    }
+                }
+            }
             return false;
         }
 
