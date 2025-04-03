@@ -16,7 +16,7 @@ import org.tinylog.Logger;
 public class CourseManager {
 
     private final List<Course> courses;
-    private final List<Timetable> timetables;
+    public final List<Timetable> timetables;
     View view;
 
 
