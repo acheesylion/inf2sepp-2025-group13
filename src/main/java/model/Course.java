@@ -21,7 +21,7 @@ public class Course {
         private String courseSecretaryEmail;
         private int requiredTutorials;
         private int requiredLabs;
-        private List<String> members;
+        private final List<String> members;
 
 
 
