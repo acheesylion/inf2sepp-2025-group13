@@ -5,18 +5,12 @@ import external.EmailService;
 import model.*;
 import view.View;
 
-
-
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 
 public class AdminStaffController extends StaffController {
     public AdminStaffController(SharedContext sharedContext, View view, AuthenticationService auth, EmailService email) {
         super(sharedContext, view, auth, email);
     }
-
 
     public void manageFAQ() {
         FAQSection currentSection = null;
@@ -30,12 +24,17 @@ public class AdminStaffController extends StaffController {
                 view.displayInfo("[-1] Return to " + (currentSection.getParent() == null ? "FAQ" : currentSection.getParent().getTopic()));
             }
             view.displayInfo("[-2] Add FAQ item");
+            if (currentSection != null && !currentSection.getItems().isEmpty()) {
+                view.displayInfo("[-3] Remove FAQ item");
+            }
             String input = view.getInput("Please choose an option: ");
             try {
                 int optionNo = Integer.parseInt(input);
 
                 if (optionNo == -2) {
                     addFAQItem(currentSection);
+                } else if (optionNo == -3 && currentSection != null && !currentSection.getItems().isEmpty()) {
+                    removeFAQItem(currentSection);
                 } else if (optionNo == -1) {
                     if (currentSection == null) {
                         break;
@@ -59,6 +58,68 @@ public class AdminStaffController extends StaffController {
         }
     }
 
+    private void removeFAQItem(FAQSection currentSection) {
+        if (currentSection.getItems().isEmpty()) {
+            view.displayWarning("No FAQ items to remove in this section!");
+            return;
+        }
+        
+        view.displayInfo("Select an FAQ item to remove:");
+        for (int i = 0; i < currentSection.getItems().size(); i++) {
+            FAQItem item = currentSection.getItems().get(i);
+            view.displayInfo("[" + i + "] " + item.getQuestion());
+        }
+        view.displayInfo("[-1] Cancel");
+        
+        String input = view.getInput("Please choose an option: ");
+        try {
+            int optionNo = Integer.parseInt(input);
+            
+            if (optionNo == -1) {
+                view.displayInfo("Removal cancelled");
+                return;
+            }
+            
+            if (optionNo >= 0 && optionNo < currentSection.getItems().size()) {
+                FAQItem removedItem = currentSection.getItems().remove(optionNo);
+                
+                String emailSubject = "FAQ topic '" + currentSection.getTopic() + "' updated - Item removed";
+                StringBuilder emailContentBuilder = new StringBuilder();
+                emailContentBuilder.append("The following Q&A has been removed from topic '" + currentSection.getTopic() + "':");
+                emailContentBuilder.append("\n\n");
+                emailContentBuilder.append("Q: ");
+                emailContentBuilder.append(removedItem.getQuestion());
+                emailContentBuilder.append("\n");
+                emailContentBuilder.append("A: ");
+                emailContentBuilder.append(removedItem.getAnswer());
+                
+                String emailContent = emailContentBuilder.toString();
+                
+                email.sendEmail(
+                        ((AuthenticatedUser) sharedContext.currentUser).getEmail(),
+                        SharedContext.ADMIN_STAFF_EMAIL,
+                        emailSubject,
+                        emailContent
+                );
+                
+                for (String subscriberEmail : sharedContext.usersSubscribedToFAQTopic(currentSection.getTopic())) {
+                    email.sendEmail(
+                            SharedContext.ADMIN_STAFF_EMAIL,
+                            subscriberEmail,
+                            emailSubject,
+                            emailContent
+                    );
+                }
+                
+                view.displaySuccess("FAQ item removed successfully");
+            } else {
+                view.displayError("Invalid option: " + optionNo);
+            }
+        } catch (NumberFormatException e) {
+            view.displayError("Invalid option: " + input);
+        }
+    }
+    
     private void addFAQItem(FAQSection currentSection) {
         // When adding an item at root of FAQ, creating a section is mandatory
         boolean createSection = (currentSection == null);
@@ -163,139 +224,5 @@ public class AdminStaffController extends StaffController {
                 "Subject: " + inquiry.getSubject() + "\nPlease log into the Self Service Portal to review and respond to the inquiry."
         );
         view.displaySuccess("Inquiry has been reassigned");
-    }
-
-    private enum manageCoursesOptions {
-        ADD_COURSE,
-        REMOVE_COURSE,
-    }
-
-    public void manageCourses() {
-        boolean endLoop = false;
-        while (!endLoop) {
-            endLoop = handleManageCourses();
-        }
-    }
-
-    private boolean handleManageCourses() {
-        int optionNo = selectFromMenu(AdminStaffController.manageCoursesOptions.values(), "Back to main menu");
-        if (optionNo == -1) {
-            return true;
-        }
-        AdminStaffController.manageCoursesOptions option = AdminStaffController.manageCoursesOptions.values()[optionNo];
-        switch (option) {
-            case ADD_COURSE -> addCourse();
-        }
-        return false;
-    }
-
-    private int readInteger(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                view.displayInfo("Invalid integer. Please try again.");
-            }
-        }
-    }
-    private boolean readBoolean(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
-                return Boolean.parseBoolean(input);
-            } else {
-                view.displayInfo("Invalid input. Please enter true or false.");
-            }
-        }
-    }
-
-    private static String getValidatedInput(String fieldName, View view) {
-        while (true) {
-            String input = view.getInput(String.format("Enter %s: ", fieldName));
-            // Perform validation based on the field name.
-            switch (fieldName) {
-                // For these fields, input must not be empty.
-                case "courseCode":
-                case "name":
-                case "description":
-                case "courseOrganiserName":
-                case "courseOrganiserEmail":
-                case "courseSecretaryName":
-                case "courseSecretaryEmail":
-                    if (input == null || input.trim().isEmpty()) {
-                        view.displayInfo(fieldName + " cannot be empty.");
-                        continue; // Prompt again.
-                    }
-                    break;
-
-                // requiresComputers should be either "true" or "false".
-                case "requiresComputers":
-                    if (!"true".equalsIgnoreCase(input) && !"false".equalsIgnoreCase(input)) {
-                        view.displayInfo("Invalid input for requiresComputers. Please enter true or false.");
-                        continue;
-                    }
-                    break;
-
-                // For these numeric fields, input must be a non-negative integer.
-                case "requiredTutorials":
-                case "requiredLabs":
-                    try {
-                        int num = Integer.parseInt(input);
-                        if (num < 0) {
-                            view.displayInfo(fieldName + " cannot be negative.");
-                            continue;
-                        }
-                    } catch (NumberFormatException e) {
-                        view.displayInfo("Invalid number for " + fieldName + ". Please enter a valid integer.");
-                        continue;
-                    }
-                    break;
-
-                default:
-                    // If there are additional fields without specific validation, you could add them here.
-                    break;
-            }
-            // If validation passes, return the input.
-            return input;
-        }
-    }
-
-    private void addCourse(){
-        view.displayInfo("=== Add Course ===");
-        CourseInfo newCourseInfo = new CourseInfo();
-        String[] courseInfoNames = {
-            "courseCode",
-            "name",
-            "description",
-            "requiresComputers",
-            "courseOrganiserName",
-            "courseOrganiserEmail",
-            "courseSecretaryName",
-            "courseSecretaryEmail",
-            "requiredTutorials",
-            "requiredLabs"
-        };
-
-        // For each field, get validated input and store it in CourseInfo.
-        for (String fieldName : courseInfoNames) {
-            String input = getValidatedInput(fieldName, view);
-            newCourseInfo.setField(fieldName, input);
-        }
-
-        String currentEmail = sharedContext.getCurrentUserEmail();
-
-        CourseManager courseManager = sharedContext.getCourseManager();
-
-        courseManager.addCourse(currentEmail, newCourseInfo);
-
-        //sendEmail(email, courseOrganiserEmail, "Course Created - " + courseCode,
-        //"A course has been provided with the following details: " +
-        //courseInfo)
-        //
-        email.sendEmail(currentEmail, newCourseInfo.getCourseOrganiserName(),
-                "Course Created - " + newCourseInfo.getCourseCode(),
-                "A course has been provided with the following details: " + newCourseInfo.getCourseInfo());
-
     }
 }
