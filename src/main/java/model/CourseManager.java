@@ -365,8 +365,6 @@ public class CourseManager {
         }
     }
 
-
-
     public void chooseActivityForCourse(String studentEmail) {
         if (!timetableExists(studentEmail)) {
             Logger.error("{}, {}, chooseActivityForCourse, FAILURE (Error: Timetable does not exist)",
