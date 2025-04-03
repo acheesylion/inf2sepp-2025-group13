@@ -103,6 +103,12 @@ public class CourseManager {
 
         }
     }
+    public String[] removeCourse(String courseCode){
+        List<String> members = getCourseByCode(courseCode).getMembers();
+        members.add(getCourseByCode(courseCode).getCourseOrganiserEmail());
+        courses.removeIf(course -> course.getCourseCode().equalsIgnoreCase(courseCode));
+        return (members.toArray(new String[0]));
+    }
 
     public void addCourse(String email, CourseInfo info) {
         if (!nullCourseInfo(info)) {
@@ -358,6 +364,7 @@ public class CourseManager {
                         System.currentTimeMillis(), studentEmail, courseCode, requiredLabs);
                 view.displayWarning("You have to choose " + requiredLabs + " tutorials for this course ");
             }
+            courseToBeAdded.addMember(studentEmail); //This line adds student as a member so if the course is deleted the student will be emailed
 
             Logger.info("{}, {}, addCourseToStudentTimetable, {} SUCCESS", System.currentTimeMillis(), studentEmail, courseCode);
             view.displaySuccess("The course was successfully added to your timetable");

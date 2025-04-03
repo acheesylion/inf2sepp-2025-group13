@@ -20,8 +20,11 @@ public class Course {
         private String courseSecretaryEmail;
         private int requiredTutorials;
         private int requiredLabs;
+        private List<String> members;
 
-        // Constructor
+
+
+    // Constructor
         public Course(String courseCode, String name, String description, boolean requiresComputers,
                       String courseOrganiserName, String courseOrganiserEmail,
                       String courseSecretaryName, String courseSecretaryEmail,
@@ -37,6 +40,7 @@ public class Course {
             this.requiredTutorials = requiredTutorials;
             this.requiredLabs = requiredLabs;
             this.activities = new ArrayList<>();
+            this.members = new ArrayList<>();
 
         }
 
@@ -57,6 +61,14 @@ public class Course {
              if (Objects.equals(type, "lab")){activities.add(new Lab(id, startDate, startTime, endDate, endTime, location, day, capacity));}
              if (Objects.equals(type, "tutorial")){activities.add(new Tutorial(id, startDate, startTime, endDate, endTime, location, day, capacity));}
 
+        }
+
+        public void addMember(String member){
+            members.add(member);
+        }
+
+        public List<String> getMembers(){
+            return(this.members);
         }
 
         public void removeActivities() {
