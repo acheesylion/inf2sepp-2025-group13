@@ -9,15 +9,13 @@ import java.util.List;
 public class Timetable {
 
     private final String studentEmail;
-    private List<TimeSlot> timeSlots;
+    private final List<TimeSlot> timeSlots;
 
     // Constructor initializing the studentEmail and the timeSlots list
     public Timetable(String studentEmail) {
         this.studentEmail = studentEmail;
         this.timeSlots = new ArrayList<>();
     }
-
-
 
     public void addTimeSlot(Activity activity, String courseCode) {
         // When adding a new time slot, we default its status to UNCHOSEN.
@@ -37,7 +35,6 @@ public class Timetable {
                 .findFirst()
                 .orElse(null);
     }
-
 
     public int numChosenActivities(String courseCode) {
         int count = 0;
@@ -60,23 +57,16 @@ public class Timetable {
      * Otherwise, an empty array is returned.
      * </p>
      *
-     * @param startDate the start date of the time interval to check
      * @param startTime the start time of the time interval to check
-     * @param endDate   the end date of the time interval to check
      * @param endTime   the end time of the time interval to check
      * @return an array of two strings: the first element is the course code and the second element is the activity ID
      *         of the conflicting time slot, or an empty array if no conflict is found.
      */
-    public String[] checkConflicts(LocalDate startDate, LocalTime startTime,
-                                   LocalDate endDate, LocalTime endTime) {
-        LocalDateTime inputStart = LocalDateTime.of(startDate, startTime);
-        LocalDateTime inputEnd = LocalDateTime.of(endDate, endTime);
+    public String[] checkConflicts(DayOfWeek day,  LocalTime startTime, LocalTime endTime) {
 
         for (TimeSlot ts : timeSlots) {
-            LocalDateTime slotStart = LocalDateTime.of(ts.getStartDate(), ts.getStartTime());
-            LocalDateTime slotEnd = LocalDateTime.of(ts.getEndDate(), ts.getEndTime());
-
-            if (inputStart.isBefore(slotEnd) && slotStart.isBefore(inputEnd)) {
+           if (ts.getActivity().getDay().equals(day))
+            if (startTime.isBefore(ts.getEndTime()) && endTime.isAfter(ts.getStartTime())) {
                 String conflictCourseCode = ts.getCourseCode();
                 String conflictID = Integer.toString(ts.getActivityId());
                 return (new String[] {conflictCourseCode, conflictID});

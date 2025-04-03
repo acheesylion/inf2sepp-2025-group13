@@ -16,6 +16,7 @@ public class StudentController extends Controller {
         ADD_COURSE_TO_TIMETABLE,
         REMOVE_COURSE_FROM_TIMETABLE,
         VIEW_TIMETABLE,
+        CHOOSE_ACTIVITY_FOR_COURSE,
         TEST_ADD_COURSE,
     }
 
@@ -36,6 +37,7 @@ public class StudentController extends Controller {
             case ADD_COURSE_TO_TIMETABLE -> addCourseToTimetable();
             case REMOVE_COURSE_FROM_TIMETABLE -> removeCourseFromTimetable();
             case VIEW_TIMETABLE -> viewTimeTable();
+            case CHOOSE_ACTIVITY_FOR_COURSE -> chooseActivityForCourse();
             case TEST_ADD_COURSE -> testAddCourseStudent();
         }
         return false;
@@ -62,10 +64,10 @@ public class StudentController extends Controller {
     private void chooseActivityForCourse() {
         view.displayInfo("=== Choose Activity for Course ===");
         String courseCode = view.getInput("Enter the course code: ");
-        int activityID = Integer.parseInt(view.getInput("Enter the Activity ID: "));
+        int activityId = Integer.parseInt(view.getInput("Enter the Activity ID: "));
         String email = sharedContext.getCurrentUserEmail();
         CourseManager courseManager = sharedContext.getCourseManager();
-        courseManager.chooseActivityForCourse(email);
+        courseManager.chooseActivityForCourse(email, courseCode, activityId);
     }
 
 }

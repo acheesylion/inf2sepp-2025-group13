@@ -310,8 +310,7 @@ public class CourseManager {
 
         for (Activity activity : courseToBeAdded.getActivities()) {
             String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                    activity.getStartDate(), activity.getStartTime(),
-                    activity.getEndDate(), activity.getEndTime()
+                    activity.getDay(), activity.getStartTime(), activity.getEndTime()
             );
 
             // If there is a conflict
@@ -372,7 +371,7 @@ public class CourseManager {
         }
     }
 
-    public void chooseActivityForCourse(String studentEmail) {
+    public void chooseActivityForCourse(String studentEmail, String courseCode, int activityId) {
         if (!timetableExists(studentEmail)) {
             Logger.error("{}, {}, chooseActivityForCourse, FAILURE (Error: Timetable does not exist)",
                     System.currentTimeMillis(), studentEmail);
@@ -382,9 +381,6 @@ public class CourseManager {
 
         Timetable userTimetable = getTimetable(studentEmail);
 
-
-        String courseCode = view.getInput("Enter courseCode: ");
-
         if (!userTimetable.hasSlotsForCourse(courseCode)) {
             Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Course does not exist in timetable.)",
                     System.currentTimeMillis(), studentEmail, courseCode);
@@ -392,15 +388,12 @@ public class CourseManager {
             return;
         }
 
-        int activityId = readInteger(view, "Enter activityId: ");
-
         TimeSlot selectedTimeSlot = userTimetable.getTimeSlotByActivityId(activityId);
 
         Activity activity = selectedTimeSlot.getActivity();
 
         String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                activity.getStartDate(), activity.getStartTime(),
-                activity.getEndDate(), activity.getEndTime()
+                activity.getDay(), activity.getStartTime(), activity.getEndTime()
         );
 
         // If there is a conflict
