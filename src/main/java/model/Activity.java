@@ -4,13 +4,13 @@ import java.time.LocalTime;
 import java.time.DayOfWeek;
 
 public abstract class Activity {
-    private int id;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private LocalDate endDate;
-    private LocalTime endTime;
-    private String location;
-    private DayOfWeek day;
+    private final int id;
+    private final LocalDate startDate;
+    private final LocalTime startTime;
+    private final LocalDate endDate;
+    private final LocalTime endTime;
+    private final String location;
+    private final DayOfWeek day;
 
     // Constructor
     public Activity(int id, LocalDate startDate, LocalTime startTime,
@@ -27,6 +27,15 @@ public abstract class Activity {
     public boolean hasId(int id) {
         return this.id == id;
     }
+
+
+    public int getId() {return id;}
+    public LocalDate getStartDate() {return startDate;}
+    public LocalTime getStartTime() {return startTime;}
+    public LocalDate getEndDate() {return endDate;}
+    public LocalTime getEndTime() {return endTime;}
+    public String getLocation() {return location;}
+    public DayOfWeek getDay() {return day;}
 
     @Override
     public String toString() {

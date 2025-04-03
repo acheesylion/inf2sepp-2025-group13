@@ -49,6 +49,7 @@ public class StudentController extends Controller {
         courseManager.addCourseToStudentTimetable(email, courseCode);
     }
 
+
     private void testAddCourseStudent() {
         CourseManager courseManager = sharedContext.getCourseManager();
         courseManager.testAddCourse();

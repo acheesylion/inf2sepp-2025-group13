@@ -14,6 +14,12 @@ public class Tutorial extends Activity {
         this.capacity = capacity;
     }
 
+    public Tutorial(Tutorial other) {
+        super(other.getId(), other.getStartDate(), other.getStartTime(),
+                other.getEndDate(), other.getEndTime(), other.getLocation(), other.getDay());
+        this.capacity = other.capacity;
+    }
+
     public int getCapacity() {
         return capacity;
     }

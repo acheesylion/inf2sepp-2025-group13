@@ -13,9 +13,14 @@ public class ViewerController extends Controller {
         super(sharedContext, view, auth, email);
     }
 
-    public void viewCourses(){
+    public void viewCourses() {
         CourseManager courseManager = sharedContext.getCourseManager();
         courseManager.viewCourses();
+    }
 
+    public void viewCourse(){
+        CourseManager courseManager = sharedContext.getCourseManager();
+        String courseCode = view.getInput("Enter the course code: ");
+        courseManager.viewCourse(courseCode);
     }
 }

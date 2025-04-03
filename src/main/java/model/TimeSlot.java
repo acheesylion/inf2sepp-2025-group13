@@ -4,33 +4,18 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class TimeSlot {
-
-    // Private fields (as indicated by '-' in UML)
-    private DayOfWeek day;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private LocalDate endDate;
-    private LocalTime endTime;
-
-    // Public fields as indicated by '+' in UML (or accessed via getters/setters)
+    private final Activity activity;
     public String courseCode;
-    public int activityId;
     public TimeSlotStatus status;
 
-    // Constructor initializing all fields
-    public TimeSlot(DayOfWeek day, LocalDate startDate, LocalTime startTime,
-                    LocalDate endDate, LocalTime endTime, String courseCode,
-                    int activityId, TimeSlotStatus status) {
 
-        this.day = day;
-        this.startDate = startDate;
-        this.startTime = startTime;
-        this.endDate = endDate;
-        this.endTime = endTime;
+    public TimeSlot(Activity activity, String courseCode, TimeSlotStatus status) {
         this.courseCode = courseCode;
-        this.activityId = activityId;
+        this.activity = activity;
         this.status = status;
     }
+
+   public Activity getActivity() {return activity;}
 
     // Checks if the TimeSlot has the given course code
     public boolean hasCourseCode(String courseCode) {
@@ -42,26 +27,30 @@ public class TimeSlot {
 
 
     // Checks if the TimeSlot has the given activity ID
-    public boolean hasActivityId(int id) {
-        return this.activityId == id;
-    }
+    public boolean hasActivityId(int id) {return activity.getId() == id;}
 
     // Returns true if the status of the TimeSlot is CHOSEN
-    public boolean isChosen() {
-        return this.status == TimeSlotStatus.CHOSEN;
-    }
+    public boolean isChosen() {return this.status == TimeSlotStatus.CHOSEN;}
+    public void setStatus(TimeSlotStatus status) {this.status = status;}
+    public LocalDate getStartDate() {return activity.getStartDate();}
+    public LocalTime getStartTime() {return activity.getStartTime();}
+    public LocalDate getEndDate() {return activity.getEndDate();}
+    public LocalTime getEndTime() {return activity.getEndTime();}
+
+    public int getActivityId() {return activity.getId();}
+    public String getCourseCode() {return courseCode;}
 
     // Provides a string representation of the TimeSlot
     @Override
     public String toString() {
         return "TimeSlot{" +
-                "day=" + day +
-                ", startDate=" + startDate +
-                ", startTime=" + startTime +
-                ", endDate=" + endDate +
-                ", endTime=" + endTime +
+                "day=" + activity.getDay() +
+                ", startDate=" + activity.getStartDate() +
+                ", startTime=" + activity.getStartTime() +
+                ", endDate=" + activity.getEndDate() +
+                ", endTime=" + activity.getEndTime() +
                 ", courseCode='" + courseCode + '\'' +
-                ", activityId=" + activityId +
+                ", activityId=" + activity.getId() +
                 ", status=" + status +
                 '}';
     }

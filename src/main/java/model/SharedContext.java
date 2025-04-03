@@ -13,15 +13,15 @@ public class SharedContext {
     public final CourseManager courseManager;
     private final Map<String, Set<String>> faqTopicsUpdateSubscribers;
 
-    protected final View view;
+    View view;
 
     public SharedContext(View view) {
         this.currentUser = new Guest();
         this.inquiries = new ArrayList<>();
+        this.view = view;
         faq = new FAQ();
         courseManager = new CourseManager(view);
         faqTopicsUpdateSubscribers = new HashMap<>();
-        this.view = view;
     }
 
     public FAQ getFAQ() {
