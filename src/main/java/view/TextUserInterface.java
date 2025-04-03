@@ -104,6 +104,9 @@ public class TextUserInterface implements View {
         System.out.println("Assigned to: " + (inquiry.getAssignedTo() == null ? "No one" : inquiry.getAssignedTo()));
         System.out.println("Query:");
         System.out.println(inquiry.getContent());
+        //only if there is a course code?
+        System.out.println("Course Code: " + inquiry.getCourseCode());
+
     }
 
     @Override

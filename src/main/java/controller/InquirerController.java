@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -133,6 +134,10 @@ public class InquirerController extends Controller {
             view.displayError("Inquiry subject cannot be blank! Please try again");
             return;
         }
+        boolean courseCodeEntered;
+
+        String courseCode = view.getInput("Please enter the course code relating to your inquiry (optional): ");
+        courseCodeEntered = !subject.strip().isBlank();
 
         String text = view.getInput("Write your inquiry:" + System.lineSeparator());
         if (text.strip().isBlank()) {
@@ -140,15 +145,44 @@ public class InquirerController extends Controller {
             return;
         }
 
-        Inquiry inquiry = new Inquiry(inquirerEmail, subject, text);
+        Inquiry inquiry = new Inquiry(inquirerEmail, subject, text, courseCodeEntered ? courseCode : null);
         sharedContext.inquiries.add(inquiry);
 
+        String msgBody = "Subject: " + subject + System.lineSeparator() +
+                (courseCodeEntered ? "Course Code: " + courseCode + System.lineSeparator() : "") +
+                "Please log into the Self Service Portal to review and respond to inquiry." ;
+        if (!courseCodeEntered){
         email.sendEmail(
                 SharedContext.ADMIN_STAFF_EMAIL,
                 SharedContext.ADMIN_STAFF_EMAIL,
                 "New inquiry from " + inquirerEmail,
-                "Subject: " + subject + System.lineSeparator() + "Please log into the Self Service Portal to review and respond to the inquiry."
+                msgBody
         );
-        view.displaySuccess("Your inquiry has been recorded. Someone will be in touch via email soon!");
+            view.displaySuccess("Your inquiry has been recorded. Someone will be in touch via email soon!");
+
+        } else{
+            //lookup courseCode
+            CourseManager courseManager = sharedContext.getCourseManager();
+            Course course = courseManager.getCourseByCode(courseCode);
+                if (course != null) {
+                    SharedContext.COURSE_ORGANISER_EMAIL = course.getCourseOrganiserEmail();
+                    email.sendEmail(
+                            //consult member of teaching staff responsible for that course
+                            SharedContext.COURSE_ORGANISER_EMAIL,
+                            SharedContext.COURSE_ORGANISER_EMAIL,
+                            "New inquiry from " + inquirerEmail,
+                            msgBody
+                    );
+                    view.displaySuccess("Your inquiry has been recorded. Someone will be in touch via email soon!");
+                } else {
+                    view.displayError("Not a valid course code");
+
+                }
+
+
+
+
+        }
+
     }
 }

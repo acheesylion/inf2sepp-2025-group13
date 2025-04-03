@@ -8,6 +8,7 @@ import model.SharedContext;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 import view.TextUserInterface;
+import view.View;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,11 +16,13 @@ import java.net.URISyntaxException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+
 public class LoginSystemTests extends TUITest {
     @Test
     public void testLoginAsAdminStaff() throws URISyntaxException, IOException, ParseException {
+        View view = new TextUserInterface();
         setMockInput("admin1", "admin1pass");
-        SharedContext context = new SharedContext();
+        SharedContext context = new SharedContext(view);
         GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         guestController.login();
@@ -31,7 +34,8 @@ public class LoginSystemTests extends TUITest {
     @Test
     public void testLoginAsTeachingStaff() throws URISyntaxException, IOException, ParseException {
         setMockInput("teacher1", "teacher1pass");
-        SharedContext context = new SharedContext();
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
         GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         guestController.login();
@@ -43,7 +47,8 @@ public class LoginSystemTests extends TUITest {
     @Test
     public void testLoginAsStudent() throws URISyntaxException, IOException, ParseException {
         setMockInput("student1", "student1pass");
-        SharedContext context = new SharedContext();
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
         GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         guestController.login();
