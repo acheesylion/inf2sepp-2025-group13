@@ -9,7 +9,7 @@ import java.util.List;
 public class Timetable {
 
     private final String studentEmail;
-    private final List<TimeSlot> timeSlots;
+    private List<TimeSlot> timeSlots;
 
     // Constructor initializing the studentEmail and the timeSlots list
     public Timetable(String studentEmail) {
@@ -29,6 +29,13 @@ public class Timetable {
             newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
         }
         timeSlots.add(newSlot);
+    }
+
+    public TimeSlot getTimeSlotByActivityId(int activityId) {
+        return timeSlots.stream()
+                .filter(ts -> ts.getActivity().hasId(activityId))
+                .findFirst()
+                .orElse(null);
     }
 
 
@@ -103,6 +110,11 @@ public class Timetable {
     }
 
     public boolean hasSlotsForCourse(String courseCode) {
+
+        if (timeSlots == null) {
+            return false;
+        }
+
         for (TimeSlot ts : timeSlots) {
             if (ts.hasCourseCode(courseCode)) {
                 return true;
@@ -113,6 +125,18 @@ public class Timetable {
 
     public void removeSlotsForCourse(String courseCode) {
         timeSlots.removeIf(ts -> ts.hasCourseCode(courseCode));
+    }
+
+    public int numTutorialInTimeSlots(String courseCode) {
+        return (int) timeSlots.stream()
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.getActivity() instanceof Tutorial)
+                .count();
+    }
+
+    public int numLabInTimeSlots(String courseCode) {
+        return (int) timeSlots.stream()
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.getActivity() instanceof Lab)
+                .count();
     }
 
 

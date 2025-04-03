@@ -89,7 +89,7 @@ public class Course {
             for (Activity activity : activities) {
                 if (activity.hasId(activityId)){
                     if (activity instanceof Lecture) {
-                        return ((Lecture) activity).getRecorded();
+                        return !(((Lecture) activity).getRecorded());
                     }
                 }
             }
