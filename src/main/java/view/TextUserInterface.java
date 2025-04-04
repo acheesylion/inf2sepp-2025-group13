@@ -17,7 +17,8 @@ public class TextUserInterface implements View {
     @Override
     public String getInput(String prompt) {
         System.out.print(prompt);
-        return scanner.nextLine();
+        String nextLine = scanner.nextLine();
+        return nextLine;
     }
 
     @Override
@@ -121,6 +122,11 @@ public class TextUserInterface implements View {
                 course.getRequiredTutorials(), course.getRequiredLabs()
         );
         System.out.println(message);
+    }
+
+    @Override
+    public void displayTimetable(Timetable timetable) {
+        System.out.println(timetable);
     }
 
     

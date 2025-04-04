@@ -59,6 +59,37 @@ public class TestTimetableClass {
     }
 
     @Test
+    public void testHasSlotsForCourse() {
+        //Empty Timeslot list
+        String courseCode = "MATH12345";
+        assertFalse(timetable.hasSlotsForCourse(courseCode));
+
+        // Populated Timeslot list
+        timetable.addTimeSlot(lectureActivity, "MATH12345");
+        timetable.addTimeSlot(labActivity, "MATH12345");
+        timetable.addTimeSlot(tutorialActivity, "MATH12345");
+        assertTrue(timetable.hasSlotsForCourse(courseCode));
+        assertFalse(timetable.hasSlotsForCourse("INFD12345"));
+
+    }
+
+    @Test
+    public void testHasSlotsForActivity() {
+        //Empty Timeslot list
+        int activityId = 101;
+        assertFalse(timetable.hasSlotsForActivityId(activityId));
+
+        // Populated Timeslot list
+        timetable.addTimeSlot(lectureActivity, "MATH12345");
+        timetable.addTimeSlot(labActivity, "MATH12345");
+        timetable.addTimeSlot(tutorialActivity, "MATH12345");
+        assertTrue(timetable.hasSlotsForActivityId(activityId));
+        int randomActivityId = 123;
+        assertFalse(timetable.hasSlotsForActivityId(randomActivityId));
+
+    }
+
+    @Test
     public void testTimetableToStringContainsHeader() {
         timetable.addTimeSlot(lectureActivity, "CS101");
         timetable.addTimeSlot(labActivity, "CS102");

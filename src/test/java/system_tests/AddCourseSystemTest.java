@@ -1,9 +1,8 @@
 package system_tests;
 
-import controller.GuestController;
+import controller.AdminStaffController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
-import model.AuthenticatedUser;
 import model.SharedContext;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
@@ -19,41 +18,29 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class AddCourseSystemTest extends TUITest {
     @Test
-    public void testLoginAsAdminStaff() throws URISyntaxException, IOException, ParseException {
+    public void testBaseAddCourse() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345",
+                "Math For Computer Science",
+                "fun course",
+                "Sarah Smith",
+                "sarah_smith@gmail.com",
+                "Joash Lemmings",
+                "joash_smith@gmail.com",
+                "2",
+                "1",
+                "Y",
+                "2",
+                "3",
+                "4"
+        );
         View view = new TextUserInterface();
-        setMockInput("admin1", "admin1pass");
         SharedContext context = new SharedContext(view);
-        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
-        guestController.login();
-        assertOutputContains("Logged in as admin1");
-        assertInstanceOf(AuthenticatedUser.class, context.currentUser);
-        assertEquals("AdminStaff", ((AuthenticatedUser) context.currentUser).getRole());
+        adminStaffController.manageCourses();
     }
 
-    @Test
-    public void testLoginAsTeachingStaff() throws URISyntaxException, IOException, ParseException {
-        setMockInput("teacher1", "teacher1pass");
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
-        startOutputCapture();
-        guestController.login();
-        assertOutputContains("Logged in as teacher1");
-        assertInstanceOf(AuthenticatedUser.class, context.currentUser);
-        assertEquals("TeachingStaff", ((AuthenticatedUser) context.currentUser).getRole());
-    }
 
-    @Test
-    public void testLoginAsStudent() throws URISyntaxException, IOException, ParseException {
-        setMockInput("student1", "student1pass");
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
-        startOutputCapture();
-        guestController.login();
-        assertOutputContains("Logged in as student1");
-        assertInstanceOf(AuthenticatedUser.class, context.currentUser);
-        assertEquals("Student", ((AuthenticatedUser) context.currentUser).getRole());
-    }
 }

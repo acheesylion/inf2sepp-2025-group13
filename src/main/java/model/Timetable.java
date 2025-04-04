@@ -33,39 +33,8 @@ public class Timetable {
         timeSlots.add(newSlot);
     }
 
-    public TimeSlot getTimeSlotByActivityId(int activityId) {
-        return timeSlots.stream()
-                .filter(ts -> ts.hasActivityId(activityId))
-                .findFirst()
-                .orElse(null);
-    }
+    public boolean hasStudentEmail(String email) {return (this.studentEmail.equals(email));}
 
-    public int numChosenActivities(String courseCode) {
-        int count = 0;
-        for (TimeSlot ts : timeSlots) {
-            if (ts.hasCourseCode(courseCode) && ts.isChosen()) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-
-    /**
-     * Checks if there is a conflict between the specified time interval and any existing time slots.
-     *
-     * <p>
-     * The method iterates over all {@code TimeSlot} objects stored in {@code timeSlots} and compares their
-     * intervals with the provided start and end dates/times. If an overlapping interval is found,
-     * it returns an array containing the course code and activity ID of the conflicting time slot.
-     * Otherwise, an empty array is returned.
-     * </p>
-     *
-     * @param startTime the start time of the time interval to check
-     * @param endTime   the end time of the time interval to check
-     * @return an array of two strings: the first element is the course code and the second element is the activity ID
-     *         of the conflicting time slot, or an empty array if no conflict is found.
-     */
     public String[] checkConflicts(DayOfWeek day,  LocalTime startTime, LocalTime endTime) {
 
         for (TimeSlot ts : timeSlots) {
@@ -81,38 +50,59 @@ public class Timetable {
         return (new String[0]);
     }
 
-
-    public boolean hasStudentEmail(String email) {return (this.studentEmail.equals(email));}
-
-    /**
-     * Chooses an activity for a given course by setting its status to CHOSEN.
-     *
-     * @param courseCode the course code of the activity to choose
-     * @param activityId the activity ID of the activity to choose
-     * @return true if the activity was found and marked as CHOSEN, false otherwise
-     */
-    public void chooseActivity(String courseCode, int activityId) {
+    public DayOfWeek getIdDay(int activityId) {
         for (TimeSlot ts : timeSlots) {
-            if (ts.hasCourseCode(courseCode) && ts.hasActivityId(activityId)) {
-                if (!ts.isChosen()) {
-                    ts.setStatus(TimeSlotStatus.CHOSEN);
+            if (ts.hasActivityId(activityId)) {
+                    return ts.getDay();
                 }
-            }
         }
+        return null;
     }
 
-    public boolean hasSlotsForCourse(String courseCode) {
-
-        if (timeSlots == null) {
-            return false;
-        }
-
+    public LocalTime getIdStartTime(int activityId) {
         for (TimeSlot ts : timeSlots) {
-            if (ts.hasCourseCode(courseCode)) {
-                return true;
+            if (ts.hasActivityId(activityId)) {
+                return ts.getStartTime();
             }
         }
-        return false;
+        return null;
+    }
+
+    public LocalTime getIdEndTime(int activityId) {
+        for (TimeSlot ts : timeSlots) {
+            if (ts.hasActivityId(activityId)) {
+                return ts.getEndTime();
+            }
+        }
+        return null;
+    }
+
+    public void chooseActivity(String courseCode, int activityId) {
+        timeSlots.stream()
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.hasActivityId(activityId) && !ts.isChosen())
+                .forEach(ts -> ts.setStatus(TimeSlotStatus.CHOSEN));
+    }
+
+    public boolean isIdTutorial(int activityId) {
+        return timeSlots.stream()
+                .filter(ts -> ts.hasActivityId(activityId))
+                .anyMatch(TimeSlot::isTutorial);
+    }
+
+    public boolean isIdLab(int activityId) {
+        return timeSlots.stream()
+                .filter(ts -> ts.hasActivityId(activityId))
+                .anyMatch(TimeSlot::isLab);
+    }
+
+    // Contains a timeslot with the given courseCode
+    public boolean hasSlotsForCourse(String courseCode) {
+        return timeSlots.stream().anyMatch(ts -> ts.hasCourseCode(courseCode));
+    }
+
+    // Contains a timeslot with the given activityId
+    public boolean hasSlotsForActivityId(int activityId) {
+        return timeSlots.stream().anyMatch(ts -> ts.hasActivityId(activityId));
     }
 
     public void removeSlotsForCourse(String courseCode) {
@@ -130,8 +120,6 @@ public class Timetable {
                 .filter(ts -> ts.hasCourseCode(courseCode) && ts.isLab() && ts.isChosen())
                 .count();
     }
-
-
 
 
 
@@ -185,4 +173,6 @@ public class Timetable {
         sb.append(tableLine).append("\n");
         return sb.toString();
     }
+
+
 }
