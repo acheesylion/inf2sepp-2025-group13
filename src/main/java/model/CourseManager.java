@@ -61,7 +61,7 @@ public class CourseManager {
         return true;
     }
 
-    public void addActivitiesToCourse(Course new_course, View view) {
+    public void addActivitiesToCourse(Course newCourse, View view) {
         int numActivities = readInteger(view, "Enter how many activities you wish to add: ");
 
         for (int i = 0; i < numActivities; i++) {
@@ -116,10 +116,10 @@ public class CourseManager {
             // Depending on the type, ask for extra input (capacity for lab/tutorial or recorded for lecture)
             if (type.equalsIgnoreCase("lab") || type.equalsIgnoreCase("tutorial")) {
                 int capacity = readInteger(view, "Enter capacity: ");
-                new_course.addActivity(startDate, startTime, endDate, endTime, location, day, capacity, type);
+                newCourse.addActivity(startDate, startTime, endDate, endTime, location, day, capacity, type);
             } else if (type.equalsIgnoreCase("lecture")) {
                 boolean isRecorded = readBoolean(view, "Enter if lectures are recorded (true/false): ");
-                new_course.addActivity(startDate, startTime, endDate, endTime, location, day, isRecorded, type);
+                newCourse.addActivity(startDate, startTime, endDate, endTime, location, day, isRecorded, type);
             }
 
         }
@@ -276,7 +276,7 @@ public class CourseManager {
                 return course;
             }
         }
-        return null; // Return null if no matching course is found.
+        return null;
     }
 
 
@@ -508,86 +508,8 @@ public class CourseManager {
         view.displaySuccess("The activity was successfully added to your timetable");
     }
 
-//    public void testAddCourse(){
-//        CourseInfo newCourseInfo = new CourseInfo();
-//
-//        String[] courseInfoNames = {
-//                "courseCode",
-//                "name",
-//                "description",
-//                "requiresComputers",
-//                "courseOrganiserName",
-//                "courseOrganiserEmail",
-//                "courseSecretaryName",
-//                "courseSecretaryEmail",
-//                "requiredTutorials",
-//                "requiredLabs"
-//        };
-//
-//        List<String> courseInfoValues = Arrays.asList(
-//                "INFR29381",
-//                "informatics 2d reasoning and agents",
-//                "very hard course",
-//                "true",
-//                "Boris Johnson",
-//                "boris_johnson@gmail.com",
-//                "Hanna Johnson",
-//                "hanna_johnson@gmail.com",
-//                "2",
-//                "3"
-//        );
-//
-//        // Create a map to hold the course information
-//        Map<String, String> courseInfoMap = new HashMap<>();
-//
-//        // Ensure that keys and values have the same size
-//        if (courseInfoNames.length != courseInfoValues.size()) {
-//            throw new IllegalArgumentException("Keys and values must be of the same length.");
-//        }
-//
-//        // Map each key to its corresponding value
-//        for (int i = 0; i < courseInfoNames.length; i++) {
-//            courseInfoMap.put(courseInfoNames[i], courseInfoValues.get(i));
-//        }
-//
-//        for (Map.Entry<String, String> entry : courseInfoMap.entrySet()) {
-//            newCourseInfo.setField(entry.getKey(), entry.getValue());
-//        }
-//
-//        Course newCourse = new Course(
-//                newCourseInfo.getCourseCode(), newCourseInfo.getName(), newCourseInfo.getDescription(), newCourseInfo.getRequiresComputers(),
-//                newCourseInfo.getCourseOrganiserName(), newCourseInfo.getCourseOrganiserEmail(),
-//                newCourseInfo.getCourseSecretaryName(), newCourseInfo.getCourseSecretaryEmail(),
-//                newCourseInfo.getRequiredTutorials(), newCourseInfo.getRequiredLabs()
-//        );
-//
-//        LocalDate startDate1 = LocalDate.of(2025, 4, 2);
-//        LocalTime startTime1 = LocalTime.of(9, 0);
-//        LocalDate endDate1 = LocalDate.of(2025, 4, 2);
-//        LocalTime endTime1 = LocalTime.of(11, 0);
-//        String location1 = "Room 101";
-//        DayOfWeek day1 = DayOfWeek.WEDNESDAY;
-//        int capacity1 = 20;
-//        String type1 = "lab";
-//
-//        newCourse.addActivity(startDate1, startTime1, endDate1, endTime1, location1, day1, capacity1, type1);
-//
-//        LocalDate startDate2 = LocalDate.of(2025, 4, 3);
-//        LocalTime startTime2 = LocalTime.of(14, 0);
-//        LocalDate endDate2 = LocalDate.of(2025, 4, 3);
-//        LocalTime endTime2 = LocalTime.of(16, 0);
-//        String location2 = "Room 202";
-//        DayOfWeek day2 = DayOfWeek.THURSDAY;
-//        int capacity2 = 15;
-//        String type2 = "tutorial";
-//
-//        newCourse.addActivity(startDate2, startTime2, endDate2, endTime2, location2, day2, capacity2, type2);
-//
-//        courses.add(newCourse);
-//    }
 
     public void printTimetable(String email, View view) {
-
         if (timetableExists(email)) {
             Timetable userTimetable = getTimetable(email);
             view.displayTimetable(userTimetable);

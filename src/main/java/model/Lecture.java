@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Lecture extends Activity {
-    private boolean recorded;
+    private final boolean recorded;
 
     public Lecture(int id, LocalDate startDate, LocalTime startTime,
                    LocalDate endDate, LocalTime endTime, String location,
@@ -22,10 +22,6 @@ public class Lecture extends Activity {
 
     public boolean getRecorded() {
         return (this.recorded);
-    }
-
-    public void setRecorded(boolean recorded) {
-        this.recorded = recorded;
     }
 
     @Override

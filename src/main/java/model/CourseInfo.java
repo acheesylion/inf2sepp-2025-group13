@@ -4,16 +4,16 @@ public class CourseInfo {
     private String courseCode;
     private String name;
     private String description;
-    private Boolean requiresComputers;  // This can be a boolean, but keeping it as String for now
+    private Boolean requiresComputers;
     private String courseOrganiserName;
     private String courseOrganiserEmail;
     private String courseSecretaryName;
     private String courseSecretaryEmail;
-    private String requiredTutorials;  // This can be an integer, but keeping it as String for now
-    private String requiredLabs;  // This can be an integer, but keeping it as String for now
+    private String requiredTutorials;
+    private String requiredLabs;
 
 
-    // Constructor to initialize all private fields
+
     public CourseInfo(){}
 
     public void setField(String fieldName, String item) {
@@ -62,15 +62,35 @@ public class CourseInfo {
                 requiredTutorials, requiredLabs
         );
     }
-    public String getCourseCode() {return courseCode;}
-    public String getName() {return name;}
-    public String getDescription() {return description;}
-    public Boolean getRequiresComputers() {return requiresComputers;}
-    public String getCourseOrganiserName() {return courseOrganiserName;}
-    public String getCourseOrganiserEmail() {return courseOrganiserEmail;}
-    public String getCourseSecretaryName() {return courseSecretaryName;}
-    public String getCourseSecretaryEmail() {return courseSecretaryEmail;}
-    public String getRequiredTutorials() {return requiredTutorials;}
-    public String getRequiredLabs() {return requiredLabs;}
+    public String getCourseCode() {
+        return courseCode;
+    }
+    public String getName() {
+        return name;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public Boolean getRequiresComputers() {
+        return requiresComputers;
+    }
+    public String getCourseOrganiserName() {
+        return courseOrganiserName;
+    }
+    public String getCourseOrganiserEmail() {
+        return courseOrganiserEmail;
+    }
+    public String getCourseSecretaryName() {
+        return courseSecretaryName;
+    }
+    public String getCourseSecretaryEmail() {
+        return courseSecretaryEmail;
+    }
+    public String getRequiredTutorials() {
+        return requiredTutorials;
+    }
+    public String getRequiredLabs() {
+        return requiredLabs;
+    }
 
 }

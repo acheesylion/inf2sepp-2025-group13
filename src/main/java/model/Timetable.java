@@ -1,13 +1,10 @@
 package model;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Timetable {
@@ -15,7 +12,6 @@ public class Timetable {
     private final String studentEmail;
     private final List<TimeSlot> timeSlots;
 
-    // Constructor initializing the studentEmail and the timeSlots list
     public Timetable(String studentEmail) {
         this.studentEmail = studentEmail;
         this.timeSlots = new ArrayList<>();
