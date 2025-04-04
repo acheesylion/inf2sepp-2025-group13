@@ -103,13 +103,12 @@ public class CourseManager {
 
         }
     }
-    public String[] removeCourse(String courseCode){
+    public String[] removeCourse(String courseCode, SharedContext context){
         List<String> members = getCourseByCode(courseCode).getMembers();
         members.add(getCourseByCode(courseCode).getCourseOrganiserEmail());
         courses.removeIf(course -> course.getCourseCode().equalsIgnoreCase(courseCode));
         return (members.toArray(new String[0]));
     }
-
     public void addCourse(String email, CourseInfo info) {
         if (!nullCourseInfo(info)) {
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: Required course info not provided)",
@@ -153,6 +152,10 @@ public class CourseManager {
         Logger.info("{}, {}, addCourse, {} SUCCESS (New course added)", System.currentTimeMillis(), email, info.getCourseInfo() );
         view.displaySuccess("Course has been successfully created");
 
+    }
+
+    public void addcoursefortest(Course course){
+        courses.add(course);
     }
 
     public void viewCourses() {

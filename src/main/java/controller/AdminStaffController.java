@@ -3,6 +3,7 @@ package controller;
 import external.AuthenticationService;
 import external.EmailService;
 import model.*;
+import org.tinylog.Logger;
 import view.View;
 
 
@@ -185,6 +186,7 @@ public class AdminStaffController extends StaffController {
         AdminStaffController.manageCoursesOptions option = AdminStaffController.manageCoursesOptions.values()[optionNo];
         switch (option) {
             case ADD_COURSE -> addCourse();
+            case REMOVE_COURSE -> deleteCourse();
         }
         return false;
     }
@@ -258,6 +260,25 @@ public class AdminStaffController extends StaffController {
             }
             // If validation passes, return the input.
             return input;
+        }
+    }
+
+    private void deleteCourse() {
+        CourseManager courseManager = sharedContext.getCourseManager();
+        view.displayInfo("=== Remove Course ===");
+        String input = getValidatedInput("courseCode", view);
+        if (!courseManager.checkCourseCode(input)){
+            //System.currentTimeMillis(),email,"addCourse",courseInfo,"FAILURE"+" (Error: Provided courseCode is invalid)")
+            Logger.error("{}, {}, deleteCourse, {} FAILURE (Error: Provided courseCode is invalid)",
+                    System.currentTimeMillis(), sharedContext.getCurrentUserEmail(), input );
+            view.displayError("Provided courseCode is invalid");
+            return ;}
+        Course courseDeleted = courseManager.getCourseByCode(input);
+        String[] emaillist = courseManager.removeCourse(input, sharedContext);
+        for (String emailAddress : emaillist) {
+            email.sendEmail(sharedContext.getCurrentUserEmail(), emailAddress,
+                    "Course deleted - " + courseDeleted.getCourseCode(),
+                    "this course has been provided with the following details: " + courseDeleted.toString());
         }
     }
 
