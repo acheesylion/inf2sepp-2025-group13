@@ -17,8 +17,7 @@ public class TextUserInterface implements View {
     @Override
     public String getInput(String prompt) {
         System.out.print(prompt);
-        String nextLine = scanner.nextLine();
-        return nextLine;
+        return scanner.nextLine();
     }
 
     @Override

@@ -28,8 +28,8 @@ public class CourseManager {
     }
 
 
-    private Boolean validCourseInfo(CourseInfo courseInfo) {
-        String courseCode = courseInfo.getName();
+    public Boolean validCourseInfo(CourseInfo courseInfo) {
+        String courseCode = courseInfo.getCourseCode();
         String name = courseInfo.getName();
         String description = courseInfo.getDescription();
         Boolean requiresComputers = courseInfo.getRequiresComputers();
@@ -61,7 +61,7 @@ public class CourseManager {
         return true;
     }
 
-    private void addActivitiesToCourse(Course new_course, View view) {
+    public void addActivitiesToCourse(Course new_course, View view) {
         int numActivities = readInteger(view, "Enter how many activities you wish to add: ");
 
         for (int i = 0; i < numActivities; i++) {
@@ -141,7 +141,6 @@ public class CourseManager {
         }
 
         if (!checkCourseCode(info.getCourseCode())){
-            //System.currentTimeMillis(),email,"addCourse",courseInfo,"FAILURE"+" (Error: Provided courseCode is invalid)")
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: Provided courseCode is invalid)",
                     System.currentTimeMillis(), email, info.getCourseInfo() );
             view.displayError("Provided courseCode is invalid");
@@ -150,7 +149,6 @@ public class CourseManager {
         }
 
         if (hasCourse(info.getCourseCode())){
-            //System.currentTimeMillis(),email,"addCourse",courseInfo,"FAILURE"+" (Error: Provided courseCode is invalid)")
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: Course with that code already exists)",
                     System.currentTimeMillis(), email, info.getCourseInfo() );
             view.displayError("Course with that code already exists");
@@ -169,11 +167,15 @@ public class CourseManager {
         );
 
         addActivitiesToCourse(newCourse, view);
-        courses.add(newCourse);
+        addCourseToCourseList(newCourse);
 
         Logger.info("{}, {}, addCourse, {} SUCCESS (New course added)", System.currentTimeMillis(), email, info.getCourseInfo() );
         view.displaySuccess("Course has been successfully created");
 
+    }
+
+    public void addCourseToCourseList(Course course) {
+        courses.add(course);
     }
 
     public void viewCourses() {
@@ -202,7 +204,7 @@ public class CourseManager {
     public boolean checkCourseCode(String courseCode){return courseCode.matches("^[A-Z]{4}\\d{5}$");}
     public boolean checkEmailString(String email){return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");}
 
-    private boolean hasCourse(String courseCode) {
+    public boolean hasCourse(String courseCode) {
         for (Course course : courses) {
             if (course.hasCode(courseCode)) {
                 return true;
@@ -234,6 +236,7 @@ public class CourseManager {
             }
         }
     }
+
     private LocalDate readDate(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);
@@ -244,6 +247,7 @@ public class CourseManager {
             }
         }
     }
+
     private LocalTime readTime(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);
@@ -254,6 +258,7 @@ public class CourseManager {
             }
         }
     }
+
     private boolean readBoolean(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);

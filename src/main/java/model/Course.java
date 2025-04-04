@@ -11,16 +11,16 @@ import java.util.UUID;
 public class Course {
         // Instance variables
         private final List<Activity> activities;
-        private String courseCode;
-        private String name;
-        private String description;
-        private boolean requiresComputers;
-        private String courseOrganiserName;
-        private String courseOrganiserEmail;
-        private String courseSecretaryName;
-        private String courseSecretaryEmail;
-        private int requiredTutorials;
-        private int requiredLabs;
+        private final String courseCode;
+        private final String name;
+        private final String description;
+        private final boolean requiresComputers;
+        private final String courseOrganiserName;
+        private final String courseOrganiserEmail;
+        private final String courseSecretaryName;
+        private final String courseSecretaryEmail;
+        private final int requiredTutorials;
+        private final int requiredLabs;
         private final List<String> members;
 
 
@@ -42,7 +42,6 @@ public class Course {
             this.requiredLabs = requiredLabs;
             this.activities = new ArrayList<>();
             this.members = new ArrayList<>();
-
         }
 
         // Methods to manage activities
@@ -81,18 +80,14 @@ public class Course {
         }
 
         public boolean hasActivityWithId(int id) {
-            // Implement functionality to check if the activity with the given id exists
+            for (Activity activity : activities) {
+                if (activity.getId() == id) {
+                    return true;
+                }
+            }
             return false;
         }
 
-        public List<String> getActivitiesAsString() {
-            // Implement functionality to return activities as a String
-            List<String> activityList = new ArrayList<>();
-            for (Activity activity : activities) {
-                activityList.add(activity == null ? "null" : activity.toString());
-            }
-            return activityList;
-        }
 
         public List<Activity> getActivities() {
             return activities;
@@ -109,6 +104,37 @@ public class Course {
             return false;
         }
 
+        public String getCourseCode() {
+            return courseCode;
+        }
+        public String getName() {
+            return name;
+        }
+        public String getDescription() {
+            return description;
+        }
+        public boolean isRequiresComputers() {
+            return requiresComputers;
+        }
+        public String getCourseOrganiserName() {
+            return courseOrganiserName;
+        }
+        public String getCourseOrganiserEmail() {
+            return courseOrganiserEmail;
+        }
+        public String getCourseSecretaryName() {
+            return courseSecretaryName;
+        }
+        public String getCourseSecretaryEmail() {
+            return courseSecretaryEmail;
+        }
+        public int getRequiredTutorials() {
+            return requiredTutorials;
+        }
+        public int getRequiredLabs() {
+            return requiredLabs;
+        }
+
         // Overriding the toString method to represent the Course object as a string
         @Override
         public String toString() {
@@ -122,85 +148,9 @@ public class Course {
                     "Required Labs: " + requiredLabs;
         }
 
-        // Getters and setters for instance variables (if needed)
-        public String getCourseCode() {
-            return courseCode;
-        }
 
-        public void setCourseCode(String courseCode) {
-            this.courseCode = courseCode;
-        }
 
-        public String getName() {
-            return name;
-        }
 
-        public void setName(String name) {
-            this.name = name;
-        }
 
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public boolean isRequiresComputers() {
-            return requiresComputers;
-        }
-
-        public void setRequiresComputers(boolean requiresComputers) {
-            this.requiresComputers = requiresComputers;
-        }
-
-        public String getCourseOrganiserName() {
-            return courseOrganiserName;
-        }
-
-        public void setCourseOrganiserName(String courseOrganiserName) {
-            this.courseOrganiserName = courseOrganiserName;
-        }
-
-        public String getCourseOrganiserEmail() {
-            return courseOrganiserEmail;
-        }
-
-        public void setCourseOrganiserEmail(String courseOrganiserEmail) {
-            this.courseOrganiserEmail = courseOrganiserEmail;
-        }
-
-        public String getCourseSecretaryName() {
-            return courseSecretaryName;
-        }
-
-        public void setCourseSecretaryName(String courseSecretaryName) {
-            this.courseSecretaryName = courseSecretaryName;
-        }
-
-        public String getCourseSecretaryEmail() {
-            return courseSecretaryEmail;
-        }
-
-        public void setCourseSecretaryEmail(String courseSecretaryEmail) {
-            this.courseSecretaryEmail = courseSecretaryEmail;
-        }
-
-        public int getRequiredTutorials() {
-            return requiredTutorials;
-        }
-
-        public void setRequiredTutorials(int requiredTutorials) {
-            this.requiredTutorials = requiredTutorials;
-        }
-
-        public int getRequiredLabs() {
-            return requiredLabs;
-        }
-
-        public void setRequiredLabs(int requiredLabs) {
-            this.requiredLabs = requiredLabs;
-        }
 
 }

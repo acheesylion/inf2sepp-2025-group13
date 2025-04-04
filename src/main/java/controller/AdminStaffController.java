@@ -185,34 +185,56 @@ public class AdminStaffController extends StaffController {
         AdminStaffController.manageCoursesOptions option = AdminStaffController.manageCoursesOptions.values()[optionNo];
         switch (option) {
             case ADD_COURSE -> addCourse();
-            case REMOVE_COURSE -> {}
+            case REMOVE_COURSE -> removeCourse();
         }
         return false;
     }
 
-    private void addCourse(){
-        view.displayInfo("=== Add Course ===");
-        CourseInfo newCourseInfo = new CourseInfo();
+    private void removeCourse() {
+        view.displayInfo("=== Remove Course ===");
+        String courseCode = view.getInput("Enter course code: ");
+        String currentEmail = sharedContext.getCurrentUserEmail();
+        CourseManager courseManager = sharedContext.getCourseManager();
+
+        String[] courseMembersEmail = courseManager.removeCourse(courseCode);
+
+        for (String allMembersEmail : courseMembersEmail) {
+            email.sendEmail(currentEmail, allMembersEmail,
+                    "Course Removed - " + courseCode,
+                    "The following Course has been removed."
+            );
+        }
+    }
+
+    public void fillCourseInfo(CourseInfo courseInfo) {
         String[] courseInfoNames = {
-            "courseCode",
-            "name",
-            "description",
-            "courseOrganiserName",
-            "courseOrganiserEmail",
-            "courseSecretaryName",
-            "courseSecretaryEmail",
-            "requiredTutorials",
-            "requiredLabs"
+                "courseCode",
+                "name",
+                "description",
+                "courseOrganiserName",
+                "courseOrganiserEmail",
+                "courseSecretaryName",
+                "courseSecretaryEmail",
+                "requiredTutorials",
+                "requiredLabs"
         };
 
         // For each field, get validated input and store it in CourseInfo.
         for (String fieldName : courseInfoNames) {
             String input = view.getInput(String.format("Enter %s: ", fieldName));
-            newCourseInfo.setField(fieldName, input);
+            courseInfo.setField(fieldName, input);
         }
 
         Boolean requiresComputers = view.getYesNoInput("Enter requiresComputers: ");
-        newCourseInfo.setRequiresComputers(requiresComputers);
+        courseInfo.setRequiresComputers(requiresComputers);
+    }
+
+    private void addCourse(){
+        view.displayInfo("=== Add Course ===");
+
+        CourseInfo newCourseInfo = new CourseInfo();
+
+        fillCourseInfo(newCourseInfo);
 
         String currentEmail = sharedContext.getCurrentUserEmail();
 
@@ -225,4 +247,5 @@ public class AdminStaffController extends StaffController {
                 "A course has been provided with the following details: " + newCourseInfo.getCourseInfo());
 
     }
+
 }

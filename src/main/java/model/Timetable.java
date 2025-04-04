@@ -126,8 +126,6 @@ public class Timetable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
-        // Header block with a centered title.
         String headerLine = "==============================================================";
         sb.append(headerLine).append("\n");
         String title = "Timetable for " + studentEmail;
@@ -136,28 +134,20 @@ public class Timetable {
         String centeredTitle = " ".repeat(Math.max(0, padding)) + title;
         sb.append(centeredTitle).append("\n");
         sb.append(headerLine).append("\n\n");
-
-        // Define table column widths:
-        // Day: 10, Time: 19, CourseCode: 10, ActivityId: 10, Type: 12.
         String tableLine = "+------------+---------------------+------------+------------+--------------+";
-
-        // Print table header.
         sb.append(tableLine).append("\n");
         sb.append(String.format("| %-10s | %-19s | %-10s | %-10s | %-12s |%n",
                 "Day", "Time", "CourseCode", "ActivityId", "Type"));
         sb.append(tableLine).append("\n");
 
-        // Formatter for time.
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        // Filter to only chosen timeslots, sort by day and then by start time.
         List<TimeSlot> sortedSlots = timeSlots.stream()
                 .filter(TimeSlot::isChosen)
                 .sorted(Comparator.comparing(TimeSlot::getDay)
                         .thenComparing(TimeSlot::getStartTime))
                 .collect(Collectors.toList());
 
-        // Print each timeslot.
         for (TimeSlot ts : sortedSlots) {
             String day = ts.getDay().toString();
             String time = ts.getStartTime().format(timeFormatter) + " - " + ts.getEndTime().format(timeFormatter);
