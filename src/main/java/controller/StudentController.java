@@ -36,7 +36,7 @@ public class StudentController extends Controller {
         switch (option) {
             case ADD_COURSE_TO_TIMETABLE -> addCourseToTimetable();
             case REMOVE_COURSE_FROM_TIMETABLE -> removeCourseFromTimetable();
-            case VIEW_TIMETABLE -> viewTimeTable();
+            case VIEW_TIMETABLE -> viewTimetable();
             case CHOOSE_ACTIVITY_FOR_COURSE -> chooseActivityForCourse();
             case TEST_ADD_COURSE -> testAddCourseStudent();
         }
@@ -59,7 +59,12 @@ public class StudentController extends Controller {
 
     private void removeCourseFromTimetable() {}
 
-    private void viewTimeTable() {}
+    private void viewTimetable() {
+        CourseManager courseManager = sharedContext.getCourseManager();
+        String email = sharedContext.getCurrentUserEmail();
+        courseManager.printTimetable(email);
+
+    }
 
     private void chooseActivityForCourse() {
         view.displayInfo("=== Choose Activity for Course ===");

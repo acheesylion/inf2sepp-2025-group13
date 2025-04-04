@@ -20,6 +20,7 @@ public class Lab extends Activity {
         this.capacity = other.capacity;
     }
 
+
     public int getCapacity() {
         return capacity;
     }

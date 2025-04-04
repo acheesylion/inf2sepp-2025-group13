@@ -52,7 +52,6 @@ public class CourseManager {
 
         for (int i = 0; i < numActivities; i++) {
             LocalDate startDate = readDate(view, "Enter startDate (YYYY-MM-DD): ");
-            LocalTime startTime = readTime(view, "Enter startTime (HH:MM): ");
             LocalDate endDate;
             while (true) {
                 endDate = readDate(view, "Enter endDate (YYYY-MM-DD): ");
@@ -63,8 +62,16 @@ public class CourseManager {
                 }
             }
 
-            LocalTime endTime = readTime(view, "Enter endTime (HH:MM): ");
-
+            LocalTime startTime = readTime(view, "Enter startTime (HH:MM): ");
+            LocalTime endTime;
+            while (true) {
+                endTime = readTime(view, "Enter endTime (HH:MM): ");;
+                if (endTime.isAfter(startTime)) {
+                    break; // Valid: end date is after start date
+                } else {
+                    view.displayInfo("End time must be after the start time. Please try again.");
+                }
+            }
             String location = view.getInput("Enter location: ");
             // Validate that location is not empty
             while (location == null || location.trim().isEmpty()) {
@@ -269,7 +276,7 @@ public class CourseManager {
             return 0;
         }
         int requiredTutorials = getCourseByCode(courseCode).getRequiredTutorials();
-        int chosenTutorials = timetable.numTutorialInTimeSlots(courseCode);
+        int chosenTutorials = timetable.numChosenTutorialInTimeSlots(courseCode);
 
         return (requiredTutorials - chosenTutorials);
     }
@@ -282,7 +289,7 @@ public class CourseManager {
             return 0;
         }
         int requiredLabs = getCourseByCode(courseCode).getRequiredLabs();
-        int chosenLabs = timetable.numLabInTimeSlots(courseCode);
+        int chosenLabs = timetable.numChosenLabInTimeSlots(courseCode);
 
         return (requiredLabs - chosenLabs);
     }
@@ -390,10 +397,8 @@ public class CourseManager {
 
         TimeSlot selectedTimeSlot = userTimetable.getTimeSlotByActivityId(activityId);
 
-        Activity activity = selectedTimeSlot.getActivity();
-
         String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                activity.getDay(), activity.getStartTime(), activity.getEndTime()
+                selectedTimeSlot.getDay(), selectedTimeSlot.getStartTime(), selectedTimeSlot.getEndTime()
         );
 
         // If there is a conflict
@@ -418,7 +423,7 @@ public class CourseManager {
 
         selectedTimeSlot.setStatus(TimeSlotStatus.CHOSEN);
 
-        if (activity instanceof Tutorial) {
+        if (selectedTimeSlot.isTutorial()) {
             int requiredVsChosenTutorial = checkChosenTutorials(courseCode, userTimetable);
             if (requiredVsChosenTutorial > 0) {
                 Logger.warn("{}, {}, chooseActivityForCourse, {} FAILURE (Warning: number of required tutorials {} not yet chosen)",
@@ -432,7 +437,7 @@ public class CourseManager {
                 view.displayWarning("You have to choose " + requiredVsChosenTutorial + " tutorials for this course ");
             }
         }
-        if (activity instanceof Lecture) {
+        if (selectedTimeSlot.isLab()) {
             int requiredVsChosenLab = checkChosenLabs(courseCode, userTimetable);
             if (requiredVsChosenLab > 0) {
                 Logger.warn("{}, {}, chooseActivityForCourse, {} FAILURE (Warning: number of required labs {} not yet chosen)",
@@ -526,6 +531,16 @@ public class CourseManager {
         newCourse.addActivity(startDate2, startTime2, endDate2, endTime2, location2, day2, capacity2, type2);
 
         courses.add(newCourse);
+    }
+
+    public void printTimetable(String email) {
+
+        if (!timetableExists(email)) {
+            return;
+        } else {
+            Timetable userTimetable = getTimetable(email);
+            System.out.println(userTimetable);
+        }
     }
 
 }

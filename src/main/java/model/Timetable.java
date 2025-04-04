@@ -3,8 +3,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Timetable {
 
@@ -21,7 +25,7 @@ public class Timetable {
         // When adding a new time slot, we default its status to UNCHOSEN.
 
         TimeSlot newSlot = null;
-        if (activity instanceof Lab) {
+        if (activity instanceof Lecture) {
             newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.CHOSEN);
         } else {
             newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
@@ -31,7 +35,7 @@ public class Timetable {
 
     public TimeSlot getTimeSlotByActivityId(int activityId) {
         return timeSlots.stream()
-                .filter(ts -> ts.getActivity().hasId(activityId))
+                .filter(ts -> ts.hasActivityId(activityId))
                 .findFirst()
                 .orElse(null);
     }
@@ -65,11 +69,11 @@ public class Timetable {
     public String[] checkConflicts(DayOfWeek day,  LocalTime startTime, LocalTime endTime) {
 
         for (TimeSlot ts : timeSlots) {
-           if (ts.getActivity().getDay().equals(day))
+           if (ts.getDay().equals(day))
             if (startTime.isBefore(ts.getEndTime()) && endTime.isAfter(ts.getStartTime())) {
                 String conflictCourseCode = ts.getCourseCode();
-                String conflictID = Integer.toString(ts.getActivityId());
-                return (new String[] {conflictCourseCode, conflictID});
+                int conflictID = ts.getActivityId();
+                return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
             }
         }
 
@@ -87,16 +91,14 @@ public class Timetable {
      * @param activityId the activity ID of the activity to choose
      * @return true if the activity was found and marked as CHOSEN, false otherwise
      */
-    public boolean chooseActivity(String courseCode, int activityId) {
+    public void chooseActivity(String courseCode, int activityId) {
         for (TimeSlot ts : timeSlots) {
             if (ts.hasCourseCode(courseCode) && ts.hasActivityId(activityId)) {
                 if (!ts.isChosen()) {
                     ts.setStatus(TimeSlotStatus.CHOSEN);
-                    return true;
                 }
             }
         }
-        return false;
     }
 
     public boolean hasSlotsForCourse(String courseCode) {
@@ -117,26 +119,70 @@ public class Timetable {
         timeSlots.removeIf(ts -> ts.hasCourseCode(courseCode));
     }
 
-    public int numTutorialInTimeSlots(String courseCode) {
+    public int numChosenTutorialInTimeSlots(String courseCode) {
         return (int) timeSlots.stream()
-                .filter(ts -> ts.hasCourseCode(courseCode) && ts.getActivity() instanceof Tutorial)
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isTutorial() && ts.isChosen())
                 .count();
     }
 
-    public int numLabInTimeSlots(String courseCode) {
+    public int numChosenLabInTimeSlots(String courseCode) {
         return (int) timeSlots.stream()
-                .filter(ts -> ts.hasCourseCode(courseCode) && ts.getActivity() instanceof Lab)
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isLab() && ts.isChosen())
                 .count();
     }
+
+
+
 
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Timetable for student: ").append(studentEmail).append("\n");
-        for (TimeSlot ts : timeSlots) {
-            sb.append(ts.toString()).append("\n");
+
+        // Header block with a centered title.
+        String headerLine = "==============================================================";
+        sb.append(headerLine).append("\n");
+        String title = "Timetable for " + studentEmail;
+        int totalWidth = headerLine.length();
+        int padding = (totalWidth - title.length()) / 2;
+        String centeredTitle = " ".repeat(Math.max(0, padding)) + title;
+        sb.append(centeredTitle).append("\n");
+        sb.append(headerLine).append("\n\n");
+
+        // Define table column widths:
+        // Day: 10, Time: 19, CourseCode: 10, ActivityId: 10, Type: 12.
+        String tableLine = "+------------+---------------------+------------+------------+--------------+";
+
+        // Print table header.
+        sb.append(tableLine).append("\n");
+        sb.append(String.format("| %-10s | %-19s | %-10s | %-10s | %-12s |%n",
+                "Day", "Time", "CourseCode", "ActivityId", "Type"));
+        sb.append(tableLine).append("\n");
+
+        // Formatter for time.
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        // Filter to only chosen timeslots, sort by day and then by start time.
+        List<TimeSlot> sortedSlots = timeSlots.stream()
+                .filter(TimeSlot::isChosen)
+                .sorted(Comparator.comparing(TimeSlot::getDay)
+                        .thenComparing(TimeSlot::getStartTime))
+                .collect(Collectors.toList());
+
+        // Print each timeslot.
+        for (TimeSlot ts : sortedSlots) {
+            String day = ts.getDay().toString();
+            String time = ts.getStartTime().format(timeFormatter) + " - " + ts.getEndTime().format(timeFormatter);
+            String courseCode = ts.getCourseCode();
+            int activityId = ts.getActivityId();
+            String type = ts.isLecture() ? "Lecture" :
+                    ts.isLab() ? "Lab" :
+                            ts.isTutorial() ? "Tutorial" : "Unknown";
+            sb.append(String.format("| %-10s | %-19s | %-10s | %-10d | %-12s |%n",
+                    day, time, courseCode, activityId, type));
         }
+
+        sb.append(tableLine).append("\n");
         return sb.toString();
     }
 }
