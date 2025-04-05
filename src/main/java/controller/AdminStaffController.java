@@ -206,7 +206,7 @@ public class AdminStaffController extends StaffController {
         }
     }
 
-    public void fillCourseInfo(CourseInfo courseInfo) {
+    private void fillCourseInfo(CourseInfo courseInfo) {
         String[] courseInfoNames = {
                 "courseCode",
                 "name",

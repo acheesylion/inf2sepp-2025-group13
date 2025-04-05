@@ -1,6 +1,7 @@
 package system_tests;
 
 import controller.AdminStaffController;
+import controller.MenuController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
 import model.*;
@@ -19,37 +20,65 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AddCourseSystemTest extends TUITest {
+
     @Test
-    public void testFillCourseInfoNormal() throws URISyntaxException, IOException, ParseException {
+    public void testFullAddCourse() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "Y",
+                "1", "2025-04-10", "2025-04-11", "09:00", "10:00",
+                "Room 101", "MONDAY", "lecture", "true",
+                "-1"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("SUCCESS");
+    }
+
+    @Test
+    public void testFillCourseInfoRecorded() throws URISyntaxException, IOException, ParseException {
         setMockInput(
-                "MATH12345",
-                "Math For Computer Science",
-                "fun course",
-                "Sarah Smith",
-                "sarah_smith@gmail.com",
-                "Joash Lemmings",
-                "joash_smith@gmail.com",
-                "2",
-                "1",
-                "Y"
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "Y"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
 
         adminStaffController.fillCourseInfo(newCourseInfoBasic);
         assertInstanceOf(CourseInfo.class, newCourseInfoBasic);
-
-
-
     }
+
     @Test
-    public void testFillCourseInfoError() throws URISyntaxException, IOException, ParseException {
+    public void testFillCourseInfoNotRecorded() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "n"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        CourseInfo newCourseInfoBasic = new CourseInfo();
+        startOutputCapture();
+
+        adminStaffController.fillCourseInfo(newCourseInfoBasic);
+        assertInstanceOf(CourseInfo.class, newCourseInfoBasic);
+    }
+
+    @Test
+    public void testFillCourseInfoError() throws URISyntaxException, IOException, ParseException {
         setMockInput(
                 "MATH12345",
                 "Math For Computer Science",
@@ -62,7 +91,9 @@ public class AddCourseSystemTest extends TUITest {
                 "1",
                 "2039wfwe"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         CourseInfo newCourseInfoError = new CourseInfo();
         startOutputCapture();
         adminStaffController.fillCourseInfo(newCourseInfoError);
@@ -71,9 +102,6 @@ public class AddCourseSystemTest extends TUITest {
 
     @Test
     public void testValidCourseInfo() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
         setMockInput(
                 "MATH12345",
                 "Math For Computer Science",
@@ -86,7 +114,10 @@ public class AddCourseSystemTest extends TUITest {
                 "1",
                 "Y"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
         adminStaffController.fillCourseInfo(newCourseInfoBasic);
@@ -96,9 +127,6 @@ public class AddCourseSystemTest extends TUITest {
 
     @Test
     public void testInvalidCourseInfoCode() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
         setMockInput(
                 "dfdsfsf",
                 "Math For Computer Science",
@@ -111,7 +139,10 @@ public class AddCourseSystemTest extends TUITest {
                 "1",
                 "Y"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
         adminStaffController.fillCourseInfo(newCourseInfoBasic);
@@ -122,9 +153,6 @@ public class AddCourseSystemTest extends TUITest {
 
     @Test
     public void testInvalidCourseInfoLab() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
         setMockInput(
                 "MATH12345",
                 "Math For Computer Science",
@@ -137,7 +165,10 @@ public class AddCourseSystemTest extends TUITest {
                 "adsasdfa",
                 "Y"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
         adminStaffController.fillCourseInfo(newCourseInfoBasic);
@@ -147,9 +178,6 @@ public class AddCourseSystemTest extends TUITest {
 
     @Test
     public void testInvalidCourseInfoTutorial() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
         setMockInput(
                 "MATH12345",
                 "Math For Computer Science",
@@ -162,7 +190,10 @@ public class AddCourseSystemTest extends TUITest {
                 "adsasdfa",
                 "Y"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
         adminStaffController.fillCourseInfo(newCourseInfoBasic);
@@ -323,9 +354,6 @@ public class AddCourseSystemTest extends TUITest {
 
     @ Test
     public void testAddActivity() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
         setMockInput(
                 "1",
                 "2025-04-10",
@@ -337,9 +365,9 @@ public class AddCourseSystemTest extends TUITest {
                 "lecture",
                 "true"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
-
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
         CourseManager courseManager = context.getCourseManager();
         startOutputCapture();
         Course course1 = new Course(
@@ -354,9 +382,7 @@ public class AddCourseSystemTest extends TUITest {
                 2,
                 1
         );
-
-        new TextUserInterface().displayInfo("Starting addActivitiesToCourse");
-        courseManager.addActivitiesToCourse(course1, new TextUserInterface());
+        courseManager.addActivitiesToCourse(course1, view);
         assertEquals(1, course1.getActivities().size(), "One activity should have been added to the course.");
         assertTrue(course1.getActivities().get(0) instanceof Lecture, "The added activity should be a Lecture.");
         assertEquals(DayOfWeek.MONDAY, course1.getActivities().get(0).getDay(), "The day should be MONDAY.");
@@ -366,9 +392,6 @@ public class AddCourseSystemTest extends TUITest {
 
     @ Test
     public void testAddActivityMultiple() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
         setMockInput(
                 "2",
                 "2025-04-10",
@@ -388,9 +411,9 @@ public class AddCourseSystemTest extends TUITest {
                 "lecture",
                 "true"
         );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
-
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
         CourseManager courseManager = context.getCourseManager();
         startOutputCapture();
         Course course1 = new Course(
@@ -405,10 +428,8 @@ public class AddCourseSystemTest extends TUITest {
                 2,
                 1
         );
-
-        new TextUserInterface().displayInfo("Starting addActivitiesToCourse");
-        courseManager.addActivitiesToCourse(course1, new TextUserInterface());
-        assertEquals(2, course1.getActivities().size(), "One activity should have been added to the course.");
+        courseManager.addActivitiesToCourse(course1, view);
+        assertEquals(2, course1.getActivities().size(), "Two activity should have been added to the course.");
         assertTrue(course1.getActivities().get(0) instanceof Lecture, "The added activity should be a Lecture.");
         assertEquals(DayOfWeek.MONDAY, course1.getActivities().get(0).getDay(), "The day should be MONDAY.");
         assertEquals("Room 102", course1.getActivities().get(1).getLocation(), "Location should be 'Room 101'.");
@@ -576,6 +597,7 @@ public class AddCourseSystemTest extends TUITest {
         newCourseInfoBasic.setField("requiredLabs", "2");
         // Update the boolean field for requiresComputers.
         newCourseInfoBasic.setRequiresComputers(true);
+        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         CourseManager courseManager = context.getCourseManager();
         courseManager.addCourse("testing@gmail.com", newCourseInfoBasic);
@@ -584,5 +606,4 @@ public class AddCourseSystemTest extends TUITest {
 
 
     }
-
 }

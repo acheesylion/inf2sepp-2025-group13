@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 public class LoginSystemTests extends TUITest {
     @Test
     public void testLoginAsAdminStaff() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
         setMockInput("admin1", "admin1pass");
+        View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        GuestController guestController = new GuestController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         guestController.login();
         assertOutputContains("Logged in as admin1");
@@ -36,7 +36,7 @@ public class LoginSystemTests extends TUITest {
         setMockInput("teacher1", "teacher1pass");
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        GuestController guestController = new GuestController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         guestController.login();
         assertOutputContains("Logged in as teacher1");
@@ -49,7 +49,7 @@ public class LoginSystemTests extends TUITest {
         setMockInput("student1", "student1pass");
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        GuestController guestController = new GuestController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         guestController.login();
         assertOutputContains("Logged in as student1");

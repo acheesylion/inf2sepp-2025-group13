@@ -69,8 +69,14 @@ public class TUITest {
         guestController.login();
     }
  
-    protected void loginAsStudent(SharedContext context) throws URISyntaxException, IOException, ParseException {
+    protected void loginAsStudent1(SharedContext context) throws URISyntaxException, IOException, ParseException {
         setMockInput("student1", "student1pass");
+        GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        guestController.login();
+    }
+
+    protected void loginAsStudent2(SharedContext context) throws URISyntaxException, IOException, ParseException {
+        setMockInput("student2", "student2pass");
         GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         guestController.login();
     }

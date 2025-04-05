@@ -1,5 +1,6 @@
 package system_tests;
 
+import controller.MenuController;
 import controller.ViewerController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
@@ -142,7 +143,7 @@ public class ViewCoursesSystemTest extends TUITest {
     public void testCoursesExists() throws URISyntaxException, IOException, ParseException {
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         CourseManager courseManager = context.getCourseManager();
         populateCourseList(courseManager);
@@ -154,10 +155,35 @@ public class ViewCoursesSystemTest extends TUITest {
     public void testCoursesDoesNotExist() throws URISyntaxException, IOException, ParseException {
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         viewerController.viewCourses();
         assertOutputContains("No courses found");
+    }
+
+    @ Test
+    public void testCorrectViewCourseFromMainMenuController() throws URISyntaxException, IOException, ParseException {
+        setMockInput("3", "-1");
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        CourseManager courseManager = context.getCourseManager();
+        populateCourseList(courseManager);
+        MenuController menus = new MenuController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        menus.mainMenu();
+        assertOutputContains("SUCCESS");
+
+    }
+    @ Test
+    public void testViewIncorrectCourseFromMainMenuController() throws URISyntaxException, IOException, ParseException {
+        setMockInput("3", "-1");
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        MenuController menus = new MenuController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        menus.mainMenu();
+        assertOutputContains("No courses found");
+
     }
 
 }

@@ -536,6 +536,12 @@ public class CourseManager {
         if (timetableExists(email)) {
             Timetable userTimetable = getTimetable(email);
             view.displayTimetable(userTimetable);
+            Logger.info("{}, {}, printTimetable, SUCCESS", System.currentTimeMillis(), email);
+            view.displaySuccess("Successfully printed timetable");
+        } else {
+            Logger.error("{}, {}, printTimetable, {} FAILURE (Error: Timetable for {} does not exist)",
+                    System.currentTimeMillis(), email, email);
+            view.displayError("Timetable does not exist");
         }
     }
 

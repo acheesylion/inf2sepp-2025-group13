@@ -1,7 +1,10 @@
 package system_tests;
 
 import controller.GuestController;
+import controller.MenuController;
 import controller.ViewerController;
+import external.AuthenticationService;
+import external.EmailService;
 import external.MockAuthenticationService;
 import external.MockEmailService;
 import model.AuthenticatedUser;
@@ -151,7 +154,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         CourseManager courseManager = context.getCourseManager();
         populateCourseList(courseManager);
@@ -166,7 +169,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         CourseManager courseManager = context.getCourseManager();
         populateCourseList(courseManager);
@@ -181,10 +184,35 @@ public class ViewCourseSystemTest extends TUITest {
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
+        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
         viewerController.viewCourse();
         assertOutputContains("Incorrect course code");
+    }
+
+    @ Test
+    public void testCorrectViewCourseFromMainMenuController() throws URISyntaxException, IOException, ParseException {
+        setMockInput("4", "COMS10101", "-1");
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        CourseManager courseManager = context.getCourseManager();
+        populateCourseList(courseManager);
+        MenuController menus = new MenuController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        menus.mainMenu();
+        assertOutputContains("SUCCESS");
+
+    }
+    @ Test
+    public void testViewIncorrectCourseFromMainMenuController() throws URISyntaxException, IOException, ParseException {
+        setMockInput("4", "123123", "-1");
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        MenuController menus = new MenuController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        menus.mainMenu();
+        assertOutputContains("Incorrect course code");
+
     }
 
 }

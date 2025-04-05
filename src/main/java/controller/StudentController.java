@@ -61,7 +61,6 @@ public class StudentController extends Controller {
         CourseManager courseManager = sharedContext.getCourseManager();
         String email = sharedContext.getCurrentUserEmail();
         courseManager.printTimetable(email, view);
-
     }
 
     private void chooseActivityForCourse() {
@@ -72,5 +71,6 @@ public class StudentController extends Controller {
         CourseManager courseManager = sharedContext.getCourseManager();
         courseManager.chooseActivityForCourse(email, courseCode, activityId);
     }
+
 
 }
