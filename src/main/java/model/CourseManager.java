@@ -183,7 +183,7 @@ public class CourseManager {
 
     public boolean checkCourseCode(String courseCode){return courseCode.matches("^[A-Z]{4}\\d{5}$");}
 
-    private boolean hasCourse(String courseCode) {
+    public boolean hasCourse(String courseCode) {
         for (Course course : courses) {
             if (course.hasCode(courseCode)) {
                 return true;

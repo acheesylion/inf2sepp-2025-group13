@@ -38,7 +38,7 @@ public class ConsultFAQSystemTest extends TUITest {
         section2.getItems().add(item4);
 
         InquirerController inquirerController = new InquirerController(sharedContext, view, new MockAuthenticationService(), new MockEmailService());
-        setMockInput("1");
+        setMockInput("1", "-1", "-1");
         inquirerController.consultFAQ();
         startOutputCapture();
         assertOutputContains("General Information\n" +

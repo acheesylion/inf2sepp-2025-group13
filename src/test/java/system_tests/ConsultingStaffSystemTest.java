@@ -29,7 +29,6 @@ public class ConsultingStaffSystemTest extends TUITest {
         //InquirerController inquirer = new InquirerController(context, view, new MockAuthenticationService(), mockEmail);
         Inquiry inquiry = new Inquiry("charlotte.email.com", "Issue with assignment", "I am unable to submit the assignment.", "COMP12345");
         context.inquiries.add(inquiry);
-        // ✅ Check that one inquiry was added to the context
         assertEquals(1, context.inquiries.size(), "Expected one inquiry to be added");
         Inquiry inquiryrecived = context.inquiries.get(0);
         assertEquals("Issue with assignment", inquiryrecived.getSubject());
@@ -106,8 +105,9 @@ public class ConsultingStaffSystemTest extends TUITest {
 
         // Capture output
 
-        AdminStaffController admin = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         setMockInput("0", "1", "This is a response.", "-1", "-1");
+        AdminStaffController admin = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+
         startOutputCapture();
 
         admin.manageInquiries();  // this is a made-up method name you'll need to implement

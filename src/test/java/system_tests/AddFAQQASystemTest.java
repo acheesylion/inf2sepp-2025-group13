@@ -1,5 +1,6 @@
 package system_tests;
 
+import controller.AdminStaffController;
 import controller.InquirerController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
@@ -95,25 +96,5 @@ public class AddFAQQASystemTest extends TUITest {
             assertEquals("Why is this system?", section.getItems().get(1).getQuestion(), "Second item question should match.");
         }
 
-  /*      @Test  DOESNT WORK
-        public void testAddFAQItemToDifferentSection() throws URISyntaxException, IOException, ParseException {
-            // Mock the view to simulate user input and capture output
-            View view = new TextUserInterface();
-            SharedContext sharedContext = new SharedContext(view);
-            InquirerController inquirerController = new InquirerController(sharedContext, view,
-                    new MockAuthenticationService(), new MockEmailService());
 
-            // Set up FAQ with multiple sections
-            FAQ faq = sharedContext.getFAQ();
-            FAQSection generalSection = new FAQSection("General Information");
-            faq.addSection(generalSection);
-            generalSection.getItems().add(new FAQItem("What is this system?", "It manages university courses."));
-
-            FAQSection specificSection = new FAQSection("Specific Information");
-            faq.addSection(specificSection);
-            specificSection.getItems().add(new FAQItem("What is this system specifically?", "It manages courses specifically."));
-
-            inquirerController.consultFAQ();
-
-        }*/
     }
