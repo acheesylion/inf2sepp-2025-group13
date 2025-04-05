@@ -15,6 +15,9 @@ public class TestTimetableClass {
     private Lecture lectureActivity;
     private Lab labActivity;
     private Tutorial tutorialActivity;
+    private Lecture lectureActivityClash1;
+    private Lab labActivityClash1;
+    private Tutorial tutorialActivityClash1;
 
     @BeforeEach
     public void setUp() {
@@ -54,6 +57,41 @@ public class TestTimetableClass {
                 DayOfWeek.WEDNESDAY,
                 10
         );
+
+
+        lectureActivityClash1 = new Lecture(
+                101,
+                LocalDate.of(2025, 4, 1),
+                LocalTime.of(9, 30),
+                LocalDate.of(2025, 4, 1),
+                LocalTime.of(10, 0),
+                "Lecture Hall",
+                DayOfWeek.WEDNESDAY,
+                true
+        );
+        tutorialActivityClash1 = new Tutorial(
+                103,
+                LocalDate.of(2025, 4, 3),
+                LocalTime.of(8, 30),
+                LocalDate.of(2025, 4, 3),
+                LocalTime.of(9, 0),
+                "Tutorial Room",
+                DayOfWeek.WEDNESDAY,
+                10
+        );
+
+        labActivityClash1 = new Lab(
+                102,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(7, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 0),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+
+
 
 
     }
@@ -101,7 +139,6 @@ public class TestTimetableClass {
         assertTrue(output.contains("Timetable for student@example.com"), "Header should contain the student email.");
         assertTrue(output.contains("======================================="), "Header separator should be present.");
     }
-
     @Test
     public void testTimetableToStringContainsColumnLegend() {
         timetable.addTimeSlot(lectureActivity, "CS101");
@@ -117,7 +154,6 @@ public class TestTimetableClass {
         assertTrue(output.contains("ActivityId"), "Output should contain the 'ActivityId' header.");
         assertTrue(output.contains("Type"), "Output should contain the 'Type' header.");
     }
-
     @Test
     public void testTimetableToStringContainsTimeslotDetails() {
         timetable.addTimeSlot(lectureActivity, "CS101");
@@ -149,4 +185,243 @@ public class TestTimetableClass {
         assertTrue(output.contains("103"), "Output should contain the tutorial activity id.");
         assertTrue(output.contains("Tutorial"), "Output should indicate 'Tutorial' type.");
     }
+    @Test
+    public void testCheckConflictsPriorityLecture() {
+        // Tutorial at 8.30 - 9:00, Lecture at 9:30 - 10:00
+        // Lab at 7:00 - 11:00
+        // Clashes with both tutorial and lecture
+        // Only returns the lectures because of higher priority
+        timetable.addTimeSlot(tutorialActivityClash1, "CS103");
+        timetable.addTimeSlot(lectureActivityClash1, "CS102");
+        timetable.addTimeSlot(labActivityClash1, "CS103");
+        timetable.chooseActivity("CS103", tutorialActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash1.getDay(),
+                labActivityClash1.getStartTime(),
+                labActivityClash1.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsSameStartSameEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(7, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 0),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsLateStartLateEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(7, 30),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsEarlyStartEarlyEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(6, 30),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(10, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsEarlyStartLateEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                102,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(6, 30),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsLateStartEarlyEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(8, 30),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(10, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsSameStartEarlyEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(7, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(10, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsSameStartLateEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(7, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsEarlyStartSameEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(6, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 0),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsLateStartSameEndPeriod() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(10, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(11, 0),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertTrue(conflicts.length > 0);
+    }
+    @Test
+    public void testCheckConflictsSameDayNoClash() {
+        Lab labActivityClash2 = new Lab(
+                222,
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(20, 0),
+                LocalDate.of(2025, 4, 2),
+                LocalTime.of(20, 30),
+                "Lab Room",
+                DayOfWeek.WEDNESDAY,
+                30
+        );
+        timetable.addTimeSlot(labActivityClash1, "MATH1232");
+        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.chooseActivity("MATH1232", labActivityClash1.getId());
+        String[] conflicts = timetable.checkConflicts(
+                labActivityClash2.getDay(),
+                labActivityClash2.getStartTime(),
+                labActivityClash2.getEndTime()
+        );
+        assertEquals(0, conflicts.length);
+    }
+
+
 }

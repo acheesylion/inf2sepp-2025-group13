@@ -18,9 +18,6 @@ public class TimeSlot {
 
     // Checks if the TimeSlot has the given course code
     public boolean hasCourseCode(String courseCode) {
-        if (this.courseCode == null) {
-            return false;
-        }
         return this.courseCode.equals(courseCode);
     }
 

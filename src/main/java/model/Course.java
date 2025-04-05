@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Course {
         // Instance variables
         private final List<Activity> activities;
+        private final List<String> members;
         private final String courseCode;
         private final String name;
         private final String description;
@@ -21,7 +22,7 @@ public class Course {
         private final String courseSecretaryEmail;
         private final int requiredTutorials;
         private final int requiredLabs;
-        private final List<String> members;
+
 
 
 
@@ -63,6 +64,15 @@ public class Course {
 
         }
 
+        private Activity getActivity(int id) {
+            for (Activity activity : activities) {
+                if (activity.getId() == id) {
+                    return activity;
+                }
+            }
+            return null;
+        }
+
         public void addMember(String member){
             members.add(member);
         }
@@ -79,7 +89,7 @@ public class Course {
             return this.courseCode.equals(code);
         }
 
-        public boolean hasActivityWithId(int id) {
+        public boolean hasActivityId(int id) {
             for (Activity activity : activities) {
                 if (activity.getId() == id) {
                     return true;
@@ -94,13 +104,10 @@ public class Course {
         }
 
         public boolean isUnrecordedLecture(int activityId) {
-            for (Activity activity : activities) {
-                if (activity.hasId(activityId)){
-                    if (activity instanceof Lecture) {
-                        return !(((Lecture) activity).getRecorded());
-                    }
+            Activity activity = getActivity(activityId);
+                if (activity instanceof Lecture) {
+                    return !(((Lecture) activity).getRecorded());
                 }
-            }
             return false;
         }
 
@@ -134,6 +141,44 @@ public class Course {
         public int getRequiredLabs() {
             return requiredLabs;
         }
+
+        public boolean isTutorial(int activityId) {
+            Activity activity = getActivity(activityId);
+            return activity instanceof Tutorial;
+        }
+        public boolean isLab(int activityId) {
+            Activity activity = getActivity(activityId);
+            return activity instanceof Lab;
+        }
+        public boolean isLecture(int activityId) {
+            Activity activity = getActivity(activityId);
+            return activity instanceof Lecture;
+        }
+
+        public DayOfWeek getDayId(int activityId) {
+            Activity activity = getActivity(activityId);
+            if (activity == null) {
+                return null;
+            }
+            return activity.getDay();
+        }
+
+        public LocalTime getStartTimeId(int activityId) {
+            Activity activity = getActivity(activityId);
+            if (activity == null) {
+                return null;
+            }
+            return activity.getStartTime();
+        }
+
+        public LocalTime getEndTimeId(int activityId) {
+            Activity activity = getActivity(activityId);
+            if (activity == null) {
+                return null;
+            }
+            return activity.getEndTime();
+        }
+
 
         // Overriding the toString method to represent the Course object as a string
         @Override

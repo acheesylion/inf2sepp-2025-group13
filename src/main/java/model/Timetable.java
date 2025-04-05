@@ -19,31 +19,60 @@ public class Timetable {
 
     public void addTimeSlot(Activity activity, String courseCode) {
         // When adding a new time slot, we default its status to UNCHOSEN.
-
-        TimeSlot newSlot = null;
         if (activity instanceof Lecture) {
-            newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.CHOSEN);
+            TimeSlot newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.CHOSEN);
+            timeSlots.add(newSlot);
         } else {
-            newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
+            TimeSlot newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
+            timeSlots.add(newSlot);
         }
-        timeSlots.add(newSlot);
+
     }
 
     public boolean hasStudentEmail(String email) {return (this.studentEmail.equals(email));}
 
-    public String[] checkConflicts(DayOfWeek day,  LocalTime startTime, LocalTime endTime) {
-
-        for (TimeSlot ts : timeSlots) {
-           if (ts.getDay().equals(day))
-            if (startTime.isBefore(ts.getEndTime()) && endTime.isAfter(ts.getStartTime())) {
-                String conflictCourseCode = ts.getCourseCode();
-                int conflictID = ts.getActivityId();
-                return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
+    private TimeSlot getTimeSlot(int activityId) {
+        if (timeSlots.isEmpty()) {
+            return null;
+        }
+        if (hasSlotsForActivityId(activityId)) {
+            for (TimeSlot timeSlot : timeSlots) {
+                if (timeSlot.getActivityId() == activityId) {
+                    return timeSlot;
+                }
             }
         }
+        return null;
+    }
 
-        // Return an empty array if no conflicts are found.
-        return (new String[0]);
+    public String[] checkConflicts(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
+
+        List<TimeSlot> conflicts = new ArrayList<>();
+        for (TimeSlot ts : timeSlots) {
+            if (ts.isChosen()) {
+                if (ts.getDay().equals(day)) {
+                    if (startTime.isBefore(ts.getEndTime()) && endTime.isAfter(ts.getStartTime())) {
+                        conflicts.add(ts);
+                    }
+                }
+            }
+
+        }
+        if (conflicts.isEmpty()) {
+            return new String[0];
+        } else {
+            for (TimeSlot conflict : conflicts) {
+                if (conflict.isLecture()) {
+                    String conflictCourseCode = conflict.getCourseCode();
+                    int conflictID = conflict.getActivityId();
+                    return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
+                }
+            }
+            // Get Head of Conflicts List
+            String conflictCourseCode = conflicts.get(0).getCourseCode();
+            int conflictID = conflicts.get(0).getActivityId();
+            return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
+        }
     }
 
     public DayOfWeek getIdDay(int activityId) {

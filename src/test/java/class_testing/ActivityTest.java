@@ -1,5 +1,7 @@
-package model;
+package class_testing;
 import static org.junit.Assert.*;
+
+import model.Lab;
 import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -1,15 +1,9 @@
 package model;
-import java.sql.SQLOutput;
-import java.sql.Time;
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.DayOfWeek;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import view.TextUserInterface;
 import view.View;
 import org.tinylog.Logger;
 
@@ -180,6 +174,8 @@ public class CourseManager {
 
     public void viewCourses() {
         if (courses.isEmpty()) {
+            Logger.error("{}, viewCourses, FAILURE (Error: Course list is empty.)",
+                    System.currentTimeMillis());
             view.displayError("No courses found");
         } else {
             for (Course course : courses){
@@ -187,16 +183,24 @@ public class CourseManager {
                 view.displayCourse(course);
                 view.displayInfo("-------------------------");
             }
+            Logger.info("{}, viewCourse, SUCCESS", System.currentTimeMillis());
+            view.displaySuccess("Successfully viewed courses");
         }
 
     }
 
     public void viewCourse(String courseCode) {
         if (!hasCourse(courseCode)) {
+            Logger.error("{}, {}, viewCourse, FAILURE (Error: Incorrect course code provided.)",
+                    System.currentTimeMillis(), courseCode);
             view.displayError("Incorrect course code");
         } else {
             Course findCourse = getCourseByCode(courseCode);
+            view.displayInfo("------------------------");
             view.displayCourse(findCourse);
+            view.displayInfo("------------------------");
+            Logger.info("{}, {}, viewCourse, SUCCESS", System.currentTimeMillis(), courseCode);
+            view.displaySuccess("Successfully viewed course " + courseCode);
         }
 
     }
@@ -362,9 +366,10 @@ public class CourseManager {
 
         for (Activity activity : courseToBeAdded.getActivities()) {
             String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                    activity.getDay(), activity.getStartTime(), activity.getEndTime()
+                    activity.getDay(),
+                    activity.getStartTime(),
+                    activity.getEndTime()
             );
-
             // If there is a conflict
             if (conflictingCourseCodeAndActivityId.length > 0) {
                 String conflictCourseCode = conflictingCourseCodeAndActivityId[0];
@@ -433,6 +438,22 @@ public class CourseManager {
 
         Timetable userTimetable = getTimetable(studentEmail);
 
+        if (!hasCourse(courseCode)) {
+            Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Incorrect course code provided.)",
+                    System.currentTimeMillis(), studentEmail, courseCode);
+            view.displayError("Incorrect course code");
+            return;
+        }
+
+        Course courseToBeChosen = getCourseByCode(courseCode);
+
+        if (!courseToBeChosen.hasActivityId(activityId)) {
+            Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Incorrect activity id provided.)",
+                    System.currentTimeMillis(), studentEmail, courseCode);
+            view.displayError("Incorrect activity id");
+            return;
+        }
+
         if (!userTimetable.hasSlotsForCourse(courseCode)) {
             Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Course does not exist in timetable.)",
                     System.currentTimeMillis(), studentEmail, courseCode);
@@ -447,20 +468,21 @@ public class CourseManager {
             return;
         }
 
+        DayOfWeek day = courseToBeChosen.getDayId(activityId);
+        LocalTime startTime = courseToBeChosen.getStartTimeId(activityId);
+        LocalTime endTime = courseToBeChosen.getEndTimeId(activityId);
 
         String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                userTimetable.getIdDay(activityId),
-                userTimetable.getIdStartTime(activityId),
-                userTimetable.getIdEndTime(activityId)
+                day, startTime, endTime
         );
 
         if (conflictingCourseCodeAndActivityId.length > 0) {
             String conflictCourseCode = conflictingCourseCodeAndActivityId[0];
             String conflictActivityId = conflictingCourseCodeAndActivityId[1];
             Course conflictingCourse = getCourseByCode(conflictCourseCode);
-            boolean unrecordedLecture2 = conflictingCourse.isUnrecordedLecture(Integer.parseInt(conflictActivityId));
+            boolean unrecordedLecture = conflictingCourse.isUnrecordedLecture(Integer.parseInt(conflictActivityId));
 
-            if (unrecordedLecture2) {
+            if (unrecordedLecture) {
                 Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: at least one clash with an unrecorded lecture)",
                         System.currentTimeMillis(), studentEmail, courseCode);
                 view.displayError("You have at least one clash with an unrecorded lecture. The course cannot be added to your timetable.");
@@ -504,6 +526,7 @@ public class CourseManager {
                 view.displayWarning("You have to choose " + requiredVsChosenLab + " tutorials for this course ");
             }
         }
+
         Logger.info("{}, {}, chooseActivityForCourse, {} SUCCESS", System.currentTimeMillis(), studentEmail, activityId);
         view.displaySuccess("The activity was successfully added to your timetable");
     }

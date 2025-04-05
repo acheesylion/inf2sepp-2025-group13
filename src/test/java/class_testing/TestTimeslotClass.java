@@ -60,6 +60,7 @@ public class TestTimeslotClass {
         TimeSlot ts = new TimeSlot(lecture1, "CS101", TimeSlotStatus.CHOSEN);
         assertTrue(ts.hasCourseCode("CS101"), "Course code should match.");
         assertFalse(ts.hasCourseCode("MATH101"), "Course code should not match.");
+        assertFalse(ts.hasCourseCode(""), "Course code should not match.");
     }
 
     @Test
