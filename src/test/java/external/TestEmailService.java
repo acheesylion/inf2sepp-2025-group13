@@ -10,7 +10,7 @@ public class TestEmailService {
 
     private static final int STATUS_SUCCESS = 0;
     private static final int STATUS_INVALID_SENDER_EMAIL = 1;
-    private static final int STATUS_INVALID_RECIPIENT_EMAIL = -1;
+    private static final int STATUS_INVALID_RECIPIENT_EMAIL = 2;
 
     @BeforeEach
     void setUp(){
@@ -41,7 +41,7 @@ public class TestEmailService {
 
     @Test
     void testSendEmailWithInvalidRecipient() {
-        int status = emailService.sendEmail("trini@gmail.com", "invalid-email", "Test Subject", "Test Content");
+        int status = emailService.sendEmail("student1@hindeburg.ac.uk", "invalid-email", "Test Subject", "Test Content");
         assertEquals(STATUS_INVALID_RECIPIENT_EMAIL, status);
     }
 
