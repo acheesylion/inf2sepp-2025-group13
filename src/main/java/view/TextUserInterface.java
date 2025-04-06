@@ -4,7 +4,6 @@ import model.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.Scanner;
 
 public class TextUserInterface implements View {

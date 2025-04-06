@@ -1,4 +1,4 @@
-package class_testing;
+package system_tests;
 
 import model.*;
 import org.junit.jupiter.api.BeforeEach;

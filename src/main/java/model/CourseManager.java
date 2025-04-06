@@ -353,7 +353,7 @@ public class CourseManager {
                     activity.getStartTime(),
                     activity.getEndTime()
             );
-            // If there is a conflict
+
             if (conflictingCourseCodeAndActivityId.length > 0) {
                 String conflictCourseCode = conflictingCourseCodeAndActivityId[0];
                 String conflictActivityId = conflictingCourseCodeAndActivityId[1];

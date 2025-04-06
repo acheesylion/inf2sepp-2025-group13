@@ -321,7 +321,7 @@ public class AdminStaffController extends StaffController {
         AdminStaffController.manageCoursesOptions option = AdminStaffController.manageCoursesOptions.values()[optionNo];
         switch (option) {
             case ADD_COURSE -> addCourse();
-            case REMOVE_COURSE -> deleteCourse();
+            case REMOVE_COURSE -> removeCourse();
         }
         return false;
     }
@@ -341,37 +341,6 @@ public class AdminStaffController extends StaffController {
             );
         }
     }
-
-     private String deletecourseinput() {
-          CourseManager courseManager = sharedContext.getCourseManager();
-         String courseCode = view.getInput("Enter course code: ");
-          if (!courseManager.checkCourseCode(courseCode)){
-              //System.currentTimeMillis(),email,"addCourse",courseInfo,"FAILURE"+" (Error: Provided courseCode is invalid)")
-              Logger.error("{}, {}, deleteCourse, {} FAILURE (Error: Provided courseCode is invalid)",
-                      System.currentTimeMillis(), sharedContext.getCurrentUserEmail(), courseCode );
-              view.displayError("Provided courseCode is invalid");
-              return null ;}
-          return courseCode;
-      }
-
-      public void deletecourselogic(String input) {
-          CourseManager courseManager = sharedContext.getCourseManager();
-          Course courseDeleted = courseManager.getCourseByCode(input);
-          String[] emaillist = courseManager.removeCourse(input);
-          for (String emailAddress : emaillist) {
-              email.sendEmail(sharedContext.getCurrentUserEmail(), emailAddress,
-                      "Course deleted - " + courseDeleted.getCourseCode(),
-                      "this course has been provided with the following details: " + courseDeleted.toString());
-          }
-      }
-
-    private void deleteCourse() {
-        CourseManager courseManager = sharedContext.getCourseManager();
-        view.displayInfo("=== Remove Course ===");
-        String input = deletecourseinput();
-        deletecourselogic(input);
-    }
-
 
     private void fillCourseInfo(CourseInfo courseInfo) {
         String[] courseInfoNames = {

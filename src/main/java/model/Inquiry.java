@@ -10,9 +10,6 @@ public class Inquiry {
     private String courseCode;
     private String assignedTo;
 
-    public Inquiry(String inquirerEmail, String subject, String content) {
-        this(inquirerEmail,subject,content,null);
-    }
 
     public Inquiry(String inquirerEmail, String subject, String content, String courseCode) {
         this.courseCode = courseCode;

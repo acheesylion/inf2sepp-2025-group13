@@ -22,6 +22,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DeleteCourseSystemTest extends TUITest {
     @Test
     public void DeleteCourse() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "1",
+                "COMP12345",
+                "-1",
+                "-1"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         MockEmailService mockEmail = new MockEmailService();
@@ -43,7 +49,7 @@ public class DeleteCourseSystemTest extends TUITest {
         assertTrue(courseManager.hasCourse("COMP12345"), "Course should exist before deletion");
         loginAsAdminStaff(context);
         AdminStaffController admin = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        courseManager.removeCourse("COMP12345");
+        admin.manageCourses();
         assertFalse(courseManager.hasCourse("COMP12345"), "Course shouldnt exist after deletion");
 
 
@@ -52,6 +58,12 @@ public class DeleteCourseSystemTest extends TUITest {
 
     @Test
     public void Checkdeletecourseemails() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "1",
+                "COMP12345",
+                "-1",
+                "-1"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         MockEmailService mockEmail = new MockEmailService();
@@ -76,7 +88,7 @@ public class DeleteCourseSystemTest extends TUITest {
         AdminStaffController admin = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
 
-        admin.deletecourselogic("COMP12345");
+        admin.manageCourses();
         assertOutputContains("Email from " + context.getCurrentUserEmail()+  " to Student1@email.com");
         assertOutputContains("Email from " + context.getCurrentUserEmail()+  " to Student2@email.com");
         assertOutputContains("Email from " + context.getCurrentUserEmail()+  " to alice.smith@university.edu");
