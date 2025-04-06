@@ -13,15 +13,9 @@ public class Lab extends Activity {
         this.capacity = capacity;
     }
 
-    public Lab(Lab other) {
-        super(other.getId(), other.getStartDate(), other.getStartTime(),
-                other.getEndDate(), other.getEndTime(), other.getLocation(), other.getDay());
-        this.capacity = other.capacity;
-    }
-
     @Override
     public String toString() {
-        String typeInfo = "Lab (Capacity: " + capacity + ")";
+        String typeInfo = "LAB (Capacity: " + capacity + ")";
         return getCommonRow() + String.format("| %-25s |", typeInfo);
     }
 

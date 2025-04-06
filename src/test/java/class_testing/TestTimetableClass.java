@@ -24,7 +24,7 @@ public class TestTimetableClass {
         // Create a Timetable for a specific student
         timetable = new Timetable("student@example.com");
 
-        // Create a Lecture, Lab, and Tutorial with different properties.
+        // Create a Lecture, LAB, and Tutorial with different properties.
         lectureActivity = new Lecture(
                 101,
                 LocalDate.of(2025, 4, 1),
@@ -42,7 +42,7 @@ public class TestTimetableClass {
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 0),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.TUESDAY,
                 30
         );
@@ -86,7 +86,7 @@ public class TestTimetableClass {
                 LocalTime.of(7, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 0),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
@@ -103,9 +103,9 @@ public class TestTimetableClass {
         assertFalse(timetable.hasSlotsForCourse(courseCode));
 
         // Populated Timeslot list
-        timetable.addTimeSlot(lectureActivity, "MATH12345");
-        timetable.addTimeSlot(labActivity, "MATH12345");
-        timetable.addTimeSlot(tutorialActivity, "MATH12345");
+        timetable.addTimeSlot(lectureActivity, "MATH12345", ActivityType.LECTURE);
+        timetable.addTimeSlot(labActivity, "MATH12345", ActivityType.LAB);
+        timetable.addTimeSlot(tutorialActivity, "MATH12345", ActivityType.TUTORIAL);
         assertTrue(timetable.hasSlotsForCourse(courseCode));
         assertFalse(timetable.hasSlotsForCourse("INFD12345"));
 
@@ -118,9 +118,9 @@ public class TestTimetableClass {
         assertFalse(timetable.hasSlotsForActivityId(activityId));
 
         // Populated Timeslot list
-        timetable.addTimeSlot(lectureActivity, "MATH12345");
-        timetable.addTimeSlot(labActivity, "MATH12345");
-        timetable.addTimeSlot(tutorialActivity, "MATH12345");
+        timetable.addTimeSlot(lectureActivity, "MATH12345", ActivityType.LECTURE);
+        timetable.addTimeSlot(labActivity, "MATH12345", ActivityType.LAB);
+        timetable.addTimeSlot(tutorialActivity, "MATH12345", ActivityType.TUTORIAL);
         assertTrue(timetable.hasSlotsForActivityId(activityId));
         int randomActivityId = 123;
         assertFalse(timetable.hasSlotsForActivityId(randomActivityId));
@@ -129,10 +129,10 @@ public class TestTimetableClass {
 
     @Test
     public void testTimetableToStringContainsHeader() {
-        timetable.addTimeSlot(lectureActivity, "CS101");
-        timetable.addTimeSlot(labActivity, "CS102");
+        timetable.addTimeSlot(lectureActivity, "CS101", ActivityType.LECTURE);
+        timetable.addTimeSlot(labActivity, "CS102", ActivityType.LAB);
         timetable.chooseActivity("CS102", labActivity.getId());
-        timetable.addTimeSlot(tutorialActivity, "CS103");
+        timetable.addTimeSlot(tutorialActivity, "CS103", ActivityType.TUTORIAL);
         timetable.chooseActivity("CS103", tutorialActivity.getId());
         String output = timetable.toString();
         // Check that the header is printed and the student email is centered.
@@ -141,10 +141,10 @@ public class TestTimetableClass {
     }
     @Test
     public void testTimetableToStringContainsColumnLegend() {
-        timetable.addTimeSlot(lectureActivity, "CS101");
-        timetable.addTimeSlot(labActivity, "CS102");
+        timetable.addTimeSlot(lectureActivity, "CS101", ActivityType.LECTURE);
+        timetable.addTimeSlot(labActivity, "CS102", ActivityType.LAB);
         timetable.chooseActivity("CS102", labActivity.getId());
-        timetable.addTimeSlot(tutorialActivity, "CS103");
+        timetable.addTimeSlot(tutorialActivity, "CS103", ActivityType.TUTORIAL);
         timetable.chooseActivity("CS103", tutorialActivity.getId());
         String output = timetable.toString();
         // Verify that the legend (column headers) is printed.
@@ -156,10 +156,10 @@ public class TestTimetableClass {
     }
     @Test
     public void testTimetableToStringContainsTimeslotDetails() {
-        timetable.addTimeSlot(lectureActivity, "CS101");
-        timetable.addTimeSlot(labActivity, "CS102");
+        timetable.addTimeSlot(lectureActivity, "CS101", ActivityType.LECTURE);
+        timetable.addTimeSlot(labActivity, "CS102", ActivityType.LAB);
         timetable.chooseActivity("CS102", labActivity.getId());
-        timetable.addTimeSlot(tutorialActivity, "CS103");
+        timetable.addTimeSlot(tutorialActivity, "CS103", ActivityType.TUTORIAL);
         timetable.chooseActivity("CS103", tutorialActivity.getId());
         String output = timetable.toString();
 
@@ -169,32 +169,32 @@ public class TestTimetableClass {
         assertTrue(output.contains("09:00 - 10:00"), "Output should contain the lecture time range.");
         assertTrue(output.contains("CS101"), "Output should contain the lecture course code.");
         assertTrue(output.contains("101"), "Output should contain the lecture activity id.");
-        assertTrue(output.contains("Lecture"), "Output should indicate 'Lecture' type.");
+        assertTrue(output.contains("LECTURE"), "Output should indicate 'Lecture' type.");
 
-        // For Tuesday (Lab)
+        // For Tuesday (LAB)
         assertTrue(output.contains("TUESDAY"), "Output should contain 'TUESDAY'.");
         assertTrue(output.contains("10:00 - 11:00"), "Output should contain the lab time range.");
         assertTrue(output.contains("CS102"), "Output should contain the lab course code.");
         assertTrue(output.contains("102"), "Output should contain the lab activity id.");
-        assertTrue(output.contains("Lab"), "Output should indicate 'Lab' type.");
+        assertTrue(output.contains("LAB"), "Output should indicate 'LAB' type.");
 
         // For Wednesday (Tutorial)
         assertTrue(output.contains("WEDNESDAY"), "Output should contain 'WEDNESDAY'.");
         assertTrue(output.contains("11:00 - 12:00"), "Output should contain the tutorial time range.");
         assertTrue(output.contains("CS103"), "Output should contain the tutorial course code.");
         assertTrue(output.contains("103"), "Output should contain the tutorial activity id.");
-        assertTrue(output.contains("Tutorial"), "Output should indicate 'Tutorial' type.");
+        assertTrue(output.contains("TUTORIAL"), "Output should indicate 'Tutorial' type.");
     }
 
     @Test
     public void testCheckConflictsPriorityLecture() {
         // Tutorial at 8.30 - 9:00, Lecture at 9:30 - 10:00
-        // Lab at 7:00 - 11:00
+        // LAB at 7:00 - 11:00
         // Clashes with both tutorial and lecture
         // Only returns the lectures because of higher priority
-        timetable.addTimeSlot(tutorialActivityClash1, "CS103");
-        timetable.addTimeSlot(lectureActivityClash1, "CS102");
-        timetable.addTimeSlot(labActivityClash1, "CS103");
+        timetable.addTimeSlot(tutorialActivityClash1, "CS103", ActivityType.TUTORIAL);
+        timetable.addTimeSlot(lectureActivityClash1, "CS102", ActivityType.LECTURE);
+        timetable.addTimeSlot(labActivityClash1, "CS103", ActivityType.LAB);
         timetable.chooseActivity("CS103", tutorialActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash1.getDay(),
@@ -211,12 +211,12 @@ public class TestTimetableClass {
                 LocalTime.of(7, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 0),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -233,12 +233,12 @@ public class TestTimetableClass {
                 LocalTime.of(7, 30),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -255,12 +255,12 @@ public class TestTimetableClass {
                 LocalTime.of(6, 30),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(10, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -277,12 +277,12 @@ public class TestTimetableClass {
                 LocalTime.of(6, 30),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -299,12 +299,12 @@ public class TestTimetableClass {
                 LocalTime.of(8, 30),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(10, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -321,12 +321,12 @@ public class TestTimetableClass {
                 LocalTime.of(7, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(10, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -343,12 +343,12 @@ public class TestTimetableClass {
                 LocalTime.of(7, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -365,12 +365,12 @@ public class TestTimetableClass {
                 LocalTime.of(6, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 0),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -387,12 +387,12 @@ public class TestTimetableClass {
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 0),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),
@@ -409,12 +409,12 @@ public class TestTimetableClass {
                 LocalTime.of(20, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(20, 30),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.WEDNESDAY,
                 30
         );
-        timetable.addTimeSlot(labActivityClash1, "MATH1232");
-        timetable.addTimeSlot(labActivityClash2, "MATH1232");
+        timetable.addTimeSlot(labActivityClash1, "MATH1232", ActivityType.LAB);
+        timetable.addTimeSlot(labActivityClash2, "MATH1232", ActivityType.LAB);
         timetable.chooseActivity("MATH1232", labActivityClash1.getId());
         String[] conflicts = timetable.checkConflicts(
                 labActivityClash2.getDay(),

@@ -59,7 +59,7 @@ public class ViewCourseSystemTest extends TUITest {
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 11),
                 LocalTime.of(11, 0),
-                "Lab Room 1",
+                "LAB Room 1",
                 DayOfWeek.TUESDAY,
                 30,
                 "lab"
@@ -98,7 +98,7 @@ public class ViewCourseSystemTest extends TUITest {
                 LocalTime.of(9, 0),
                 "Lecture Hall 2",
                 DayOfWeek.THURSDAY,
-                true,         // lecture
+                false,         // lecture
                 "lecture"
         );
         course2.addActivity(
@@ -143,7 +143,7 @@ public class ViewCourseSystemTest extends TUITest {
                 LocalTime.of(14, 0),
                 LocalDate.of(2025, 4, 16),
                 LocalTime.of(15, 0),
-                "Physics Lab",
+                "Physics LAB",
                 DayOfWeek.TUESDAY,
                 25,           // capacity for lab
                 "lab"
@@ -222,4 +222,18 @@ public class ViewCourseSystemTest extends TUITest {
 
     }
 
+    @Test
+    public void testCourse2Exists() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "MATH20120"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        CourseManager courseManager = context.getCourseManager();
+        populateCourseList(courseManager);
+        viewerController.viewCourse();
+        assertOutputContains("SUCCESS");
+    }
 }

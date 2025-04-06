@@ -14,12 +14,6 @@ public class Tutorial extends Activity {
         this.capacity = capacity;
     }
 
-    public Tutorial(Tutorial other) {
-        super(other.getId(), other.getStartDate(), other.getStartTime(),
-                other.getEndDate(), other.getEndTime(), other.getLocation(), other.getDay());
-        this.capacity = other.capacity;
-    }
-
     @Override
     public String toString() {
         String typeInfo = "Tutorial (Capacity: " + capacity + ")";

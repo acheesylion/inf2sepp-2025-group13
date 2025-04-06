@@ -376,18 +376,14 @@ public class CourseManager {
         }
 
         for (Activity activity : courseToBeAdded.getActivities()) {
-            Activity copyActivity = null;
             if (activity instanceof Lab) {
-                copyActivity = new Lab((Lab) activity);
-                userTimetable.addTimeSlot(copyActivity, courseCode);
+                userTimetable.addTimeSlot(activity, courseCode, ActivityType.LAB);
             }
             if  (activity instanceof Tutorial) {
-                copyActivity = new Tutorial((Tutorial) activity);
-                userTimetable.addTimeSlot(copyActivity, courseCode);
+                userTimetable.addTimeSlot(activity, courseCode, ActivityType.TUTORIAL);
             }
             if (activity instanceof Lecture) {
-                copyActivity = new Lecture((Lecture) activity);
-                userTimetable.addTimeSlot(copyActivity, courseCode);
+                userTimetable.addTimeSlot(activity, courseCode, ActivityType.LECTURE);
             }
         }
 
@@ -459,9 +455,9 @@ public class CourseManager {
         }
 
         String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                courseToBeChosen.getDayId(activityId),
-                courseToBeChosen.getStartTimeId(activityId),
-                courseToBeChosen.getEndTimeId(activityId)
+                courseToBeChosen.getActivityDay(activityId),
+                courseToBeChosen.getActivityStartTime(activityId),
+                courseToBeChosen.getActivityEndTime(activityId)
         );
 
         if (conflictingCourseCodeAndActivityId.length > 0) {

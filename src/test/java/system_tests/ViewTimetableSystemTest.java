@@ -31,7 +31,7 @@ public class ViewTimetableSystemTest extends TUITest {
         // Create a Timetable for a specific student
         timetable = new Timetable("student1@hindeburg.ac.uk");
 
-        // Create a Lecture, Lab, and Tutorial with different properties.
+        // Create a Lecture, LAB, and Tutorial with different properties.
         Lecture lectureActivity = new Lecture(
                 101,
                 LocalDate.of(2025, 4, 1),
@@ -49,7 +49,7 @@ public class ViewTimetableSystemTest extends TUITest {
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 2),
                 LocalTime.of(11, 0),
-                "Lab Room",
+                "LAB Room",
                 DayOfWeek.TUESDAY,
                 30
         );
@@ -65,9 +65,9 @@ public class ViewTimetableSystemTest extends TUITest {
                 10
         );
 
-        timetable.addTimeSlot(lectureActivity, "MATH10101");
-        timetable.addTimeSlot(tutorialActivity, "MATH10101");
-        timetable.addTimeSlot(labActivity, "MATH10101");
+        timetable.addTimeSlot(lectureActivity, "MATH10101", ActivityType.LAB);
+        timetable.addTimeSlot(tutorialActivity, "MATH10101", ActivityType.LAB);
+        timetable.addTimeSlot(labActivity, "MATH10101", ActivityType.LAB);
         timetable.chooseActivity("MATH10101", tutorialActivity.getId());
         timetable.chooseActivity("MATH10101", lectureActivity.getId());
 

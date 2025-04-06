@@ -51,7 +51,7 @@ public class ViewCoursesSystemTest extends TUITest {
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 11),
                 LocalTime.of(11, 0),
-                "Lab Room 1",
+                "LAB Room 1",
                 DayOfWeek.TUESDAY,
                 30,
                 "lab"
@@ -135,7 +135,7 @@ public class ViewCoursesSystemTest extends TUITest {
                 LocalTime.of(14, 0),
                 LocalDate.of(2025, 4, 16),
                 LocalTime.of(15, 0),
-                "Physics Lab",
+                "Physics LAB",
                 DayOfWeek.TUESDAY,
                 25,           // capacity for lab
                 "lab"

@@ -76,7 +76,7 @@ public class Course {
         }
 
         public List<String> getMembers(){
-            return(this.members);
+            return members;
         }
 
         public void removeActivities() {
@@ -126,7 +126,7 @@ public class Course {
         }
 
 
-        public DayOfWeek getDayId(int activityId) {
+        public DayOfWeek getActivityDay(int activityId) {
             Activity activity = getActivity(activityId);
             if (activity == null) {
                 return null;
@@ -134,7 +134,7 @@ public class Course {
             return activity.getDay();
         }
 
-        public LocalTime getStartTimeId(int activityId) {
+        public LocalTime getActivityStartTime(int activityId) {
             Activity activity = getActivity(activityId);
             if (activity == null) {
                 return null;
@@ -142,7 +142,7 @@ public class Course {
             return activity.getStartTime();
         }
 
-        public LocalTime getEndTimeId(int activityId) {
+        public LocalTime getActivityEndTime(int activityId) {
             Activity activity = getActivity(activityId);
             if (activity == null) {
                 return null;

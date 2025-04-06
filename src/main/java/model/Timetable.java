@@ -1,7 +1,6 @@
 package model;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,30 +16,30 @@ public class Timetable {
         this.timeSlots = new ArrayList<>();
     }
 
-    public void addTimeSlot(Activity activity, String courseCode) {
+    public void addTimeSlot(Activity activity, String courseCode, ActivityType type) {
         // When adding a new time slot, we default its status to UNCHOSEN.
-        if (activity instanceof Lecture) {
+        if (type == ActivityType.LECTURE) {
             TimeSlot newSlot = new TimeSlot(
-                    activity, activity.getId(),
+                    activity.getId(),
                     activity.getStartTime(), activity.getEndTime(),
-                    activity.getDay(), ActivityType.Lecture,
+                    activity.getDay(), ActivityType.LECTURE,
                     courseCode, TimeSlotStatus.CHOSEN);
             timeSlots.add(newSlot);
         }
-        if (activity instanceof Lab) {
+        if (type == ActivityType.LAB) {
             TimeSlot newSlot = new TimeSlot(
-                    activity, activity.getId(),
+                    activity.getId(),
                     activity.getStartTime(), activity.getEndTime(),
-                    activity.getDay(), ActivityType.Lab,
+                    activity.getDay(), ActivityType.LAB,
                     courseCode, TimeSlotStatus.UNCHOSEN);
             timeSlots.add(newSlot);
         }
 
-        if (activity instanceof Tutorial) {
+        if (type == ActivityType.TUTORIAL) {
             TimeSlot newSlot = new TimeSlot(
-                    activity, activity.getId(),
+                    activity.getId(),
                     activity.getStartTime(), activity.getEndTime(),
-                    activity.getDay(), ActivityType.Tutorial,
+                    activity.getDay(), ActivityType.TUTORIAL,
                     courseCode, TimeSlotStatus.UNCHOSEN);
             timeSlots.add(newSlot);
         }
@@ -67,7 +66,7 @@ public class Timetable {
             return new String[0];
         } else {
             for (TimeSlot conflict : conflicts) {
-                if (conflict.isLecture()) {
+                if (conflict.isType(ActivityType.LECTURE)) {
                     String conflictCourseCode = conflict.getCourseCode();
                     int conflictID = conflict.getActivityId();
                     return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
@@ -90,13 +89,13 @@ public class Timetable {
     public boolean isIdTutorial(int activityId) {
         return timeSlots.stream()
                 .filter(ts -> ts.hasActivityIdTimeSlot(activityId))
-                .anyMatch(TimeSlot::isTutorial);
+                .anyMatch(ts->ts.isType(ActivityType.TUTORIAL));
     }
 
     public boolean isIdLab(int activityId) {
         return timeSlots.stream()
                 .filter(ts -> ts.hasActivityIdTimeSlot(activityId))
-                .anyMatch(TimeSlot::isLab);
+                .anyMatch(ts->ts.isType(ActivityType.LAB));
     }
 
     // Contains a timeslot with the given courseCode
@@ -115,13 +114,13 @@ public class Timetable {
 
     public int numChosenTutorialInTimeSlots(String courseCode) {
         return (int) timeSlots.stream()
-                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isTutorial() && ts.isChosen())
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isType(ActivityType.TUTORIAL) && ts.isChosen())
                 .count();
     }
 
     public int numChosenLabInTimeSlots(String courseCode) {
         return (int) timeSlots.stream()
-                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isLab() && ts.isChosen())
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isType(ActivityType.LAB) && ts.isChosen())
                 .count();
     }
 

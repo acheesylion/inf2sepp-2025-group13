@@ -1,7 +1,7 @@
 package model;
 
 public enum ActivityType {
-    Lecture,
-    Tutorial,
-    Lab
+    LECTURE,
+    TUTORIAL,
+    LAB
 }
