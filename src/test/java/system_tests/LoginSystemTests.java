@@ -25,8 +25,8 @@ public class LoginSystemTests extends TUITest {
 
     @Test
     public void testLoginAsAdminStaff() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
         setMockInput("admin1", "admin1pass");
+        View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         GuestController guestController = new GuestController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
@@ -51,6 +51,7 @@ public class LoginSystemTests extends TUITest {
 
     @Test
     public void testAdminRespondsToInquiry() throws Exception {
+        setMockInput("0", "1", "Sure, submit by tomorrow", "-1", "-1");
         // Set up the test environment
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
@@ -66,7 +67,6 @@ public class LoginSystemTests extends TUITest {
         // "Sure, submit by tomorrow" => response text
         // -1 => return to inquiry list
         // -1 => return to main menu
-        setMockInput("0", "1", "Sure, submit by tomorrow", "-1", "-1");
 
         AdminStaffController admin = new AdminStaffController(context, view, new MockAuthenticationService(), emailService);
 
