@@ -4,6 +4,11 @@ import java.time.LocalTime;
 import java.time.DayOfWeek;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * The Activity class represents an event or activity with specific details such as
+ * ID, dates, times, location, and day of the week. This class is intended to be
+ * extended by other classes that define specific types of activities.
+ */
 public abstract class Activity {
     private final int id;
     private final LocalDate startDate;
@@ -13,7 +18,17 @@ public abstract class Activity {
     private final String location;
     private final DayOfWeek day;
 
-    // Constructor
+    /**
+     * Constructs an Activity object with the given details.
+     *
+     * @param id        The unique identifier for the activity.
+     * @param startDate The start date of the activity.
+     * @param startTime The start time of the activity.
+     * @param endDate   The end date of the activity.
+     * @param endTime   The end time of the activity.
+     * @param location  The location where the activity takes place.
+     * @param day       The day of the week the activity occurs.
+     */
     public Activity(int id, LocalDate startDate, LocalTime startTime,
                     LocalDate endDate, LocalTime endTime, String location, DayOfWeek day) {
         this.id = id;
@@ -25,18 +40,58 @@ public abstract class Activity {
         this.day = day;
     }
 
+    /**
+     * Checks if the given ID matches the ID of this activity.
+     *
+     * @param id The ID to check.
+     * @return true if the IDs match, false otherwise.
+     */
     public boolean hasId(int id) {
         return this.id == id;
     }
 
-    public int getId() {return id;}
-    public LocalDate getStartDate() {return startDate;}
-    public LocalTime getStartTime() {return startTime;}
-    public LocalDate getEndDate() {return endDate;}
-    public LocalTime getEndTime() {return endTime;}
-    public String getLocation() {return location;}
-    public DayOfWeek getDay() {return day;}
+    /**
+     * Gets the unique identifier for this activity.
+     *
+     * @return The ID of the activity.
+     */
+    public int getId() {
+        return id;
+    }
 
+    /**
+     * Gets the start time of the activity.
+     *
+     * @return The start time of the activity.
+     */
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * Gets the end time of the activity.
+     *
+     * @return The end time of the activity.
+     */
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    /**
+     * Gets the day of the week the activity occurs.
+     *
+     * @return The day of the week of the activity.
+     */
+    public DayOfWeek getDay() {
+        return day;
+    }
+
+    /**
+     * Gets a formatted string representing the common details of the activity
+     * (day, time range, and ID) to be displayed in a table row.
+     *
+     * @return A formatted string with the common details of the activity.
+     */
     protected String getCommonRow() {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         String dayStr = String.valueOf(this.day);

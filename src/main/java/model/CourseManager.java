@@ -8,24 +8,43 @@ import view.View;
 import org.tinylog.Logger;
 import static java.lang.Math.abs;
 
-
+/**
+ * The CourseManager class is responsible for managing courses in the system.
+ * It includes methods for adding, removing, viewing, and managing courses and their activities,
+ * as well as handling course-related operations like adding courses to a student's timetable.
+ */
 public class CourseManager {
 
     private final List<Course> courses;
     public final List<Timetable> timetables;
     View view;
 
-
+    /**
+     * Constructs a CourseManager object with the specified view.
+     *
+     * @param view The view used to interact with the user.
+     */
     public CourseManager(View view) {
         this.courses = new ArrayList<>();
         this.timetables = new ArrayList<>();
         this.view = view;
     }
 
+    /**
+     * Generates a unique activity ID for new activities.
+     *
+     * @return A unique activity ID.
+     */
     public int generateActivityId() {
         return (UUID.randomUUID().hashCode());
     }
 
+    /**
+     * Validates the provided course information.
+     *
+     * @param courseInfo The course information to validate.
+     * @return true if the course information is valid, false otherwise.
+     */
     public Boolean validCourseInfo(CourseInfo courseInfo) {
         String courseCode = courseInfo.getCourseCode();
         String name = courseInfo.getName();
@@ -58,6 +77,12 @@ public class CourseManager {
         return true;
     }
 
+    /**
+     * Adds activities to a newly created course based on user input.
+     *
+     * @param newCourse The course to which activities will be added.
+     * @param view      The view used to interact with the user.
+     */
     private void addActivitiesToCourse(Course newCourse, View view) {
         int numActivities = readInteger(view, "Enter how many activities you wish to add: ");
 
@@ -122,6 +147,12 @@ public class CourseManager {
         }
     }
 
+    /**
+     * Removes a course by its course code.
+     *
+     * @param courseCode The code of the course to remove.
+     * @return An array of the course's members' emails.
+     */
     public String[] removeCourse(String courseCode){
         Course courseToRemove = getCourseByCode(courseCode);
         if (courseToRemove == null) {
@@ -134,6 +165,12 @@ public class CourseManager {
         return (members.toArray(new String[0]));
     }
 
+    /**
+     * Adds a new course to the system based on the provided course information.
+     *
+     * @param email    The email of the user adding the course.
+     * @param info     The course information to add.
+     */
     public void addCourse(String email, CourseInfo info) {
         if(!validCourseInfo(info)) {
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: : Required course info not provided)",
@@ -176,10 +213,18 @@ public class CourseManager {
 
     }
 
+    /**
+     * Adds the specified course to the list of courses.
+     *
+     * @param course The course to add.
+     */
     public void addCourseToCourseList(Course course) {
         courses.add(course);
     }
 
+    /**
+     * Views all courses in the system.
+     */
     public void viewCourses() {
         if (courses.isEmpty()) {
             Logger.error("{}, viewCourses, FAILURE (Error: Course list is empty.)",
@@ -195,6 +240,11 @@ public class CourseManager {
 
     }
 
+    /**
+     * Views a specific course based on its course code.
+     *
+     * @param courseCode The code of the course to view.
+     */
     public void viewCourse(String courseCode) {
         if (!hasCourse(courseCode)) {
             Logger.error("{}, {}, viewCourse, FAILURE (Error: Incorrect course code provided.)",
@@ -211,9 +261,32 @@ public class CourseManager {
 
     }
 
-    public boolean checkCourseCode(String courseCode){return courseCode.matches("^[A-Z]{4}\\d{5}$");}
-    public boolean checkEmailString(String email){return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");}
+    /**
+     * Checks if the provided course code matches a valid format.
+     *
+     * @param courseCode The course code to check.
+     * @return true if the course code is valid, false otherwise.
+     */
+    public boolean checkCourseCode(String courseCode){
+        return courseCode.matches("^[A-Z]{4}\\d{5}$");
+    }
 
+    /**
+     * Checks if the provided email is in a valid format.
+     *
+     * @param email The email to check.
+     * @return true if the email is valid, false otherwise.
+     */
+    public boolean checkEmailString(String email){
+        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    /**
+     * Checks if a course with the provided course code exists in the system.
+     *
+     * @param courseCode The course code to check.
+     * @return true if the course exists, false otherwise.
+     */
     public boolean hasCourse(String courseCode) {
         for (Course course : courses) {
             if (course.hasCode(courseCode)) {
@@ -223,12 +296,24 @@ public class CourseManager {
         return false;
     }
 
+    /**
+     * Checks if a timetable exists for a given student email.
+     *
+     * @param studentEmail The email of the student whose timetable is being checked.
+     * @return true if the timetable exists, false otherwise.
+     */
     private boolean timetableExists(String studentEmail) {
         return timetables.stream()
                 .anyMatch(t -> t.hasStudentEmail(studentEmail));
     }
 
-
+    /**
+     * Retrieves the timetable for a given student email.
+     *
+     * @param studentEmail The email of the student whose timetable is being retrieved.
+     * @return The Timetable object associated with the given student email.
+     * @throws NoSuchElementException if no timetable exists for the student.
+     */
     private Timetable getTimetable(String studentEmail) {
         return timetables.stream()
                 .filter(t -> t.hasStudentEmail(studentEmail))
@@ -236,6 +321,13 @@ public class CourseManager {
                 .get();
     }
 
+    /**
+     * Prompts the user for an integer input and validates it.
+     *
+     * @param view   The view used to interact with the user.
+     * @param prompt The message shown to the user to ask for the integer input.
+     * @return The integer input provided by the user.
+     */
     private int readInteger(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);
@@ -247,6 +339,13 @@ public class CourseManager {
         }
     }
 
+    /**
+     * Prompts the user for a date input and validates it.
+     *
+     * @param view   The view used to interact with the user.
+     * @param prompt The message shown to the user to ask for the date input.
+     * @return The LocalDate input provided by the user.
+     */
     private LocalDate readDate(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);
@@ -258,6 +357,13 @@ public class CourseManager {
         }
     }
 
+    /**
+     * Prompts the user for a time input and validates it.
+     *
+     * @param view   The view used to interact with the user.
+     * @param prompt The message shown to the user to ask for the time input.
+     * @return The LocalTime input provided by the user.
+     */
     private LocalTime readTime(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);
@@ -269,6 +375,13 @@ public class CourseManager {
         }
     }
 
+    /**
+     * Prompts the user for a boolean input and validates it.
+     *
+     * @param view   The view used to interact with the user.
+     * @param prompt The message shown to the user to ask for the boolean input.
+     * @return The boolean input provided by the user.
+     */
     private boolean readBoolean(View view, String prompt) {
         while (true) {
             String input = view.getInput(prompt);
@@ -280,6 +393,12 @@ public class CourseManager {
         }
     }
 
+    /**
+     * Retrieves a course by its course code.
+     *
+     * @param courseCode The code of the course to retrieve.
+     * @return The Course object associated with the given course code, or null if no course is found.
+     */
     public Course getCourseByCode(String courseCode) {
         for (Course course : courses) {
             if (course.getCourseCode().equalsIgnoreCase(courseCode)) {
@@ -289,7 +408,14 @@ public class CourseManager {
         return null;
     }
 
-
+    /**
+     * Removes a course from a student's timetable.
+     * The method verifies that the course exists, the student has a timetable,
+     * and that the course is in the student's timetable before removal.
+     *
+     * @param studentEmail The email of the student from whose timetable the course will be removed.
+     * @param courseCode   The course code of the course to be removed.
+     */
     public void removeCourseFromTimetable(String studentEmail, String courseCode) {
         if (!hasCourse(courseCode)) {
             Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Error: Incorrect course code provided.)",
@@ -321,6 +447,15 @@ public class CourseManager {
 
     }
 
+    /**
+     * Adds a course to a student's timetable.
+     * The method checks if the course exists, verifies there are no conflicts in the timetable,
+     * and handles adding the course's activities (lab, tutorial, lecture) to the timetable.
+     * It also ensures that required tutorials and labs are selected before confirming the addition.
+     *
+     * @param studentEmail The email of the student to whom the course will be added.
+     * @param courseCode   The course code of the course to be added.
+     */
     public void addCourseToStudentTimetable(String studentEmail, String courseCode) {
         if (!hasCourse(courseCode)) {
             Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Error: Incorrect course code provided.)",
@@ -409,6 +544,16 @@ public class CourseManager {
 
     }
 
+    /**
+     * Allows a student to choose an activity for a course from their timetable.
+     * The method validates the provided activity ID, checks for conflicts with existing activities,
+     * and ensures that the required tutorials and labs are selected. If all checks pass, the activity
+     * is added to the student's timetable.
+     *
+     * @param studentEmail The email of the student who is selecting the activity.
+     * @param courseCode   The course code of the course the activity belongs to.
+     * @param activityIdString The ID of the activity the student wants to select (provided as a string).
+     */
     public void chooseActivityForCourse(String studentEmail, String courseCode, String activityIdString) {
         int activityId;
 
@@ -519,7 +664,13 @@ public class CourseManager {
         view.displaySuccess("The activity was successfully added to your timetable");
     }
 
-
+    /**
+     * Prints the timetable of a student.
+     * If the student's timetable exists, it is displayed; otherwise, an error message is shown.
+     *
+     * @param email The email of the student whose timetable is being printed.
+     * @param view  The view used to display the timetable to the user.
+     */
     public void printTimetable(String email, View view) {
         if (timetableExists(email)) {
             Timetable userTimetable = getTimetable(email);
