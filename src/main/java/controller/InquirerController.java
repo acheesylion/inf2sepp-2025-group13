@@ -15,11 +15,27 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for handling inquirer interactions such as browsing the FAQ, submitting inquiries,
+ * and subscribing/unsubscribing to FAQ topic updates.
+ */
 public class InquirerController extends Controller {
+
+    /**
+     * Constructs a new InquirerController.
+     *
+     * @param sharedContext the shared application context
+     * @param view the user interface view
+     * @param auth the authentication service
+     * @param email the email service
+     */
     public InquirerController(SharedContext sharedContext, View view, AuthenticationService auth, EmailService email) {
         super(sharedContext, view, auth, email);
     }
 
+    /**
+     * Allows the user to browse the FAQ, navigate sections, and manage email subscriptions for updates on topics.
+     */
     public void consultFAQ() {
         FAQSection currentSection = null;
         String userEmail;
@@ -91,6 +107,12 @@ public class InquirerController extends Controller {
         }
     }
 
+    /**
+     * Registers a user's email to receive updates for a specific FAQ topic.
+     *
+     * @param userEmail the email to register (can be prompted if null)
+     * @param topic the FAQ topic
+     */
     private void requestFAQUpdates(String userEmail, String topic) {
         if (userEmail == null) {
             userEmail = view.getInput("Please enter your email address: ");
@@ -103,6 +125,12 @@ public class InquirerController extends Controller {
         }
     }
 
+    /**
+     * Unregisters a user's email from receiving updates for a specific FAQ topic.
+     *
+     * @param userEmail the email to unregister (can be prompted if null)
+     * @param topic the FAQ topic
+     */
     private void stopFAQUpdates(String userEmail, String topic) {
         if (userEmail == null) {
             userEmail = view.getInput("Please enter your email address: ");
@@ -115,6 +143,11 @@ public class InquirerController extends Controller {
         }
     }
 
+    /**
+     * Prompts and retrieves the email address of the inquirer, validating its format.
+     *
+     * @return the valid email address or null if invalid
+     */
     public String getinquirerEmail(){
         String inquirerEmail;
         if (sharedContext.currentUser instanceof AuthenticatedUser) {
@@ -131,6 +164,11 @@ public class InquirerController extends Controller {
         return(inquirerEmail);
     }
 
+    /**
+     * Prompts and retrieves the subject of the inquiry.
+     *
+     * @return the subject string or null if blank
+     */
     public String getSubject(){
         String subject = view.getInput("Describe the topic of your inquiry in a few words: ");
         if (subject.strip().isBlank()) {
@@ -140,11 +178,21 @@ public class InquirerController extends Controller {
         return(subject);
     }
 
+    /**
+     * Prompts and retrieves the course code related to the inquiry (optional).
+     *
+     * @return the course code string
+     */
     public String getCourseCode(){
         String courseCode = view.getInput("Please enter the course code relating to your inquiry (optional): ");
         return(courseCode);
     }
 
+    /**
+     * Prompts and retrieves the content of the inquiry.
+     *
+     * @return the content string or null if blank
+     */
     public String getContent(){
         String text = view.getInput("Write your inquiry:" + System.lineSeparator());
         if (text.strip().isBlank()) {
@@ -154,6 +202,15 @@ public class InquirerController extends Controller {
         return (text);
     }
 
+    /**
+     * Sends the inquiry to the appropriate recipient via email based on the presence and validity of a course code.
+     *
+     * @param inquirerEmail the inquirer's email
+     * @param subject the inquiry subject
+     * @param text the body of the inquiry
+     * @param courseCodeEntered whether a course code was entered
+     * @param courseCode the course code (optional)
+     */
     public void sendInquiry(String inquirerEmail, String subject, String text, boolean courseCodeEntered, String courseCode) {
         Inquiry inquiry = new Inquiry(inquirerEmail, subject, text, courseCodeEntered ? courseCode : null);
         sharedContext.inquiries.add(inquiry);
@@ -194,6 +251,9 @@ public class InquirerController extends Controller {
         }
     }
 
+    /**
+     * Coordinates the process of collecting inquiry details from the user and sending the inquiry.
+     */
     public void contactStaff() {
 
         String inquirerEmail = getinquirerEmail();
