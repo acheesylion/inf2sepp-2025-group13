@@ -87,15 +87,6 @@ public class Course {
             return this.courseCode.equals(code);
         }
 
-        public boolean hasActivityWithId(int id) {
-            for (Activity activity : activities) {
-                if (activity.getId() == id) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
 
         public List<Activity> getActivities() {
             return activities;

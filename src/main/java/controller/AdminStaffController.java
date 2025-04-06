@@ -16,11 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminStaffController extends StaffController {
+    /**
+     * Constructs an AdminStaffController instance.
+     *
+     * @param sharedContext Shared context containing application data.
+     * @param view          View used to interact with the user.
+     * @param auth          Authentication service for user validation.
+     * @param email         Email service for sending notifications.
+     */
     public AdminStaffController(SharedContext sharedContext, View view, AuthenticationService auth, EmailService email) {
         super(sharedContext, view, auth, email);
     }
 
-
+    /**
+     * Allows an administrator to manage the FAQ section, including viewing and editing FAQ items.
+     */
     public void manageFAQ() {
         FAQSection currentSection = null;
 
@@ -67,6 +77,11 @@ public class AdminStaffController extends StaffController {
         }
     }
 
+    /**
+     * Removes an FAQ item from the current FAQ section.
+     *
+     * @param currentSection The current FAQ section from which an item will be removed.
+     */
     private void removeFAQItem(FAQSection currentSection) {
         if (currentSection.getItems().isEmpty()) {
             Logger.error("{},{},removeFAQItem,{} FAILURE: No FAQ items to remove in this section!"
@@ -176,6 +191,11 @@ public class AdminStaffController extends StaffController {
         }
     }
 
+    /**
+     * Adds a new FAQ item to the current FAQ section. It also allows the creation of new FAQ sections.
+     *
+     * @param currentSection The current FAQ section where the new item will be added.
+     */
     private void addFAQItem(FAQSection currentSection) {
         // When adding an item at root of FAQ, creating a section is mandatory
         boolean createSection = (currentSection == null);
@@ -259,6 +279,9 @@ public class AdminStaffController extends StaffController {
         view.displaySuccess("Created new FAQ item");
     }
 
+    /**
+     * Allows an administrator to manage user inquiries, including redirecting or responding to inquiries.
+     */
     public void manageInquiries() {
         String[] inquiryTitles = getInquiryTitles(sharedContext.inquiries);
 
@@ -290,6 +313,11 @@ public class AdminStaffController extends StaffController {
         }
     }
 
+    /**
+     * Redirects the selected inquiry to another staff member for handling.
+     *
+     * @param inquiry The inquiry to be redirected.
+     */
     private void redirectInquiry(Inquiry inquiry) {
         inquiry.setAssignedTo(view.getInput("Enter assignee email: "));
         email.sendEmail(
@@ -301,11 +329,17 @@ public class AdminStaffController extends StaffController {
         view.displaySuccess("Inquiry has been reassigned");
     }
 
+    /**
+     * Enum representing the available options for managing courses.
+     */
     private enum manageCoursesOptions {
         ADD_COURSE,
         REMOVE_COURSE,
     }
 
+    /**
+     * Allows an administrator to manage courses, including adding and removing courses.
+     */
     public void manageCourses() {
         boolean endLoop = false;
         while (!endLoop) {
@@ -313,6 +347,11 @@ public class AdminStaffController extends StaffController {
         }
     }
 
+    /**
+     * Handles the options for adding or removing courses.
+     *
+     * @return true if the operation is complete, false otherwise.
+     */
     private boolean handleManageCourses() {
         int optionNo = selectFromMenu(AdminStaffController.manageCoursesOptions.values(), "Back to main menu");
         if (optionNo == -1) {
@@ -321,11 +360,14 @@ public class AdminStaffController extends StaffController {
         AdminStaffController.manageCoursesOptions option = AdminStaffController.manageCoursesOptions.values()[optionNo];
         switch (option) {
             case ADD_COURSE -> addCourse();
-            case REMOVE_COURSE -> deleteCourse();
+            case REMOVE_COURSE -> removeCourse();
         }
         return false;
     }
 
+    /**
+     * Removes a course and notifies the relevant users.
+     */
     private void removeCourse() {
         view.displayInfo("=== Remove Course ===");
         String courseCode = view.getInput("Enter course code: ");
@@ -342,37 +384,11 @@ public class AdminStaffController extends StaffController {
         }
     }
 
-     private String deletecourseinput() {
-          CourseManager courseManager = sharedContext.getCourseManager();
-         String courseCode = view.getInput("Enter course code: ");
-          if (!courseManager.checkCourseCode(courseCode)){
-              //System.currentTimeMillis(),email,"addCourse",courseInfo,"FAILURE"+" (Error: Provided courseCode is invalid)")
-              Logger.error("{}, {}, deleteCourse, {} FAILURE (Error: Provided courseCode is invalid)",
-                      System.currentTimeMillis(), sharedContext.getCurrentUserEmail(), courseCode );
-              view.displayError("Provided courseCode is invalid");
-              return null ;}
-          return courseCode;
-      }
-
-      public void deletecourselogic(String input) {
-          CourseManager courseManager = sharedContext.getCourseManager();
-          Course courseDeleted = courseManager.getCourseByCode(input);
-          String[] emaillist = courseManager.removeCourse(input);
-          for (String emailAddress : emaillist) {
-              email.sendEmail(sharedContext.getCurrentUserEmail(), emailAddress,
-                      "Course deleted - " + courseDeleted.getCourseCode(),
-                      "this course has been provided with the following details: " + courseDeleted.toString());
-          }
-      }
-
-    private void deleteCourse() {
-        CourseManager courseManager = sharedContext.getCourseManager();
-        view.displayInfo("=== Remove Course ===");
-        String input = deletecourseinput();
-        deletecourselogic(input);
-    }
-
-
+    /**
+     * Fills the provided CourseInfo object with course details gathered from the user.
+     *
+     * @param courseInfo The CourseInfo object to be populated.
+     */
     private void fillCourseInfo(CourseInfo courseInfo) {
         String[] courseInfoNames = {
                 "courseCode",
@@ -386,7 +402,6 @@ public class AdminStaffController extends StaffController {
                 "requiredLabs"
         };
 
-        // For each field, get validated input and store it in CourseInfo.
         for (String fieldName : courseInfoNames) {
             String input = view.getInput(String.format("Enter %s: ", fieldName));
             courseInfo.setField(fieldName, input);
@@ -396,6 +411,9 @@ public class AdminStaffController extends StaffController {
         courseInfo.setRequiresComputers(requiresComputers);
     }
 
+    /**
+     * Adds a new course and sends email notifications regarding the course creation.
+     */
     private void addCourse(){
         view.displayInfo("=== Add Course ===");
 

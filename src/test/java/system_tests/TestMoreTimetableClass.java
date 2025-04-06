@@ -1,13 +1,11 @@
-package class_testing;
+package system_tests;
 
 import controller.StudentController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
 import model.*;
 import org.json.simple.parser.ParseException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import system_tests.TUITest;
 import view.TextUserInterface;
 import view.View;
 
@@ -16,8 +14,6 @@ import java.net.URISyntaxException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TestMoreTimetableClass extends TUITest {
     private Timetable timetable;

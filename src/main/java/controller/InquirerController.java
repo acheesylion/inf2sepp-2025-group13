@@ -195,24 +195,7 @@ public class InquirerController extends Controller {
     }
 
     public void contactStaff() {
-//        String inquirerEmail;
-//        if (sharedContext.currentUser instanceof AuthenticatedUser) {
-//            AuthenticatedUser user = (AuthenticatedUser) sharedContext.currentUser;
-//            inquirerEmail = user.getEmail();
-//        } else {
-//            inquirerEmail = view.getInput("Enter your email address: ");
-//            // From https://owasp.org/www-community/OWASP_Validation_Regex_Repository
-//            if (!inquirerEmail.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
-//                view.displayError("Invalid email address! Please try again");
-//                return;
-//            }
-//        }
-//
-//        String subject = view.getInput("Describe the topic of your inquiry in a few words: ");
-//        if (subject.strip().isBlank()) {
-//            view.displayError("Inquiry subject cannot be blank! Please try again");
-//            return;
-//        }
+
         String inquirerEmail = getinquirerEmail();
         if (inquirerEmail==null){return;}
 
@@ -225,53 +208,8 @@ public class InquirerController extends Controller {
         if (text==null){return;}
 
         boolean courseCodeEntered;
-        //String courseCode = view.getInput("Please enter the course code relating to your inquiry (optional): ");
         courseCodeEntered = !courseCode.strip().isBlank();
-
         sendInquiry(inquirerEmail, subject, text, courseCodeEntered, courseCode);
-//        String text = view.getInput("Write your inquiry:" + System.lineSeparator());
-//        if (text.strip().isBlank()) {
-//            view.displayError("Inquiry content cannot be blank! Please try again");
-//            return;
-//        }
-//        Inquiry inquiry = new Inquiry(inquirerEmail, subject, text, courseCodeEntered ? courseCode : null);
-//        sharedContext.inquiries.add(inquiry);
-//
-//        String msgBody = "Subject: " + subject + System.lineSeparator() +
-//                (courseCodeEntered ? "Course Code: " + courseCode + System.lineSeparator() : "") +
-//                "Please log into the Self Service Portal to review and respond to inquiry." ;
-//        if (!courseCodeEntered){
-//        email.sendEmail(
-//                SharedContext.ADMIN_STAFF_EMAIL,
-//                SharedContext.ADMIN_STAFF_EMAIL,
-//                "New inquiry from " + inquirerEmail,
-//                msgBody
-//        );
-//            view.displaySuccess("Your inquiry has been recorded. Someone will be in touch via email soon!");
-//
-//        } else{
-//            //lookup courseCode
-//            CourseManager courseManager = sharedContext.getCourseManager();
-//            Course course = courseManager.getCourseByCode(courseCode);
-//                if (course != null) {
-//                    SharedContext.COURSE_ORGANISER_EMAIL = course.getCourseOrganiserEmail();
-//                    email.sendEmail(
-//                            //consult member of teaching staff responsible for that course
-//                            SharedContext.COURSE_ORGANISER_EMAIL,
-//                            SharedContext.COURSE_ORGANISER_EMAIL,
-//                            "New inquiry from " + inquirerEmail,
-//                            msgBody
-//                    );
-//                    view.displaySuccess("Your inquiry has been recorded. Someone will be in touch via email soon!");
-//                } else {
-//                    view.displayError("Not a valid course code");
-//
-//                }
-
-
-
-
-       // }
 
     }
 }

@@ -37,6 +37,26 @@ public class ConsultingStaffSystemTest extends TUITest {
     }
 
     @Test
+    public void testsendInquiryFull() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "student1@email.com",
+                "Issue with assignment",
+                "",
+                "I am unable to submit the assignment.",
+                "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        MockEmailService mockEmail = new MockEmailService();
+        InquirerController inquirer = new InquirerController(context, view, new MockAuthenticationService(), mockEmail);
+        startOutputCapture();
+        inquirer.contactStaff();
+        assertOutputContains("Email from student1@email.com");
+
+
+    }
+
+    @Test
     public void testifadminstaffgetemailed() throws URISyntaxException, IOException, ParseException {
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
