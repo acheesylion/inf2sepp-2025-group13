@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Tutorial extends Activity {
-    private int capacity;
+    private final int capacity;
 
     public Tutorial(int id, LocalDate startDate, LocalTime startTime,
                     LocalDate endDate, LocalTime endTime, String location,
@@ -14,12 +14,14 @@ public class Tutorial extends Activity {
         this.capacity = capacity;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public Tutorial(Tutorial other) {
+        super(other.getId(), other.getStartDate(), other.getStartTime(),
+                other.getEndDate(), other.getEndTime(), other.getLocation(), other.getDay());
+        this.capacity = other.capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public int getCapacity() {
+        return capacity;
     }
 
     @Override

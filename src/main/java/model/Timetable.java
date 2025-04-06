@@ -1,156 +1,154 @@
-//package model;
-//import java.time.DayOfWeek;
-//import java.time.LocalDate;
-//import java.time.LocalTime;
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//public class Timetable {
-//
-//    // The student's email that this timetable corresponds to
-//    private String studentEmail;
-//
-//    // A list to store the time slots for this timetable
-//    private List<TimeSlot> timeSlots;
-//
-//    // Constructor initializing the studentEmail and the timeSlots list
-//    public Timetable(String studentEmail) {
-//        this.studentEmail = studentEmail;
-//        this.timeSlots = new ArrayList<>();
-//    }
-//
-//    /**
-//     * Adds a new TimeSlot to the timetable.
-//     *
-//     * @param day         the day of the week for the time slot
-//     * @param startDate   the start date of the time slot
-//     * @param startTime   the start time of the time slot
-//     * @param endDate     the end date of the time slot
-//     * @param endTime     the end time of the time slot
-//     * @param courseCode  the course code for the time slot
-//     * @param activityId  the activity ID for the time slot
-//     */
-//    public void addTimeSlot(DayOfWeek day, LocalDate startDate, LocalTime startTime,
-//                            LocalDate endDate, LocalTime endTime, String courseCode,
-//                            int activityId) {
-//        // When adding a new time slot, we default its status to UNCHOSEN.
-//        TimeSlot newSlot = new TimeSlot(day, startDate, startTime, endDate, endTime,
-//                courseCode, activityId, TimeSlotStatus.UNCHOSEN);
-//
-//        timeSlots.add(newSlot);
-//    }
-//
-//    /**
-//     * Counts how many activities for a given course are chosen.
-//     *
-//     * @param courseCode  the course code to check
-//     * @return the number of chosen activities for the course
-//     */
-//    public int numChosenActivities(String courseCode) {
-//        int count = 0;
-//        for (TimeSlot ts : timeSlots) {
-//            if (ts.hasCourseCode(courseCode) && ts.isChosen()) {
-//                count++;
-//            }
-//        }
-//        return count;
-//    }
-//
-//    /**
-//     * Checks for time conflicts between the given time period and the existing time slots.
-//     * If any existing time slot overlaps with the input period, its details are added to the conflict list.
-//     *
-//     * @param startDate the start date of the period to check
-//     * @param startTime the start time of the period to check
-//     * @param endDate   the end date of the period to check
-//     * @param endTime   the end time of the period to check
-//     * @return an array of String representations for the conflicting time slots
-//     */
-//    public String[] checkConflicts(LocalDate startDate, LocalTime startTime,
-//                                   LocalDate endDate, LocalTime endTime) {
-//        List<String> conflicts = new ArrayList<>();
-//        LocalDateTime inputStart = LocalDateTime.of(startDate, startTime);
-//        LocalDateTime inputEnd = LocalDateTime.of(endDate, endTime);
-//
-//        for (TimeSlot ts : timeSlots) {
-//            // Assuming TimeSlot has getters for start and end date/time.
-//            LocalDateTime slotStart = LocalDateTime.of(ts.getStartDate(), ts.getStartTime());
-//            LocalDateTime slotEnd = LocalDateTime.of(ts.getEndDate(), ts.getEndTime());
-//            // Check if the two time intervals overlap.
-//            if (inputStart.isBefore(slotEnd) && slotStart.isBefore(inputEnd)) {
-//                conflicts.add(ts.toString());
-//            }
-//        }
-//        return conflicts.toArray(new String[0]);
-//    }
-//
-//    /**
-//     * Checks if this timetable belongs to the student with the given email.
-//     *
-//     * @param email the email to check
-//     * @return true if the studentEmail matches, false otherwise
-//     */
-//    public boolean hasStudentEmail(String email) {
-//        return this.studentEmail.equals(email);
-//    }
-//
-//    /**
-//     * Chooses an activity for a given course by setting its status to CHOSEN.
-//     *
-//     * @param courseCode the course code of the activity to choose
-//     * @param activityId the activity ID of the activity to choose
-//     * @return true if the activity was found and marked as CHOSEN, false otherwise
-//     */
-//    public boolean chooseActivity(String courseCode, int activityId) {
-//        for (TimeSlot ts : timeSlots) {
-//            if (ts.hasCourseCode(courseCode) && ts.hasActivityId(activityId)) {
-//                if (!ts.isChosen()) {
-//                    ts.setStatus(TimeSlotStatus.CHOSEN);
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-//
-//    /**
-//     * Checks if there is at least one time slot for the specified course.
-//     *
-//     * @param courseCode the course code to check for
-//     * @return true if at least one time slot with the given course code exists, false otherwise
-//     */
-//    public boolean hasSlotsForCourse(String courseCode) {
-//        for (TimeSlot ts : timeSlots) {
-//            if (ts.hasCourseCode(courseCode)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    /**
-//     * Removes all time slots for the specified course.
-//     *
-//     * @param courseCode the course code whose time slots should be removed
-//     */
-//    public void removeSlotsForCourse(String courseCode) {
-//        timeSlots.removeIf(ts -> ts.hasCourseCode(courseCode));
-//    }
-//
-//    /**
-//     * Provides a string representation of the timetable, including the student email
-//     * and details of all time slots.
-//     *
-//     * @return a string representation of the timetable
-//     */
-//    @Override
-//    public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("Timetable for student: ").append(studentEmail).append("\n");
-//        for (TimeSlot ts : timeSlots) {
-//            sb.append(ts.toString()).append("\n");
-//        }
-//        return sb.toString();
-//    }
-//}
+package model;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Timetable {
+
+    private final String studentEmail;
+    private final List<TimeSlot> timeSlots;
+
+    public Timetable(String studentEmail) {
+        this.studentEmail = studentEmail;
+        this.timeSlots = new ArrayList<>();
+    }
+
+    public void addTimeSlot(Activity activity, String courseCode) {
+        // When adding a new time slot, we default its status to UNCHOSEN.
+        if (activity instanceof Lecture) {
+            TimeSlot newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.CHOSEN);
+            timeSlots.add(newSlot);
+        } else {
+            TimeSlot newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
+            timeSlots.add(newSlot);
+        }
+
+    }
+
+    public boolean hasStudentEmail(String email) {return (this.studentEmail.equals(email));}
+
+
+    public String[] checkConflicts(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
+
+        List<TimeSlot> conflicts = new ArrayList<>();
+        for (TimeSlot ts : timeSlots) {
+            if (ts.isChosen()) {
+                if (ts.getDay().equals(day)) {
+                    if (startTime.isBefore(ts.getEndTime()) && endTime.isAfter(ts.getStartTime())) {
+                        conflicts.add(ts);
+                    }
+                }
+            }
+
+        }
+        if (conflicts.isEmpty()) {
+            return new String[0];
+        } else {
+            for (TimeSlot conflict : conflicts) {
+                if (conflict.isLecture()) {
+                    String conflictCourseCode = conflict.getCourseCode();
+                    int conflictID = conflict.getActivityId();
+                    return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
+                }
+            }
+            // Get Head of Conflicts List
+            String conflictCourseCode = conflicts.get(0).getCourseCode();
+            int conflictID = conflicts.get(0).getActivityId();
+            return (new String[] {conflictCourseCode, Integer.toString(conflictID)});
+        }
+    }
+
+
+    public void chooseActivity(String courseCode, int activityId) {
+        timeSlots.stream()
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.hasActivityId(activityId) && !ts.isChosen())
+                .forEach(ts -> ts.setStatus(TimeSlotStatus.CHOSEN));
+    }
+
+    public boolean isIdTutorial(int activityId) {
+        return timeSlots.stream()
+                .filter(ts -> ts.hasActivityId(activityId))
+                .anyMatch(TimeSlot::isTutorial);
+    }
+
+    public boolean isIdLab(int activityId) {
+        return timeSlots.stream()
+                .filter(ts -> ts.hasActivityId(activityId))
+                .anyMatch(TimeSlot::isLab);
+    }
+
+    // Contains a timeslot with the given courseCode
+    public boolean hasSlotsForCourse(String courseCode) {
+        return timeSlots.stream().anyMatch(ts -> ts.hasCourseCode(courseCode));
+    }
+
+    // Contains a timeslot with the given activityId
+    public boolean hasSlotsForActivityId(int activityId) {
+        return timeSlots.stream().anyMatch(ts -> ts.hasActivityId(activityId));
+    }
+
+    public void removeSlotsForCourse(String courseCode) {
+        timeSlots.removeIf(ts -> ts.hasCourseCode(courseCode));
+    }
+
+    public int numChosenTutorialInTimeSlots(String courseCode) {
+        return (int) timeSlots.stream()
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isTutorial() && ts.isChosen())
+                .count();
+    }
+
+    public int numChosenLabInTimeSlots(String courseCode) {
+        return (int) timeSlots.stream()
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.isLab() && ts.isChosen())
+                .count();
+    }
+
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        String headerLine = "==============================================================";
+        sb.append(headerLine).append("\n");
+        String title = "Timetable for " + studentEmail;
+        int totalWidth = headerLine.length();
+        int padding = (totalWidth - title.length()) / 2;
+        String centeredTitle = " ".repeat(Math.max(0, padding)) + title;
+        sb.append(centeredTitle).append("\n");
+        sb.append(headerLine).append("\n\n");
+        String tableLine = "+------------+---------------------+------------+------------+--------------+";
+        sb.append(tableLine).append("\n");
+        sb.append(String.format("| %-10s | %-19s | %-10s | %-10s | %-12s |%n",
+                "Day", "Time", "CourseCode", "ActivityId", "Type"));
+        sb.append(tableLine).append("\n");
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<TimeSlot> sortedSlots = timeSlots.stream()
+                .filter(TimeSlot::isChosen)
+                .sorted(Comparator.comparing(TimeSlot::getDay)
+                        .thenComparing(TimeSlot::getStartTime))
+                .collect(Collectors.toList());
+
+        for (TimeSlot ts : sortedSlots) {
+            String day = ts.getDay().toString();
+            String time = ts.getStartTime().format(timeFormatter) + " - " + ts.getEndTime().format(timeFormatter);
+            String courseCode = ts.getCourseCode();
+            int activityId = ts.getActivityId();
+            String type = ts.isLecture() ? "Lecture" :
+                    ts.isLab() ? "Lab" :
+                            ts.isTutorial() ? "Tutorial" : "Unknown";
+            sb.append(String.format("| %-10s | %-19s | %-10s | %-10d | %-12s |%n",
+                    day, time, courseCode, activityId, type));
+        }
+
+        sb.append(tableLine).append("\n");
+        return sb.toString();
+    }
+
+
+}

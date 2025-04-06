@@ -1,6 +1,7 @@
 package model;
 
 import java.util.*;
+import view.View;
 
 public class SharedContext {
     public static final String ADMIN_STAFF_EMAIL = "inquiries@hindeburg.ac.nz";
@@ -8,17 +9,35 @@ public class SharedContext {
 
     public final List<Inquiry> inquiries;
     public final FAQ faq;
+
+    public final CourseManager courseManager;
     private final Map<String, Set<String>> faqTopicsUpdateSubscribers;
 
-    public SharedContext() {
+    protected final View view;
+
+    public SharedContext(View view) {
         this.currentUser = new Guest();
         this.inquiries = new ArrayList<>();
         faq = new FAQ();
+        courseManager = new CourseManager(view);
         faqTopicsUpdateSubscribers = new HashMap<>();
+        this.view = view;
     }
 
     public FAQ getFAQ() {
         return faq;
+    }
+    public String getCurrentUserRole(){
+        if (this.currentUser instanceof AuthenticatedUser) {
+            return ((AuthenticatedUser) this.currentUser).getRole();
+        }
+        return null;
+    }
+    public String getCurrentUserEmail(){
+        if (this.currentUser instanceof AuthenticatedUser) {
+            return ((AuthenticatedUser) this.currentUser).getEmail();
+        }
+        return null;
     }
 
     public boolean registerForFAQUpdates(String email, String topic) {
@@ -38,5 +57,9 @@ public class SharedContext {
 
     public Set<String> usersSubscribedToFAQTopic(String topic) {
         return faqTopicsUpdateSubscribers.getOrDefault(topic, new HashSet<>());
+    }
+
+    public CourseManager getCourseManager(){
+        return courseManager;
     }
 }

@@ -16,7 +16,7 @@ public class StudentController extends Controller {
         ADD_COURSE_TO_TIMETABLE,
         REMOVE_COURSE_FROM_TIMETABLE,
         VIEW_TIMETABLE,
-        TEST_ADD_COURSE,
+        CHOOSE_ACTIVITY_FOR_COURSE,
     }
 
     public void manageTimetable() {
@@ -35,8 +35,8 @@ public class StudentController extends Controller {
         switch (option) {
             case ADD_COURSE_TO_TIMETABLE -> addCourseToTimetable();
             case REMOVE_COURSE_FROM_TIMETABLE -> removeCourseFromTimetable();
-            case VIEW_TIMETABLE -> viewTimeTable();
-            case TEST_ADD_COURSE -> testAddCourseStudent();
+            case VIEW_TIMETABLE -> viewTimetable();
+            case CHOOSE_ACTIVITY_FOR_COURSE -> chooseActivityForCourse();
         }
         return false;
     }
@@ -49,13 +49,28 @@ public class StudentController extends Controller {
         courseManager.addCourseToStudentTimetable(email, courseCode);
     }
 
-    private void testAddCourseStudent() {
+    private void removeCourseFromTimetable() {
+        view.displayInfo("=== Remove Course from Timetable ===");
+        String courseCode = view.getInput("Enter the course code: ");
+        String email = sharedContext.getCurrentUserEmail();
         CourseManager courseManager = sharedContext.getCourseManager();
-        courseManager.testAddCourse();
+        courseManager.removeCourseFromTimetable(email, courseCode);
     }
 
-    private void removeCourseFromTimetable() {}
+    private void viewTimetable() {
+        CourseManager courseManager = sharedContext.getCourseManager();
+        String email = sharedContext.getCurrentUserEmail();
+        courseManager.printTimetable(email, view);
+    }
 
-    private void viewTimeTable() {}
+    private void chooseActivityForCourse() {
+        view.displayInfo("=== Choose Activity for Course ===");
+        String courseCode = view.getInput("Enter the course code: ");
+        String activityId = view.getInput("Enter the Activity ID: ");
+        String email = sharedContext.getCurrentUserEmail();
+        CourseManager courseManager = sharedContext.getCourseManager();
+        courseManager.chooseActivityForCourse(email, courseCode, activityId);
+    }
+
 
 }

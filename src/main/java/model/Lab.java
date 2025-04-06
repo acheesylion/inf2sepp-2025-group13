@@ -1,11 +1,10 @@
 package model;
-import javax.management.relation.Role;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
 
 public class Lab extends Activity {
-    private int capacity;
+    private final int capacity;
 
     public Lab(int id, LocalDate startDate, LocalTime startTime,
                LocalDate endDate, LocalTime endTime, String location,
@@ -14,12 +13,14 @@ public class Lab extends Activity {
         this.capacity = capacity;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public Lab(Lab other) {
+        super(other.getId(), other.getStartDate(), other.getStartTime(),
+                other.getEndDate(), other.getEndTime(), other.getLocation(), other.getDay());
+        this.capacity = other.capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public int getCapacity() {
+        return capacity;
     }
 
     @Override

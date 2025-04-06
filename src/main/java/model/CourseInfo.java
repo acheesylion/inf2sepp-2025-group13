@@ -4,19 +4,20 @@ public class CourseInfo {
     private String courseCode;
     private String name;
     private String description;
-    private boolean requiresComputers;  // This can be a boolean, but keeping it as String for now
+    private Boolean requiresComputers;
     private String courseOrganiserName;
     private String courseOrganiserEmail;
     private String courseSecretaryName;
     private String courseSecretaryEmail;
-    private int requiredTutorials;  // This can be an integer, but keeping it as String for now
-    private int requiredLabs;  // This can be an integer, but keeping it as String for now
+    private String requiredTutorials;
+    private String requiredLabs;
 
-    // Constructor to initialize all private fields
+
+
     public CourseInfo(){}
 
-    public void setField(String fieldName, String item){
-        switch (fieldName){
+    public void setField(String fieldName, String item) {
+        switch (fieldName) {
             case "courseCode":
                 this.courseCode = item;
                 break;
@@ -25,9 +26,6 @@ public class CourseInfo {
                 break;
             case "description":
                 this.description = item;
-                break;
-            case "requiresComputers":
-                this.requiresComputers = Boolean.parseBoolean(item);
                 break;
             case "courseOrganiserName":
                 this.courseOrganiserName = item;
@@ -42,20 +40,22 @@ public class CourseInfo {
                 this.courseSecretaryEmail = item;
                 break;
             case "requiredTutorials":
-                this.requiredTutorials = Integer.parseInt(item);
+                this.requiredTutorials = item;
                 break;
             case "requiredLabs":
-                this.requiredLabs = Integer.parseInt(item);
+                this.requiredLabs = item;
                 break;
-
         }
+    }
+    public void setRequiresComputers(Boolean requiresComputers) {
+        this.requiresComputers = requiresComputers;
     }
 
     public String getCourseInfo() {
         return String.format(
-                "Course Code: %s\nName: %s\nDescription: %s\nRequires Computers: %b\n" +
+                "Course Code: %s\nName: %s\nDescription: %s\nRequires Computers: %s\n" +
                         "Course Organiser: %s (%s)\nCourse Secretary: %s (%s)\n" +
-                        "Required Tutorials: %d\nRequired Labs: %d",
+                        "Required Tutorials: %s\nRequired Labs: %s",
                 courseCode, name, description, requiresComputers,
                 courseOrganiserName, courseOrganiserEmail,
                 courseSecretaryName, courseSecretaryEmail,
@@ -65,80 +65,32 @@ public class CourseInfo {
     public String getCourseCode() {
         return courseCode;
     }
-
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
-
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDescription() {
         return description;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean getRequiresComputers() {
+    public Boolean getRequiresComputers() {
         return requiresComputers;
     }
-
-    public void setRequiresComputers(boolean requiresComputers) {
-        this.requiresComputers = requiresComputers;
-    }
-
     public String getCourseOrganiserName() {
         return courseOrganiserName;
     }
-
-    public void setCourseOrganiserName(String courseOrganiserName) {
-        this.courseOrganiserName = courseOrganiserName;
-    }
-
     public String getCourseOrganiserEmail() {
         return courseOrganiserEmail;
     }
-
-    public void setCourseOrganiserEmail(String courseOrganiserEmail) {
-        this.courseOrganiserEmail = courseOrganiserEmail;
-    }
-
     public String getCourseSecretaryName() {
         return courseSecretaryName;
     }
-
-    public void setCourseSecretaryName(String courseSecretaryName) {
-        this.courseSecretaryName = courseSecretaryName;
-    }
-
     public String getCourseSecretaryEmail() {
         return courseSecretaryEmail;
     }
-
-    public void setCourseSecretaryEmail(String courseSecretaryEmail) {
-        this.courseSecretaryEmail = courseSecretaryEmail;
-    }
-
-    public int getRequiredTutorials() {
+    public String getRequiredTutorials() {
         return requiredTutorials;
     }
-
-    public void setRequiredTutorials(int requiredTutorials) {
-        this.requiredTutorials = requiredTutorials;
-    }
-
-    public int getRequiredLabs() {
+    public String getRequiredLabs() {
         return requiredLabs;
     }
 
-    public void setRequiredLabs(int requiredLabs) {
-        this.requiredLabs = requiredLabs;
-    }
 }
