@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,11 +17,13 @@ public class TestMockAuthenticationService {
     //}}.toJSONString();
 
     @BeforeAll
+    @DisplayName("")
     static void setup() throws URISyntaxException, IOException, ParseException {
         authenticationService = new MockAuthenticationService();
     }
 
     @Test
+    @DisplayName("")
     void testValidLogin() throws ParseException{
         String result = authenticationService.login("student1","student1pass");
 
@@ -33,6 +36,7 @@ public class TestMockAuthenticationService {
     }
 
     @Test
+    @DisplayName("")
     void testLoginWithInvalidUser() throws ParseException{
         String result = authenticationService.login("invalidUser","password");
 
@@ -44,6 +48,7 @@ public class TestMockAuthenticationService {
     }
 
     @Test
+    @DisplayName("")
     void testLoginWithInvalidPassword() throws ParseException{
     String result = authenticationService.login("student1","notStudent1Pass");
 
