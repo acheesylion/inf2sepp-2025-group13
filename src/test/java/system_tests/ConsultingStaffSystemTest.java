@@ -41,7 +41,7 @@ public class ConsultingStaffSystemTest extends TUITest {
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         MockEmailService mockEmail = new MockEmailService();
-        loginAsStudent(context);
+        loginAsStudent1(context);
 
         InquirerController inquirer = new InquirerController(context, view, new MockAuthenticationService(), mockEmail);
 
@@ -73,10 +73,10 @@ public class ConsultingStaffSystemTest extends TUITest {
                 0,                                // requiredTutorials
                 0                                  // requiredLabs
         );
-        courseManager.addcoursefortest(course);
+        courseManager.addCourseToCourseList(course);
         //courseManager.viewCourses();
         //System.out.println(courseManager.getCourseByCode("COMP12345"));
-        loginAsStudent(context);
+        loginAsStudent1(context);
         course.getCourseOrganiserEmail();
 
         InquirerController inquirer = new InquirerController(context, view, new MockAuthenticationService(), mockEmail);

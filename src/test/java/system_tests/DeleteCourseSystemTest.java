@@ -38,12 +38,12 @@ public class DeleteCourseSystemTest extends TUITest {
                 0,                                // requiredTutorials
                 0                                  // requiredLabs
         );
-        courseManager.addcoursefortest(course);
+        courseManager.addCourseToCourseList(course);
 
         assertTrue(courseManager.hasCourse("COMP12345"), "Course should exist before deletion");
         loginAsAdminStaff(context);
         AdminStaffController admin = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        courseManager.removeCourse("COMP12345", context);
+        courseManager.removeCourse("COMP12345");
         assertFalse(courseManager.hasCourse("COMP12345"), "Course shouldnt exist after deletion");
 
 
@@ -68,7 +68,7 @@ public class DeleteCourseSystemTest extends TUITest {
                 0,                                // requiredTutorials
                 0                                  // requiredLabs
         );
-        courseManager.addcoursefortest(course);
+        courseManager.addCourseToCourseList(course);
         course.addMember("Student1@email.com");
         course.addMember("Student2@email.com");
 
