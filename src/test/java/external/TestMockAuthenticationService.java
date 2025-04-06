@@ -17,13 +17,13 @@ public class TestMockAuthenticationService {
     //}}.toJSONString();
 
     @BeforeAll
-    @DisplayName("")
+    @DisplayName("Setup an instance of MockAuthenticationService before each test.")
     static void setup() throws URISyntaxException, IOException, ParseException {
         authenticationService = new MockAuthenticationService();
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing a valid login.")
     void testValidLogin() throws ParseException{
         String result = authenticationService.login("student1","student1pass");
 
@@ -36,7 +36,7 @@ public class TestMockAuthenticationService {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing a login with an invalid username.")
     void testLoginWithInvalidUser() throws ParseException{
         String result = authenticationService.login("invalidUser","password");
 
@@ -48,7 +48,7 @@ public class TestMockAuthenticationService {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing a login with an invalid password.")
     void testLoginWithInvalidPassword() throws ParseException{
     String result = authenticationService.login("student1","notStudent1Pass");
 

@@ -20,41 +20,43 @@ public class TestMockEmailService {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing sending an email with valid inputs.")
     void testSendEmailWithValidInputs(){
-        int status = emailService.sendEmail("trini@gmail.com","boris_johnson@gmail.com",
+        int status = emailService.sendEmail("student1@hindeburg.ac.uk","teacher1@hindeburg.ac.uk",
                 "Test Subject","Test Content");
         assertEquals(STATUS_SUCCESS, status);
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing trying to send an email with an invalid sender email.")
     void testSendEmailWithInvalidSender(){
-        int status = emailService.sendEmail("invalid-email", "boris_johnson@gmail.com",
+        int status = emailService.sendEmail("invalid-email", "teacher1@hindeburg.ac.uk",
                 "Test Subject","Test Content");
         assertEquals(STATUS_INVALID_SENDER_EMAIL,status);
 
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing trying to send an email with a null sender email.")
     void testSendEmailWithNullSender(){
-        int status = emailService.sendEmail(null,"boris_johnson@gmail.com",
+        int status = emailService.sendEmail(null,"teacher1@hindeburg.ac.uk",
                 "Test Subject", "Test Content");
         assertEquals(STATUS_INVALID_SENDER_EMAIL, status);
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing trying to send an email with an invalid recipient email.")
     void testSendEmailWithInvalidRecipient() {
-        int status = emailService.sendEmail("student1@hindeburg.ac.uk", "invalid-email", "Test Subject", "Test Content");
+        int status = emailService.sendEmail("student1@hindeburg.ac.uk", "invalid-email",
+                "Test Subject", "Test Content");
         assertEquals(STATUS_INVALID_RECIPIENT_EMAIL, status);
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Testing trying to send an email with a null recipient email.")
     void testSendEmailWithNullRecipient() {
-        int status = emailService.sendEmail("trini@gmail.com", null, "Test Subject", "Test Content");
+        int status = emailService.sendEmail("student1@hindeburg.ac.uk", null,
+                "Test Subject", "Test Content");
         assertEquals(STATUS_INVALID_RECIPIENT_EMAIL, status);
     }
 
