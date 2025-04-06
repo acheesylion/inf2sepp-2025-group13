@@ -56,4 +56,15 @@ public class LoginSystemTests extends TUITest {
         assertInstanceOf(AuthenticatedUser.class, context.currentUser);
         assertEquals("Student", ((AuthenticatedUser) context.currentUser).getRole());
     }
+
+    @Test
+    public void testLoginFail() throws URISyntaxException, IOException, ParseException {
+        setMockInput("asdfsdf", "asdfsdfa");
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        GuestController guestController = new GuestController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        guestController.login();
+        assertOutputContains("Wrong username or password");
+    }
 }

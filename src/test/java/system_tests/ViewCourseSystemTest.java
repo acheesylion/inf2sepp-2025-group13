@@ -42,6 +42,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
 
         course1.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 10),
                 LocalTime.of(9, 0),
                 LocalDate.of(2025, 4, 10),
@@ -53,6 +54,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
 
         course1.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 11),
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 11),
@@ -64,6 +66,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
 
         course1.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 12),
                 LocalTime.of(11, 0),
                 LocalDate.of(2025, 4, 12),
@@ -88,6 +91,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
 
         course2.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 13),
                 LocalTime.of(8, 0),
                 LocalDate.of(2025, 4, 13),
@@ -98,6 +102,7 @@ public class ViewCourseSystemTest extends TUITest {
                 "lecture"
         );
         course2.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 14),
                 LocalTime.of(9, 0),
                 LocalDate.of(2025, 4, 14),
@@ -122,6 +127,7 @@ public class ViewCourseSystemTest extends TUITest {
         );
 
         course3.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(2025, 4, 15),
@@ -132,6 +138,7 @@ public class ViewCourseSystemTest extends TUITest {
                 "lecture"
         );
         course3.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 16),
                 LocalTime.of(14, 0),
                 LocalDate.of(2025, 4, 16),

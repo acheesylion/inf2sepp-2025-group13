@@ -2,6 +2,7 @@ package system_tests;
 
 import controller.AdminStaffController;
 import controller.MenuController;
+import controller.ViewerController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
 import model.*;
@@ -30,7 +31,7 @@ public class AddCourseSystemTest extends TUITest {
                 "joash_smith@gmail.com", "2", "1", "Y",
                 "1", "2025-04-10", "2025-04-11", "09:00", "10:00",
                 "Room 101", "MONDAY", "lecture", "true",
-                "-1"
+                "-1", "-1"
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
@@ -42,163 +43,331 @@ public class AddCourseSystemTest extends TUITest {
     }
 
     @Test
-    public void testFillCourseInfoRecorded() throws URISyntaxException, IOException, ParseException {
+    public void testFullAddLab() throws URISyntaxException, IOException, ParseException {
         setMockInput(
+                "0",
                 "MATH12345", "Math For Computer Science", "fun course",
                 "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
-                "joash_smith@gmail.com", "2", "1", "Y"
+                "joash_smith@gmail.com", "2", "1", "Y",
+                "1", "2025-04-10", "2025-04-11", "09:00", "10:00",
+                "Room 101", "MONDAY", "lab", "30",
+                "-1", "-1"
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
         AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
-
-        adminStaffController.fillCourseInfo(newCourseInfoBasic);
-        assertInstanceOf(CourseInfo.class, newCourseInfoBasic);
+        adminStaffController.manageCourses();
+        assertOutputContains("SUCCESS");
     }
+
+    @Test
+    public void testFullAddTutorial() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "Y",
+                "1", "2025-04-10", "2025-04-11", "09:00", "10:00",
+                "Room 101", "MONDAY", "tutorial", "30",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("SUCCESS");
+    }
+
+    @Test
+    public void testActivityErrors() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "Y",
+                "1",
+                "asdasdf", "2025-04-10", "2025-03-11", "2025-04-11",
+                "asdasdfasdf", "09:00", "08:00", "10:00",
+                "", "Room 101",
+                "asdsadf","MONDAY",
+                "asasdfsadf", "lecture",
+                "sdfwefef", "true",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("SUCCESS");
+    }
+
+    @Test
+    public void testActivityLab() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "Y",
+                "1",
+                "asdasdf", "2025-04-10", "2025-03-11", "2025-04-11",
+                "asdasdfasdf", "09:00", "08:00", "10:00",
+                "", "Room 101",
+                "asdsadf","MONDAY",
+                "asasdfsadf", "lab",
+                "sdfwefef", "3",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("SUCCESS");
+    }
+
+    @Test
+    public void testInvalidIntegerActivity() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "dddd", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testInvalidEmailOrganiser() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "asdfasdf", "Joash Lemmings",
+                "jasdfasdf", "2", "2", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo1() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo2() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo3() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo4() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo5() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "",
+                "joash_smith@gmail.com", "2", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo6() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "", "2", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo7() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "", "3", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
+    @Test
+    public void testNullInfo8() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "3", "", "Y",
+                "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        loginAsAdminStaff(context);
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
+    }
+
 
     @Test
     public void testFillCourseInfoNotRecorded() throws URISyntaxException, IOException, ParseException {
         setMockInput(
+                "0",
                 "MATH12345", "Math For Computer Science", "fun course",
                 "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
-                "joash_smith@gmail.com", "2", "1", "n"
+                "joash_smith@gmail.com", "2", "1", "n",
+                "1", "2025-04-10", "2025-04-11", "09:00", "10:00",
+                "Room 101", "MONDAY", "lecture", "true",
+                "-1", "-1"
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
         AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
-
-        adminStaffController.fillCourseInfo(newCourseInfoBasic);
-        assertInstanceOf(CourseInfo.class, newCourseInfoBasic);
-    }
-
-    @Test
-    public void testFillCourseInfoError() throws URISyntaxException, IOException, ParseException {
-        setMockInput(
-                "MATH12345",
-                "Math For Computer Science",
-                "fun course",
-                "Sarah Smith",
-                "sarah_smith@gmail.com",
-                "Joash Lemmings",
-                "joash_smith@gmail.com",
-                "2",
-                "1",
-                "2039wfwe"
-        );
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoError = new CourseInfo();
-        startOutputCapture();
-        adminStaffController.fillCourseInfo(newCourseInfoError);
-        assertEquals(false, newCourseInfoError.getRequiresComputers());
-    }
-
-    @Test
-    public void testValidCourseInfo() throws URISyntaxException, IOException, ParseException {
-        setMockInput(
-                "MATH12345",
-                "Math For Computer Science",
-                "fun course",
-                "Sarah Smith",
-                "sarah_smith@gmail.com",
-                "Joash Lemmings",
-                "joash_smith@gmail.com",
-                "2",
-                "1",
-                "Y"
-        );
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
-        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
-        startOutputCapture();
-        adminStaffController.fillCourseInfo(newCourseInfoBasic);
-        Boolean validCourseInfo = context.getCourseManager().validCourseInfo(newCourseInfoBasic);
-        assertEquals(true, validCourseInfo);
+        adminStaffController.manageCourses();
+        assertOutputContains("SUCCESS");
     }
 
     @Test
     public void testInvalidCourseInfoCode() throws URISyntaxException, IOException, ParseException {
         setMockInput(
-                "dfdsfsf",
-                "Math For Computer Science",
-                "fun course",
-                "Sarah Smith",
-                "sarah_smith@gmail.com",
-                "Joash Lemmings",
-                "joash_smith@gmail.com",
-                "2",
-                "1",
-                "Y"
+                "0",
+                "dfdsfsf", "Math For Computer Science", "fun course", "Sarah Smith",
+                "sarah_smith@gmail.com", "Joash Lemmings", "joash_smith@gmail.com",
+                "2", "1", "Y",
+                "-1", "-1"
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
         AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
-        adminStaffController.fillCourseInfo(newCourseInfoBasic);
-        Boolean validCourseInfo = context.getCourseManager().validCourseInfo(newCourseInfoBasic);
-        // Check for Course Info in sequence diagram happens after validCourseInfo; this is correct.
-        assertEquals(true, validCourseInfo);
+        adminStaffController.manageCourses();
+        assertOutputContains("Provided courseCode is invalid");
     }
 
-    @Test
-    public void testInvalidCourseInfoLab() throws URISyntaxException, IOException, ParseException {
-        setMockInput(
-                "MATH12345",
-                "Math For Computer Science",
-                "fun course",
-                "Sarah Smith",
-                "sarah_smith@gmail.com",
-                "Joash Lemmings",
-                "joash_smith@gmail.com",
-                "2",
-                "adsasdfa",
-                "Y"
-        );
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
-        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
-        startOutputCapture();
-        adminStaffController.fillCourseInfo(newCourseInfoBasic);
-        Boolean validCourseInfo = context.getCourseManager().validCourseInfo(newCourseInfoBasic);
-        assertEquals(false, validCourseInfo);
-    }
 
     @Test
     public void testInvalidCourseInfoTutorial() throws URISyntaxException, IOException, ParseException {
         setMockInput(
-                "MATH12345",
-                "Math For Computer Science",
-                "fun course",
-                "Sarah Smith",
-                "sarah_smith@gmail.com",
-                "Joash Lemmings",
-                "joash_smith@gmail.com",
-                "3",
-                "adsasdfa",
-                "Y"
+                "0",
+                "MATH12345", "Math For Computer Science", "fun course", "Sarah Smith",
+                "sarah_smith@gmail.com", "Joash Lemmings", "joash_smith@gmail.com",
+                "3", "adsasdfa", "Y",
+                "-1", "-1"
         );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
         AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
         startOutputCapture();
-        adminStaffController.fillCourseInfo(newCourseInfoBasic);
-        Boolean validCourseInfo = context.getCourseManager().validCourseInfo(newCourseInfoBasic);
-        assertEquals(false, validCourseInfo);
+        adminStaffController.manageCourses();
+        assertOutputContains("Required course info not provided");
     }
 
     @Test
@@ -234,6 +403,7 @@ public class AddCourseSystemTest extends TUITest {
         );
 
         course1.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 10),
                 LocalTime.of(9, 0),
                 LocalDate.of(2025, 4, 10),
@@ -245,6 +415,7 @@ public class AddCourseSystemTest extends TUITest {
         );
 
         course1.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 11),
                 LocalTime.of(10, 0),
                 LocalDate.of(2025, 4, 11),
@@ -256,6 +427,7 @@ public class AddCourseSystemTest extends TUITest {
         );
 
         course1.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 12),
                 LocalTime.of(11, 0),
                 LocalDate.of(2025, 4, 12),
@@ -280,6 +452,7 @@ public class AddCourseSystemTest extends TUITest {
         );
 
         course2.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 13),
                 LocalTime.of(8, 0),
                 LocalDate.of(2025, 4, 13),
@@ -290,6 +463,7 @@ public class AddCourseSystemTest extends TUITest {
                 "lecture"
         );
         course2.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 14),
                 LocalTime.of(9, 0),
                 LocalDate.of(2025, 4, 14),
@@ -314,6 +488,7 @@ public class AddCourseSystemTest extends TUITest {
         );
 
         course3.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(2025, 4, 15),
@@ -324,6 +499,7 @@ public class AddCourseSystemTest extends TUITest {
                 "lecture"
         );
         course3.addActivity(
+                courseManager.generateActivityId(),
                 LocalDate.of(2025, 4, 16),
                 LocalTime.of(14, 0),
                 LocalDate.of(2025, 4, 16),
@@ -341,193 +517,24 @@ public class AddCourseSystemTest extends TUITest {
 
     @ Test
     public void testHasCourse() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0",
+                "MATH20120", "Math For Computer Science", "fun course",
+                "Sarah Smith", "sarah_smith@gmail.com", "Joash Lemmings",
+                "joash_smith@gmail.com", "2", "1", "Y",
+                "-1", "-1"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
         CourseManager courseManager = context.getCourseManager();
         populateCourseList(courseManager);
-        boolean hasCourseBool1 = courseManager.hasCourse("MATH20120");
-        assertTrue(hasCourseBool1);
-        boolean hasCourseBool2 = courseManager.hasCourse("dfdsa");
-        assertFalse(hasCourseBool2);
-    }
-
-    @ Test
-    public void testAddActivity() throws URISyntaxException, IOException, ParseException {
-        setMockInput(
-                "1",
-                "2025-04-10",
-                "2025-04-11",
-                "09:00",
-                "10:00",
-                "Room 101",
-                "MONDAY",
-                "lecture",
-                "true"
-        );
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
         loginAsAdminStaff(context);
-        CourseManager courseManager = context.getCourseManager();
+        AdminStaffController adminStaffController = new AdminStaffController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
-        Course course1 = new Course(
-                "COMS10101",
-                "Introduction to Computer Science",
-                "Learn the fundamentals of computer science and programming.",
-                false,
-                "Alice Johnson",
-                "alice.johnson@example.com",
-                "Bob Smith",
-                "bob.smith@example.com",
-                2,
-                1
-        );
-        courseManager.addActivitiesToCourse(course1, view);
-        assertEquals(1, course1.getActivities().size(), "One activity should have been added to the course.");
-        assertTrue(course1.getActivities().get(0) instanceof Lecture, "The added activity should be a Lecture.");
-        assertEquals(DayOfWeek.MONDAY, course1.getActivities().get(0).getDay(), "The day should be MONDAY.");
-        assertEquals("Room 101", course1.getActivities().get(0).getLocation(), "Location should be 'Room 101'.");
-        assertTrue(((Lecture) course1.getActivities().get(0)).getRecorded(), "Lecture should be marked as recorded.");
-    }
+        adminStaffController.manageCourses();
+        assertOutputContains("Course with that code already exists");
 
-    @ Test
-    public void testAddActivityMultiple() throws URISyntaxException, IOException, ParseException {
-        setMockInput(
-                "2",
-                "2025-04-10",
-                "2025-04-11",
-                "09:00",
-                "10:00",
-                "Room 101",
-                "MONDAY",
-                "lecture",
-                "true",
-                "2025-04-10",
-                "2025-04-11",
-                "09:00",
-                "10:00",
-                "Room 102",
-                "MONDAY",
-                "lecture",
-                "true"
-        );
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
-        CourseManager courseManager = context.getCourseManager();
-        startOutputCapture();
-        Course course1 = new Course(
-                "COMS10101",
-                "Introduction to Computer Science",
-                "Learn the fundamentals of computer science and programming.",
-                false,
-                "Alice Johnson",
-                "alice.johnson@example.com",
-                "Bob Smith",
-                "bob.smith@example.com",
-                2,
-                1
-        );
-        courseManager.addActivitiesToCourse(course1, view);
-        assertEquals(2, course1.getActivities().size(), "Two activity should have been added to the course.");
-        assertTrue(course1.getActivities().get(0) instanceof Lecture, "The added activity should be a Lecture.");
-        assertEquals(DayOfWeek.MONDAY, course1.getActivities().get(0).getDay(), "The day should be MONDAY.");
-        assertEquals("Room 102", course1.getActivities().get(1).getLocation(), "Location should be 'Room 101'.");
-        assertTrue(((Lecture) course1.getActivities().get(0)).getRecorded(), "Lecture should be marked as recorded.");
-    }
-
-    @ Test
-    public void testAddActivityError() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
-        setMockInput(
-                "1",
-                "2025-04-10",
-                "2025-01-10",
-                "2025-04-11",
-                "09:00",
-                "08:00",
-                "10:00",
-                "Room 101",
-                "chewsday",
-                "MONDAY",
-                "extended_extra_session",
-                "lecture",
-                "not true",
-                "true"
-        );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
-
-        CourseManager courseManager = context.getCourseManager();
-        startOutputCapture();
-        Course course1 = new Course(
-                "COMS10101",
-                "Introduction to Computer Science",
-                "Learn the fundamentals of computer science and programming.",
-                false,
-                "Alice Johnson",
-                "alice.johnson@example.com",
-                "Bob Smith",
-                "bob.smith@example.com",
-                2,
-                1
-        );
-
-        new TextUserInterface().displayInfo("Starting addActivitiesToCourse");
-        courseManager.addActivitiesToCourse(course1, new TextUserInterface());
-        assertEquals(1, course1.getActivities().size(), "One activity should have been added to the course.");
-        assertTrue(course1.getActivities().get(0) instanceof Lecture, "The added activity should be a Lecture.");
-        assertEquals(DayOfWeek.MONDAY, course1.getActivities().get(0).getDay(), "The day should be MONDAY.");
-        assertEquals("Room 101", course1.getActivities().get(0).getLocation(), "Location should be 'Room 101'.");
-        assertTrue(((Lecture) course1.getActivities().get(0)).getRecorded(), "Lecture should be marked as recorded.");
-    }
-
-    @ Test
-    public void testAddActivityErrorCapacity() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        loginAsAdminStaff(context);
-        setMockInput(
-                "1",
-                "2025-04-10",
-                "2025-04-11",
-                "09:00",
-                "10:00",
-                "Room 101",
-                "chewsday",
-                "MONDAY",
-                "extended_extra_session",
-                "lecture",
-                "asdfasdfw",
-                "true"
-        );
-        AdminStaffController adminStaffController = new AdminStaffController(context, new TextUserInterface(), new MockAuthenticationService(), new MockEmailService());
-        CourseInfo newCourseInfoBasic = new CourseInfo();
-
-        CourseManager courseManager = context.getCourseManager();
-        startOutputCapture();
-        Course course1 = new Course(
-                "COMS10101",
-                "Introduction to Computer Science",
-                "Learn the fundamentals of computer science and programming.",
-                false,
-                "Alice Johnson",
-                "alice.johnson@example.com",
-                "Bob Smith",
-                "bob.smith@example.com",
-                2,
-                1
-        );
-
-        new TextUserInterface().displayInfo("Starting addActivitiesToCourse");
-        courseManager.addActivitiesToCourse(course1, new TextUserInterface());
-        assertEquals(1, course1.getActivities().size(), "One activity should have been added to the course.");
-        assertTrue(course1.getActivities().get(0) instanceof Lecture, "The added activity should be a Lecture.");
-        assertEquals(DayOfWeek.MONDAY, course1.getActivities().get(0).getDay(), "The day should be MONDAY.");
-        assertEquals("Room 101", course1.getActivities().get(0).getLocation(), "Location should be 'Room 101'.");
-        assertTrue(((Lecture) course1.getActivities().get(0)).getRecorded(), "Lecture should be marked as recorded.");
     }
 
     @ Test

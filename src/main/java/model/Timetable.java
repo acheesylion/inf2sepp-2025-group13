@@ -31,19 +31,6 @@ public class Timetable {
 
     public boolean hasStudentEmail(String email) {return (this.studentEmail.equals(email));}
 
-    private TimeSlot getTimeSlot(int activityId) {
-        if (timeSlots.isEmpty()) {
-            return null;
-        }
-        if (hasSlotsForActivityId(activityId)) {
-            for (TimeSlot timeSlot : timeSlots) {
-                if (timeSlot.getActivityId() == activityId) {
-                    return timeSlot;
-                }
-            }
-        }
-        return null;
-    }
 
     public String[] checkConflicts(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
 
@@ -75,32 +62,6 @@ public class Timetable {
         }
     }
 
-    public DayOfWeek getIdDay(int activityId) {
-        for (TimeSlot ts : timeSlots) {
-            if (ts.hasActivityId(activityId)) {
-                    return ts.getDay();
-                }
-        }
-        return null;
-    }
-
-    public LocalTime getIdStartTime(int activityId) {
-        for (TimeSlot ts : timeSlots) {
-            if (ts.hasActivityId(activityId)) {
-                return ts.getStartTime();
-            }
-        }
-        return null;
-    }
-
-    public LocalTime getIdEndTime(int activityId) {
-        for (TimeSlot ts : timeSlots) {
-            if (ts.hasActivityId(activityId)) {
-                return ts.getEndTime();
-            }
-        }
-        return null;
-    }
 
     public void chooseActivity(String courseCode, int activityId) {
         timeSlots.stream()

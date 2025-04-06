@@ -1,7 +1,6 @@
 package system_tests;
 
-import controller.MenuController;
-import controller.ViewerController;
+import controller.StudentController;
 import external.MockAuthenticationService;
 import external.MockEmailService;
 import model.Course;
@@ -11,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 import view.TextUserInterface;
 import view.View;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.DayOfWeek;
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 
-public class ViewCoursesSystemTest extends TUITest {
+public class RemoveCourseToTimetableSystemTest extends TUITest {
     public void populateCourseList(CourseManager courseManager) {
         Course course1 = new Course(
                 "COMS10101",
@@ -40,7 +40,7 @@ public class ViewCoursesSystemTest extends TUITest {
                 LocalDate.of(2025, 4, 10),
                 LocalTime.of(10, 0),
                 "Main Lecture Hall",
-                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
                 true,
                 "lecture"
         );
@@ -126,7 +126,7 @@ public class ViewCoursesSystemTest extends TUITest {
                 LocalTime.of(14, 0),
                 "Physics Lecture Hall",
                 DayOfWeek.MONDAY,
-                true,         // lecture
+                false,         // lecture
                 "lecture"
         );
         course3.addActivity(
@@ -141,56 +141,113 @@ public class ViewCoursesSystemTest extends TUITest {
                 "lab"
         );
 
+        Course conflicting1 = new Course(
+                "CONF10101",
+                "Conflicting Course 1",
+                "Introduction to mechanics, thermodynamics, and electromagnetism.",
+                true,
+                "Eve Thompson",
+                "eve.thompson@example.com",
+                "Frank Lee",
+                "frank.lee@example.com",
+                3,
+                2
+        );
+        conflicting1.addActivity(
+                courseManager.generateActivityId(),
+                LocalDate.of(2025, 4, 16),
+                LocalTime.of(8, 0),
+                LocalDate.of(2025, 4, 16),
+                LocalTime.of(9, 0),
+                "Physics Lecture Hall",
+                DayOfWeek.THURSDAY,
+                true,           // capacity for lab
+                "lecture"
+        );
+
+        conflicting1.addActivity(
+                courseManager.generateActivityId(),
+                LocalDate.of(2025, 4, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(2025, 4, 15),
+                LocalTime.of(14, 0),
+                "Physics Lecture Hall",
+                DayOfWeek.MONDAY,
+                true,         // lecture
+                "lecture"
+        );
+
+
         courseManager.addCourseToCourseList(course1);
         courseManager.addCourseToCourseList(course2);
         courseManager.addCourseToCourseList(course3);
+        courseManager.addCourseToCourseList(conflicting1);
     }
 
     @Test
-    public void testCoursesExists() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
-        startOutputCapture();
-        CourseManager courseManager = context.getCourseManager();
-        populateCourseList(courseManager);
-        viewerController.viewCourses();
-        assertOutputContains("SUCCESS");
-    }
-
-    @ Test
-    public void testCoursesDoesNotExist() throws URISyntaxException, IOException, ParseException {
-        View view = new TextUserInterface();
-        SharedContext context = new SharedContext(view);
-        ViewerController viewerController = new ViewerController(context, view, new MockAuthenticationService(), new MockEmailService());
-        startOutputCapture();
-        viewerController.viewCourses();
-        assertOutputContains("No courses found");
-    }
-
-    @ Test
-    public void testCorrectViewCourseFromMainMenuController() throws URISyntaxException, IOException, ParseException {
-        setMockInput("3", "-1");
+    public void testRemoveCourse() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0", "COMS10101", "1", "COMS10101", "-1", "-1"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
         CourseManager courseManager = context.getCourseManager();
         populateCourseList(courseManager);
-        MenuController menus = new MenuController(context, view, new MockAuthenticationService(), new MockEmailService());
+        loginAsStudent1(context);
+        StudentController studentController = new StudentController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
-        menus.mainMenu();
-        assertOutputContains("SUCCESS");
-
+        studentController.manageTimetable();
+        assertOutputContains("The course was successfully removed from your timetable");
     }
-    @ Test
-    public void testViewIncorrectCourseFromMainMenuController() throws URISyntaxException, IOException, ParseException {
-        setMockInput("3", "-1");
+
+    @Test
+    public void testHasCourseRemoveCourseTest() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0", "COMS10101", "1", "asdfasdf", "-1", "-1"
+        );
         View view = new TextUserInterface();
         SharedContext context = new SharedContext(view);
-        MenuController menus = new MenuController(context, view, new MockAuthenticationService(), new MockEmailService());
+        CourseManager courseManager = context.getCourseManager();
+        populateCourseList(courseManager);
+        loginAsStudent1(context);
+        StudentController studentController = new StudentController(context, view, new MockAuthenticationService(), new MockEmailService());
         startOutputCapture();
-        menus.mainMenu();
-        assertOutputContains("No courses found");
-
+        studentController.manageTimetable();
+        assertOutputContains("Incorrect course code");
     }
+
+    @Test
+    public void testTimetableExistRemoveCourseTest() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+               "1", "COMS10101", "-1", "-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        CourseManager courseManager = context.getCourseManager();
+        populateCourseList(courseManager);
+        loginAsStudent1(context);
+        StudentController studentController = new StudentController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        studentController.manageTimetable();
+        assertOutputContains("Student does not have Timetable");
+    }
+
+    @Test
+    public void testNoSlotsRemoveCourseTest() throws URISyntaxException, IOException, ParseException {
+        setMockInput(
+                "0", "COMS10101", "1", "MATH20120", "-1","-1"
+        );
+        View view = new TextUserInterface();
+        SharedContext context = new SharedContext(view);
+        CourseManager courseManager = context.getCourseManager();
+        populateCourseList(courseManager);
+        loginAsStudent1(context);
+        StudentController studentController = new StudentController(context, view, new MockAuthenticationService(), new MockEmailService());
+        startOutputCapture();
+        studentController.manageTimetable();
+        assertOutputContains("Course not in timetable");
+    }
+
+
 
 }

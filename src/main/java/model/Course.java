@@ -3,10 +3,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Course {
         // Instance variables
@@ -46,21 +45,20 @@ public class Course {
         }
 
         // Methods to manage activities
-        public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
+        public void addActivity(int activityId, LocalDate startDate, LocalTime startTime, LocalDate endDate,
                                 LocalTime endTime, String location, DayOfWeek day, boolean isRecorded, String type) {
 
-            int id = UUID.randomUUID().hashCode();
 
-            activities.add(new Lecture(id, startDate, startTime, endDate, endTime, location, day, isRecorded));
+
+            activities.add(new Lecture(activityId, startDate, startTime, endDate, endTime, location, day, isRecorded));
 
         }
 
-         public void addActivity(LocalDate startDate, LocalTime startTime, LocalDate endDate,
+         public void addActivity(int activityId, LocalDate startDate, LocalTime startTime, LocalDate endDate,
                             LocalTime endTime, String location, DayOfWeek day, int capacity, String type) {
 
-             int id = UUID.randomUUID().hashCode();
-             if (Objects.equals(type, "lab")){activities.add(new Lab(id, startDate, startTime, endDate, endTime, location, day, capacity));}
-             if (Objects.equals(type, "tutorial")){activities.add(new Tutorial(id, startDate, startTime, endDate, endTime, location, day, capacity));}
+             if (Objects.equals(type, "lab")){activities.add(new Lab(activityId, startDate, startTime, endDate, endTime, location, day, capacity));}
+             if (Objects.equals(type, "tutorial")){activities.add(new Tutorial(activityId, startDate, startTime, endDate, endTime, location, day, capacity));}
 
         }
 
@@ -142,18 +140,6 @@ public class Course {
             return requiredLabs;
         }
 
-        public boolean isTutorial(int activityId) {
-            Activity activity = getActivity(activityId);
-            return activity instanceof Tutorial;
-        }
-        public boolean isLab(int activityId) {
-            Activity activity = getActivity(activityId);
-            return activity instanceof Lab;
-        }
-        public boolean isLecture(int activityId) {
-            Activity activity = getActivity(activityId);
-            return activity instanceof Lecture;
-        }
 
         public DayOfWeek getDayId(int activityId) {
             Activity activity = getActivity(activityId);
@@ -179,18 +165,63 @@ public class Course {
             return activity.getEndTime();
         }
 
-
         // Overriding the toString method to represent the Course object as a string
         @Override
         public String toString() {
-            return "Course Code: " + courseCode + "\n" +
-                    "Name: " + name + "\n" +
-                    "Description: " + description + "\n" +
-                    "Requires Computers: " + requiresComputers + "\n" +
-                    "Course Organiser: " + courseOrganiserName + " (" + courseOrganiserEmail + ")\n" +
-                    "Course Secretary: " + courseSecretaryName + " (" + courseSecretaryEmail + ")\n" +
-                    "Required Tutorials: " + requiredTutorials + "\n" +
-                    "Required Labs: " + requiredLabs;
+            StringBuilder sb = new StringBuilder();
+
+            // Print Course Details Header
+            sb.append("========================================================================\n");
+            sb.append(String.format("Course: %s - %s\n", getCourseCode(), getName()));
+            sb.append(String.format("Description: %s\n", getDescription()));
+            sb.append(String.format("Organiser: %s <%s>\n", getCourseOrganiserName(), getCourseOrganiserEmail()));
+            sb.append(String.format("Secretary: %s <%s>\n", getCourseSecretaryName(), getCourseSecretaryEmail()));
+            sb.append("========================================================================\n\n");
+
+            // Print Activities Header
+            String tableLine = "+------------+---------------------+------------+----------------+---------------------------+\n";
+            sb.append("Activities:\n");
+            sb.append(tableLine);
+            sb.append(String.format("| %-10s | %-19s | %-10s | %-14s | %-25s |\n",
+                    "Day", "Time", "CourseCode", "ActivityId", "Type"));
+            sb.append(tableLine);
+
+            // Formatter for time output
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+            // Sort activities by day and then start time.
+            List<Activity> sortedActivities = activities.stream()
+                    .sorted(Comparator.comparing(Activity::getDay)
+                            .thenComparing(Activity::getStartTime))
+                    .collect(Collectors.toList());
+
+            // Print each activity
+            for (Activity activity : sortedActivities) {
+                String day = activity.getDay().toString();
+                String time = activity.getStartTime().format(timeFormatter) + " - " + activity.getEndTime().format(timeFormatter);
+                String courseCode = getCourseCode();
+                int activityId = activity.getId();
+                String type;
+                if (activity instanceof Lecture) {
+                    if (((Lecture) activity).getRecorded()) {
+                        type = "Lecture (recorded)";
+                    } else {
+                        type = "Lecture (unrecorded)";
+                    }
+
+                } else if (activity instanceof Lab) {
+                    type = "Lab (Capacity: " + ((Lab) activity).getCapacity() + ")";
+                } else if (activity instanceof Tutorial) {
+                    type = "Tutorial (Capacity: " + ((Tutorial) activity).getCapacity() + ")";
+                } else {
+                    type = "Unknown";
+                }
+                sb.append(String.format("| %-10s | %-19s | %-10s | %-14d | %-25s |\n",
+                        day, time, courseCode, activityId, type));
+            }
+            sb.append(tableLine);
+
+            return sb.toString();
         }
 
 

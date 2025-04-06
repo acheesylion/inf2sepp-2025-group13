@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import view.View;
 import org.tinylog.Logger;
+import static java.lang.Math.abs;
 
 
 public class CourseManager {
@@ -21,6 +22,9 @@ public class CourseManager {
         this.view = view;
     }
 
+    public int generateActivityId() {
+        return (UUID.randomUUID().hashCode());
+    }
 
     public Boolean validCourseInfo(CourseInfo courseInfo) {
         String courseCode = courseInfo.getCourseCode();
@@ -34,10 +38,10 @@ public class CourseManager {
         String requiredTutorials = courseInfo.getRequiredTutorials();
         String requiredLabs = courseInfo.getRequiredLabs();
 
-        if (courseCode == null || name == null || description == null || requiresComputers == null ||
-                courseOrganiserName == null || courseOrganiserEmail == null ||
-                courseSecretaryName == null || courseSecretaryEmail == null ||
-                requiredTutorials == null || requiredLabs == null) {
+        if (courseCode.isEmpty() || name.isEmpty() || description.isEmpty()||
+                courseOrganiserName.isEmpty() || courseOrganiserEmail.isEmpty() ||
+                courseSecretaryName.isEmpty()|| courseSecretaryEmail.isEmpty()||
+                requiredTutorials.isEmpty()|| requiredLabs.isEmpty()) {
             return false;
         }
 
@@ -55,7 +59,7 @@ public class CourseManager {
         return true;
     }
 
-    public void addActivitiesToCourse(Course newCourse, View view) {
+    private void addActivitiesToCourse(Course newCourse, View view) {
         int numActivities = readInteger(view, "Enter how many activities you wish to add: ");
 
         for (int i = 0; i < numActivities; i++) {
@@ -82,7 +86,7 @@ public class CourseManager {
             }
             String location = view.getInput("Enter location: ");
             // Validate that location is not empty
-            while (location == null || location.trim().isEmpty()) {
+            while (location.isEmpty()) {
                 view.displayInfo("Location cannot be empty. Please enter a valid location.");
                 location = view.getInput("Enter location: ");
             }
@@ -110,10 +114,10 @@ public class CourseManager {
             // Depending on the type, ask for extra input (capacity for lab/tutorial or recorded for lecture)
             if (type.equalsIgnoreCase("lab") || type.equalsIgnoreCase("tutorial")) {
                 int capacity = readInteger(view, "Enter capacity: ");
-                newCourse.addActivity(startDate, startTime, endDate, endTime, location, day, capacity, type);
+                newCourse.addActivity(generateActivityId(), startDate, startTime, endDate, endTime, location, day, capacity, type);
             } else if (type.equalsIgnoreCase("lecture")) {
                 boolean isRecorded = readBoolean(view, "Enter if lectures are recorded (true/false): ");
-                newCourse.addActivity(startDate, startTime, endDate, endTime, location, day, isRecorded, type);
+                newCourse.addActivity(generateActivityId(),startDate, startTime, endDate, endTime, location, day, isRecorded, type);
             }
 
         }
@@ -131,6 +135,7 @@ public class CourseManager {
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: : Required course info not provided)",
                     System.currentTimeMillis(), email, info.getCourseInfo() );
             view.displayError("Required course info not provided");
+            return;
 
         }
 
@@ -138,7 +143,6 @@ public class CourseManager {
             Logger.error("{}, {}, addCourse, {} FAILURE (Error: Provided courseCode is invalid)",
                     System.currentTimeMillis(), email, info.getCourseInfo() );
             view.displayError("Provided courseCode is invalid");
-
             return;
         }
 
@@ -179,9 +183,7 @@ public class CourseManager {
             view.displayError("No courses found");
         } else {
             for (Course course : courses){
-                view.displayInfo("-------------------------");
                 view.displayCourse(course);
-                view.displayInfo("-------------------------");
             }
             Logger.info("{}, viewCourse, SUCCESS", System.currentTimeMillis());
             view.displaySuccess("Successfully viewed courses");
@@ -284,32 +286,6 @@ public class CourseManager {
     }
 
 
-    public int checkChosenTutorials(String courseCode, Timetable timetable) {
-        if (timetable == null || courseCode == null) {
-            return 0;
-        }
-        if (!timetable.hasSlotsForCourse(courseCode)) {
-            return 0;
-        }
-        int requiredTutorials = getCourseByCode(courseCode).getRequiredTutorials();
-        int chosenTutorials = timetable.numChosenTutorialInTimeSlots(courseCode);
-
-        return (requiredTutorials - chosenTutorials);
-    }
-
-    public int checkChosenLabs(String courseCode, Timetable timetable) {
-        if (timetable == null || courseCode == null) {
-            return 0;
-        }
-        if (!timetable.hasSlotsForCourse(courseCode)) {
-            return 0;
-        }
-        int requiredLabs = getCourseByCode(courseCode).getRequiredLabs();
-        int chosenLabs = timetable.numChosenLabInTimeSlots(courseCode);
-
-        return (requiredLabs - chosenLabs);
-    }
-
     public void removeCourseFromTimetable(String studentEmail, String courseCode) {
         if (!hasCourse(courseCode)) {
             Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Error: Incorrect course code provided.)",
@@ -335,6 +311,9 @@ public class CourseManager {
         }
 
         userTimetable.removeSlotsForCourse(courseCode);
+
+        Logger.info("{}, {}, removeCourseFromTimetable, {} SUCCESS", System.currentTimeMillis(), studentEmail, courseCode);
+        view.displaySuccess("The course was successfully removed from your timetable");
 
     }
 
@@ -390,45 +369,59 @@ public class CourseManager {
                     view.displayWarning("You have at least one clash with another activity");
                 }
             }
+        }
 
+        for (Activity activity : courseToBeAdded.getActivities()) {
             Activity copyActivity = null;
-
             if (activity instanceof Lab) {
                 copyActivity = new Lab((Lab) activity);
-            } else if (activity instanceof Tutorial) {
+                userTimetable.addTimeSlot(copyActivity, courseCode);
+            }
+            if  (activity instanceof Tutorial) {
                 copyActivity = new Tutorial((Tutorial) activity);
-            } else if (activity instanceof Lecture) {
+                userTimetable.addTimeSlot(copyActivity, courseCode);
+            }
+            if (activity instanceof Lecture) {
                 copyActivity = new Lecture((Lecture) activity);
-            } else {
-                Logger.error("{}, {}, addCourseToStudentTimetable, {} FAILURE (Error: Unsupported activity type)",
-                        System.currentTimeMillis(), studentEmail, courseCode);
-                view.displayError("Unsupported activity type");
-                return;
+                userTimetable.addTimeSlot(copyActivity, courseCode);
             }
-            userTimetable.addTimeSlot(copyActivity, courseCode);
-
-            int requiredTutorials = courseToBeAdded.getRequiredTutorials();
-            if (requiredTutorials > 0) {
-                Logger.warn("{}, {}, addCourseToStudentTimetable, {} FAILURE (Warning: number of required tutorials {} not yet chosen)",
-                        System.currentTimeMillis(), studentEmail, courseCode, requiredTutorials);
-                view.displayWarning("You have to choose " + requiredTutorials + " tutorials for this course ");
-            }
-            int requiredLabs = courseToBeAdded.getRequiredLabs();
-
-            if (requiredLabs > 0) {
-                Logger.warn("{}, {}, addCourseToStudentTimetable, {} FAILURE (Warning: number of required labs {} not yet chosen)",
-                        System.currentTimeMillis(), studentEmail, courseCode, requiredLabs);
-                view.displayWarning("You have to choose " + requiredLabs + " tutorials for this course ");
-            }
-            courseToBeAdded.addMember(studentEmail); //This line adds student as a member so if the course is deleted the student will be emailed
-
-            Logger.info("{}, {}, addCourseToStudentTimetable, {} SUCCESS", System.currentTimeMillis(), studentEmail, courseCode);
-            view.displaySuccess("The course was successfully added to your timetable");
-
         }
+
+        int requiredTutorials = courseToBeAdded.getRequiredTutorials();
+        if (requiredTutorials > 0) {
+            Logger.warn("{}, {}, addCourseToStudentTimetable, {} FAILURE (Warning: number of required tutorials {} not yet chosen)",
+                    System.currentTimeMillis(), studentEmail, courseCode, requiredTutorials);
+            view.displayWarning("You have to choose " + requiredTutorials + " tutorials for this course ");
+        }
+
+
+        int requiredLabs = courseToBeAdded.getRequiredLabs();
+        if (requiredLabs > 0) {
+            Logger.warn("{}, {}, addCourseToStudentTimetable, {} FAILURE (Warning: number of required labs {} not yet chosen)",
+                    System.currentTimeMillis(), studentEmail, courseCode, requiredLabs);
+            view.displayWarning("You have to choose " + requiredLabs + " labs for this course ");
+        }
+
+        courseToBeAdded.addMember(studentEmail); //This line adds student as a member so if the course is deleted the student will be emailed
+
+        Logger.info("{}, {}, addCourseToStudentTimetable, {} SUCCESS", System.currentTimeMillis(), studentEmail, courseCode);
+        view.displaySuccess("The course was successfully added to your timetable");
+
     }
 
-    public void chooseActivityForCourse(String studentEmail, String courseCode, int activityId) {
+    public void chooseActivityForCourse(String studentEmail, String courseCode, String activityIdString) {
+        int activityId;
+
+        try {
+            activityId =  Integer.parseInt(activityIdString);
+        } catch (NumberFormatException e) {
+            view.displayInfo("Invalid integer. Please try again.");
+            Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Incorrect activity id provided.)",
+                    System.currentTimeMillis(), studentEmail, courseCode);
+            view.displayError("Incorrect activity id");
+            return;
+        }
+
         if (!timetableExists(studentEmail)) {
             Logger.error("{}, {}, chooseActivityForCourse, FAILURE (Error: Timetable does not exist)",
                     System.currentTimeMillis(), studentEmail);
@@ -447,33 +440,24 @@ public class CourseManager {
 
         Course courseToBeChosen = getCourseByCode(courseCode);
 
-        if (!courseToBeChosen.hasActivityId(activityId)) {
-            Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Incorrect activity id provided.)",
-                    System.currentTimeMillis(), studentEmail, courseCode);
-            view.displayError("Incorrect activity id");
-            return;
-        }
-
         if (!userTimetable.hasSlotsForCourse(courseCode)) {
             Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Course does not exist in timetable.)",
                     System.currentTimeMillis(), studentEmail, courseCode);
-            view.displayError("Course does not exist in timetable.");
+            view.displayError("Course does not exist in timetable");
             return;
         }
 
         if (!userTimetable.hasSlotsForActivityId(activityId)) {
             Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: Activity does not exist in timetable.)",
                     System.currentTimeMillis(), studentEmail, activityId);
-            view.displayError("Activity does not exist in timetable.");
+            view.displayError("Activity does not exist in timetable");
             return;
         }
 
-        DayOfWeek day = courseToBeChosen.getDayId(activityId);
-        LocalTime startTime = courseToBeChosen.getStartTimeId(activityId);
-        LocalTime endTime = courseToBeChosen.getEndTimeId(activityId);
-
         String[] conflictingCourseCodeAndActivityId = userTimetable.checkConflicts(
-                day, startTime, endTime
+                courseToBeChosen.getDayId(activityId),
+                courseToBeChosen.getStartTimeId(activityId),
+                courseToBeChosen.getEndTimeId(activityId)
         );
 
         if (conflictingCourseCodeAndActivityId.length > 0) {
@@ -485,7 +469,7 @@ public class CourseManager {
             if (unrecordedLecture) {
                 Logger.error("{}, {}, chooseActivityForCourse, {} FAILURE (Error: at least one clash with an unrecorded lecture)",
                         System.currentTimeMillis(), studentEmail, courseCode);
-                view.displayError("You have at least one clash with an unrecorded lecture. The course cannot be added to your timetable.");
+                view.displayError("You have at least one clash with an unrecorded lecture. The activity cannot be added to your timetable.");
                 return;
 
             } else {
@@ -498,32 +482,36 @@ public class CourseManager {
         userTimetable.chooseActivity(courseCode, activityId);
 
         if (userTimetable.isIdTutorial(activityId)) {
-            int requiredVsChosenTutorial = checkChosenTutorials(courseCode, userTimetable);
+            int requiredTutorials = getCourseByCode(courseCode).getRequiredTutorials();
+            int chosenTutorials = userTimetable.numChosenTutorialInTimeSlots(courseCode);
+            int requiredVsChosenTutorial = requiredTutorials - chosenTutorials;
             if (requiredVsChosenTutorial > 0) {
                 Logger.warn("{}, {}, chooseActivityForCourse, {} FAILURE (Warning: number of required tutorials {} not yet chosen)",
                         System.currentTimeMillis(), studentEmail, courseCode, requiredVsChosenTutorial);
-                view.displayWarning("You have to choose " + requiredVsChosenTutorial + " tutorials for this course ");
+                view.displayWarning("You have to choose " + requiredVsChosenTutorial + " more tutorial(s) for this course");
             }
 
             if (requiredVsChosenTutorial < 0) {
                 Logger.warn("{}, {}, chooseActivityForCourse, {} FAILURE (Warning: {} more chosen tutorials than required tutorials)",
                         System.currentTimeMillis(), studentEmail, courseCode, requiredVsChosenTutorial);
-                view.displayWarning("You have to choose " + requiredVsChosenTutorial + " tutorials for this course ");
+                view.displayWarning("You have to choose " + abs(requiredVsChosenTutorial) + " less tutorial(s) for this course");
             }
         }
 
         if (userTimetable.isIdLab(activityId)) {
-            int requiredVsChosenLab = checkChosenLabs(courseCode, userTimetable);
+            int requiredLabs = getCourseByCode(courseCode).getRequiredLabs();
+            int chosenLabs = userTimetable.numChosenLabInTimeSlots(courseCode);
+            int requiredVsChosenLab = requiredLabs - chosenLabs;
             if (requiredVsChosenLab > 0) {
                 Logger.warn("{}, {}, chooseActivityForCourse, {} FAILURE (Warning: number of required labs {} not yet chosen)",
                         System.currentTimeMillis(), studentEmail, courseCode, requiredVsChosenLab);
-                view.displayWarning("You have to choose " + requiredVsChosenLab + " tutorials for this course ");
+                view.displayWarning("You have to choose " + requiredVsChosenLab + " more lab(s) for this course");
             }
 
             if (requiredVsChosenLab < 0) {
                 Logger.warn("{}, {}, chooseActivityForCourse, {} FAILURE (Warning: {} more chosen labs than required labs)",
                         System.currentTimeMillis(), studentEmail, courseCode, requiredVsChosenLab);
-                view.displayWarning("You have to choose " + requiredVsChosenLab + " tutorials for this course ");
+                view.displayWarning("You have to choose " + abs(requiredVsChosenLab) + " less lab(s) for this course");
             }
         }
 

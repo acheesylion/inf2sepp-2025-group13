@@ -66,7 +66,7 @@ public class StudentController extends Controller {
     private void chooseActivityForCourse() {
         view.displayInfo("=== Choose Activity for Course ===");
         String courseCode = view.getInput("Enter the course code: ");
-        int activityId = Integer.parseInt(view.getInput("Enter the Activity ID: "));
+        String activityId = view.getInput("Enter the Activity ID: ");
         String email = sharedContext.getCurrentUserEmail();
         CourseManager courseManager = sharedContext.getCourseManager();
         courseManager.chooseActivityForCourse(email, courseCode, activityId);
