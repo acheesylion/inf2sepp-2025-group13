@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Lecture extends Activity {
-    private boolean recorded;
+    private final boolean recorded;
 
     public Lecture(int id, LocalDate startDate, LocalTime startTime,
                    LocalDate endDate, LocalTime endTime, String location,
@@ -24,13 +24,10 @@ public class Lecture extends Activity {
         return (this.recorded);
     }
 
-    public void setRecorded(boolean recorded) {
-        this.recorded = recorded;
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", recorded=" + recorded;
+        String typeInfo = recorded ? "Lecture (recorded)" : "Lecture (unrecorded)";
+        return getCommonRow() + String.format("| %-25s |", typeInfo);
     }
 
 }

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Tutorial extends Activity {
-    private int capacity;
+    private final int capacity;
 
     public Tutorial(int id, LocalDate startDate, LocalTime startTime,
                     LocalDate endDate, LocalTime endTime, String location,
@@ -20,17 +20,10 @@ public class Tutorial extends Activity {
         this.capacity = other.capacity;
     }
 
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", capacity=" + capacity;
+        String typeInfo = "Tutorial (Capacity: " + capacity + ")";
+        return getCommonRow() + String.format("| %-25s |", typeInfo);
     }
 
 }

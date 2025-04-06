@@ -185,103 +185,56 @@ public class AdminStaffController extends StaffController {
         AdminStaffController.manageCoursesOptions option = AdminStaffController.manageCoursesOptions.values()[optionNo];
         switch (option) {
             case ADD_COURSE -> addCourse();
+            case REMOVE_COURSE -> removeCourse();
         }
         return false;
     }
 
-    private int readInteger(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                view.displayInfo("Invalid integer. Please try again.");
-            }
-        }
-    }
-    private boolean readBoolean(View view, String prompt) {
-        while (true) {
-            String input = view.getInput(prompt);
-            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
-                return Boolean.parseBoolean(input);
-            } else {
-                view.displayInfo("Invalid input. Please enter true or false.");
-            }
+    private void removeCourse() {
+        view.displayInfo("=== Remove Course ===");
+        String courseCode = view.getInput("Enter course code: ");
+        String currentEmail = sharedContext.getCurrentUserEmail();
+        CourseManager courseManager = sharedContext.getCourseManager();
+
+        String[] courseMembersEmail = courseManager.removeCourse(courseCode);
+
+        for (String allMembersEmail : courseMembersEmail) {
+            email.sendEmail(currentEmail, allMembersEmail,
+                    "Course Removed - " + courseCode,
+                    "The following Course has been removed."
+            );
         }
     }
 
-    private static String getValidatedInput(String fieldName, View view) {
-        while (true) {
-            String input = view.getInput(String.format("Enter %s: ", fieldName));
-            // Perform validation based on the field name.
-            switch (fieldName) {
-                // For these fields, input must not be empty.
-                case "courseCode":
-                case "name":
-                case "description":
-                case "courseOrganiserName":
-                case "courseOrganiserEmail":
-                case "courseSecretaryName":
-                case "courseSecretaryEmail":
-                    if (input == null || input.trim().isEmpty()) {
-                        view.displayInfo(fieldName + " cannot be empty.");
-                        continue; // Prompt again.
-                    }
-                    break;
-
-                // requiresComputers should be either "true" or "false".
-                case "requiresComputers":
-                    if (!"true".equalsIgnoreCase(input) && !"false".equalsIgnoreCase(input)) {
-                        view.displayInfo("Invalid input for requiresComputers. Please enter true or false.");
-                        continue;
-                    }
-                    break;
-
-                // For these numeric fields, input must be a non-negative integer.
-                case "requiredTutorials":
-                case "requiredLabs":
-                    try {
-                        int num = Integer.parseInt(input);
-                        if (num < 0) {
-                            view.displayInfo(fieldName + " cannot be negative.");
-                            continue;
-                        }
-                    } catch (NumberFormatException e) {
-                        view.displayInfo("Invalid number for " + fieldName + ". Please enter a valid integer.");
-                        continue;
-                    }
-                    break;
-
-                default:
-                    // If there are additional fields without specific validation, you could add them here.
-                    break;
-            }
-            // If validation passes, return the input.
-            return input;
-        }
-    }
-
-    private void addCourse(){
-        view.displayInfo("=== Add Course ===");
-        CourseInfo newCourseInfo = new CourseInfo();
+    private void fillCourseInfo(CourseInfo courseInfo) {
         String[] courseInfoNames = {
-            "courseCode",
-            "name",
-            "description",
-            "requiresComputers",
-            "courseOrganiserName",
-            "courseOrganiserEmail",
-            "courseSecretaryName",
-            "courseSecretaryEmail",
-            "requiredTutorials",
-            "requiredLabs"
+                "courseCode",
+                "name",
+                "description",
+                "courseOrganiserName",
+                "courseOrganiserEmail",
+                "courseSecretaryName",
+                "courseSecretaryEmail",
+                "requiredTutorials",
+                "requiredLabs"
         };
 
         // For each field, get validated input and store it in CourseInfo.
         for (String fieldName : courseInfoNames) {
-            String input = getValidatedInput(fieldName, view);
-            newCourseInfo.setField(fieldName, input);
+            String input = view.getInput(String.format("Enter %s: ", fieldName));
+            courseInfo.setField(fieldName, input);
         }
+
+        Boolean requiresComputers = view.getYesNoInput("Enter requiresComputers: ");
+        courseInfo.setRequiresComputers(requiresComputers);
+    }
+
+    private void addCourse(){
+        view.displayInfo("=== Add Course ===");
+
+        CourseInfo newCourseInfo = new CourseInfo();
+
+        fillCourseInfo(newCourseInfo);
 
         String currentEmail = sharedContext.getCurrentUserEmail();
 
@@ -289,13 +242,10 @@ public class AdminStaffController extends StaffController {
 
         courseManager.addCourse(currentEmail, newCourseInfo);
 
-        //sendEmail(email, courseOrganiserEmail, "Course Created - " + courseCode,
-        //"A course has been provided with the following details: " +
-        //courseInfo)
-        //
         email.sendEmail(currentEmail, newCourseInfo.getCourseOrganiserName(),
                 "Course Created - " + newCourseInfo.getCourseCode(),
                 "A course has been provided with the following details: " + newCourseInfo.getCourseInfo());
 
     }
+
 }

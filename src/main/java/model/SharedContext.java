@@ -30,13 +30,13 @@ public class SharedContext {
     public FAQ getFAQ() {
         return faq;
     }
-    public String getCurrentUserRole(){
+    public String getCurrentUserRole() {
         if (this.currentUser instanceof AuthenticatedUser) {
             return ((AuthenticatedUser) this.currentUser).getRole();
         }
         return null;
     }
-    public String getCurrentUserEmail(){
+    public String getCurrentUserEmail() {
         if (this.currentUser instanceof AuthenticatedUser) {
             return ((AuthenticatedUser) this.currentUser).getEmail();
         }

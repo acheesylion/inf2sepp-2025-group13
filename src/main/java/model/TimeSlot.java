@@ -1,83 +1,61 @@
 package model;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class TimeSlot {
-
-    // Private fields (as indicated by '-' in UML)
-    private DayOfWeek day;
-    private LocalDate startDate;
-    private LocalTime startTime;
-    private LocalDate endDate;
-    private LocalTime endTime;
-
+    private final Activity activity;
     public String courseCode;
-    public int activityId;
     public TimeSlotStatus status;
+    public int activityId;
+    public LocalTime startTime;
+    public LocalTime endTime;
+    public DayOfWeek day;
+    public ActivityType type;
 
-    // Constructor initializing all fields
-    public TimeSlot(DayOfWeek day, LocalDate startDate, LocalTime startTime,
-                    LocalDate endDate, LocalTime endTime, String courseCode,
-                    int activityId, TimeSlotStatus status) {
+    public TimeSlot(Activity activity, int activityId,
+                    LocalTime startTime, LocalTime endTime,
+                    DayOfWeek day, ActivityType type,
+                    String courseCode, TimeSlotStatus status) {
 
-        this.day = day;
-        this.startDate = startDate;
-        this.startTime = startTime;
-        this.endDate = endDate;
-        this.endTime = endTime;
         this.courseCode = courseCode;
+        this.activity = activity;
         this.activityId = activityId;
         this.status = status;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.day = day;
+        this.type = type;
     }
 
-    public TimeSlot(Activity activity, String courseCode, TimeSlotStatus status) {
-        // Use Activity getters to initialize the time-related fields.
-        this(activity.getDay(),
-                activity.getStartDate(),
-                activity.getStartTime(),
-                activity.getEndDate(),
-                activity.getEndTime(),
-                courseCode,
-                activity.getId(), // Use the activity's id for the timeslot's activityId.
-                status);
-    }
 
     // Checks if the TimeSlot has the given course code
     public boolean hasCourseCode(String courseCode) {
-        if (this.courseCode == null) {
-            return false;
-        }
         return this.courseCode.equals(courseCode);
     }
 
-    // Checks if the TimeSlot has the given activity ID
-    public boolean hasActivityId(int id) {return this.activityId == id;}
 
-    // Returns true if the status of the TimeSlot is CHOSEN
+
+    public boolean hasActivityIdTimeSlot(int id) {return (activityId == id);}
     public boolean isChosen() {return this.status == TimeSlotStatus.CHOSEN;}
     public void setStatus(TimeSlotStatus status) {this.status = status;}
-    public LocalDate getStartDate() {return startDate;}
-    public LocalTime getStartTime() {return startTime;}
-    public LocalDate getEndDate() {return endDate;}
-    public LocalTime getEndTime() {return endTime;}
-
-    public int getActivityId() {return activityId;}
+    public LocalTime getStartTime() {return activity.getStartTime();}
+    public LocalTime getEndTime() {return activity.getEndTime();}
+    public DayOfWeek getDay() {return activity.getDay();}
+    public int getActivityId() {return activity.getId();}
     public String getCourseCode() {return courseCode;}
+    public boolean isTutorial() {return activity instanceof Tutorial;}
+    public boolean isLab() {return activity instanceof Lab;}
+    public boolean isLecture() {return activity instanceof Lecture;}
 
     // Provides a string representation of the TimeSlot
     @Override
     public String toString() {
-        return "TimeSlot{" +
-                "day=" + day +
-                ", startDate=" + startDate +
-                ", startTime=" + startTime +
-                ", endDate=" + endDate +
-                ", endTime=" + endTime +
-                ", courseCode='" + courseCode + '\'' +
-                ", activityId=" + activityId +
-                ", status=" + status +
-                '}';
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String day = String.valueOf(this.day);
+        String time = startTime.format(timeFormatter) + " - " + endTime.format(timeFormatter);
+        return (String.format("| %-10s | %-19s | %-14s | %-10s | %-10s |",
+                day, time, courseCode, activityId, type));
     }
 
 

@@ -2,6 +2,7 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
+import java.time.format.DateTimeFormatter;
 
 public abstract class Activity {
     private final int id;
@@ -28,7 +29,6 @@ public abstract class Activity {
         return this.id == id;
     }
 
-
     public int getId() {return id;}
     public LocalDate getStartDate() {return startDate;}
     public LocalTime getStartTime() {return startTime;}
@@ -37,17 +37,11 @@ public abstract class Activity {
     public String getLocation() {return location;}
     public DayOfWeek getDay() {return day;}
 
-    @Override
-    public String toString() {
-        return "Activity{" +
-                "id=" + id +
-                ", startDate=" + startDate +
-                ", startTime=" + startTime +
-                ", endDate=" + endDate +
-                ", endTime=" + endTime +
-                ", location='" + location + '\'' +
-                ", day=" + day +
-                '}';
+    protected String getCommonRow() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String dayStr = String.valueOf(this.day);
+        String timeStr = startTime.format(timeFormatter) + " - " + endTime.format(timeFormatter);
+        return String.format("| %-10s | %-19s | %-14d ", dayStr, timeStr, id);
     }
 
 }

@@ -111,16 +111,12 @@ public class TextUserInterface implements View {
 
     @Override
     public void displayCourse(Course course) {
-        String message = String.format(
-                "Course Code: %s\nName: %s\nDescription: %s\nRequires Computers: %b\n" +
-                        "Course Organiser: %s (%s)\nCourse Secretary: %s (%s)\n" +
-                        "Required Tutorials: %d\nRequired Labs: %d",
-                course.getCourseCode(), course.getName(), course.getDescription(), course.isRequiresComputers(),
-                course.getCourseOrganiserName(), course.getCourseOrganiserEmail(),
-                course.getCourseSecretaryName(), course.getCourseSecretaryEmail(),
-                course.getRequiredTutorials(), course.getRequiredLabs()
-        );
-        System.out.println(message);
+        System.out.println(course);
+    }
+
+    @Override
+    public void displayTimetable(Timetable timetable) {
+        System.out.println(timetable);
     }
 
     

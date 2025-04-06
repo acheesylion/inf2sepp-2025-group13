@@ -1,11 +1,10 @@
 package model;
-import javax.management.relation.Role;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
 
 public class Lab extends Activity {
-    private int capacity;
+    private final int capacity;
 
     public Lab(int id, LocalDate startDate, LocalTime startTime,
                LocalDate endDate, LocalTime endTime, String location,
@@ -20,17 +19,10 @@ public class Lab extends Activity {
         this.capacity = other.capacity;
     }
 
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", capacity=" + capacity;
+        String typeInfo = "Lab (Capacity: " + capacity + ")";
+        return getCommonRow() + String.format("| %-25s |", typeInfo);
     }
 
 }
