@@ -22,7 +22,6 @@ public class GuestController extends Controller {
         JSONParser parser = new JSONParser();
         String email = null;
         String role = null;
-
         try {
             JSONObject result = (JSONObject) parser.parse(response);
             if (result.containsKey("error")) {

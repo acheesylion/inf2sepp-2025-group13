@@ -1,6 +1,5 @@
 package view;
 
-import model.Course;
 import model.FAQ;
 import model.FAQSection;
 import model.Inquiry;
@@ -16,7 +15,7 @@ public interface View {
     void displayDivider();
     void displayFAQ(FAQ faq);
     void displayFAQSection(FAQSection section);
+    // 新增方法：显示按课程代码筛选的FAQ部分
+    void displayFilteredFAQSection(FAQSection section, String courseCode);
     void displayInquiry(Inquiry inquiry);
-
-    void displayCourse(Course course);
 }

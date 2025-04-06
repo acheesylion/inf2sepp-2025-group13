@@ -82,9 +82,14 @@ public class TextUserInterface implements View {
         System.out.println(section.getTopic());
         displayDivider();
         for (FAQItem item : section.getItems()) {
+            System.out.print("[#" + item.getNumber() + "] ");
             System.out.println(item.getQuestion());
             System.out.print("> ");
             System.out.println(item.getAnswer());
+            if (item.hasCourseTag()) {
+                System.out.println("Course: " + item.getCourseTag());
+            }
+            System.out.println();
         }
 
         System.out.println("Subsections:");
@@ -107,17 +112,35 @@ public class TextUserInterface implements View {
     }
 
     @Override
-    public void displayCourse(Course course) {
-        String message = String.format(
-                "Course Code: %s\nName: %s\nDescription: %s\nRequires Computers: %b\n" +
-                        "Course Organiser: %s (%s)\nCourse Secretary: %s (%s)\n" +
-                        "Required Tutorials: %d\nRequired Labs: %d",
-                course.getCourseCode(), course.getName(), course.getDescription(), course.isRequiresComputers(),
-                course.getCourseOrganiserName(), course.getCourseOrganiserEmail(),
-                course.getCourseSecretaryName(), course.getCourseSecretaryEmail(),
-                course.getRequiredTutorials(), course.getRequiredLabs()
-        );
-        System.out.println(message);
+    public void displayFilteredFAQSection(FAQSection section, String courseCode) {
+        System.out.println(section.getTopic());
+        displayDivider();
+        boolean hasItems = false;
+        
+        for (FAQItem item : section.getItems()) {
+            // 只显示匹配课程代码的FAQ项目
+            if (item.hasCourseTag() && item.getCourseTag().equals(courseCode)) {
+                hasItems = true;
+                System.out.print("[#" + item.getNumber() + "] ");
+                System.out.println(item.getQuestion());
+                System.out.print("> ");
+                System.out.println(item.getAnswer());
+                System.out.println();
+            }
+        }
+        
+        if (!hasItems) {
+            System.out.println("No FAQ items with course code '" + courseCode + "' in this topic.");
+        }
+
+        System.out.println("Subsections:");
+        int i = 0;
+        for (FAQSection subsection : section.getSubsections()) {
+            System.out.print("[");
+            System.out.print(i++);
+            System.out.print("] ");
+            System.out.println(subsection.getTopic());
+        }
     }
 
     
