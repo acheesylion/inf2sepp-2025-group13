@@ -23,6 +23,7 @@ public class Main {
         } catch (URISyntaxException | IOException | ParseException | NullPointerException e) {
             view.displayException(e);
         }
+
     }
 
 }
