@@ -20,13 +20,10 @@ public class Tutorial extends Activity {
         this.capacity = other.capacity;
     }
 
-    public int getCapacity() {
-        return capacity;
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", capacity=" + capacity;
+        String typeInfo = "Tutorial (Capacity: " + capacity + ")";
+        return getCommonRow() + String.format("| %-25s |", typeInfo);
     }
 
 }

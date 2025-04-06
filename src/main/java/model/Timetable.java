@@ -20,10 +20,28 @@ public class Timetable {
     public void addTimeSlot(Activity activity, String courseCode) {
         // When adding a new time slot, we default its status to UNCHOSEN.
         if (activity instanceof Lecture) {
-            TimeSlot newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.CHOSEN);
+            TimeSlot newSlot = new TimeSlot(
+                    activity, activity.getId(),
+                    activity.getStartTime(), activity.getEndTime(),
+                    activity.getDay(), ActivityType.Lecture,
+                    courseCode, TimeSlotStatus.CHOSEN);
             timeSlots.add(newSlot);
-        } else {
-            TimeSlot newSlot = new TimeSlot(activity, courseCode, TimeSlotStatus.UNCHOSEN);
+        }
+        if (activity instanceof Lab) {
+            TimeSlot newSlot = new TimeSlot(
+                    activity, activity.getId(),
+                    activity.getStartTime(), activity.getEndTime(),
+                    activity.getDay(), ActivityType.Lab,
+                    courseCode, TimeSlotStatus.UNCHOSEN);
+            timeSlots.add(newSlot);
+        }
+
+        if (activity instanceof Tutorial) {
+            TimeSlot newSlot = new TimeSlot(
+                    activity, activity.getId(),
+                    activity.getStartTime(), activity.getEndTime(),
+                    activity.getDay(), ActivityType.Tutorial,
+                    courseCode, TimeSlotStatus.UNCHOSEN);
             timeSlots.add(newSlot);
         }
 
@@ -65,19 +83,19 @@ public class Timetable {
 
     public void chooseActivity(String courseCode, int activityId) {
         timeSlots.stream()
-                .filter(ts -> ts.hasCourseCode(courseCode) && ts.hasActivityId(activityId) && !ts.isChosen())
+                .filter(ts -> ts.hasCourseCode(courseCode) && ts.hasActivityIdTimeSlot(activityId) && !ts.isChosen())
                 .forEach(ts -> ts.setStatus(TimeSlotStatus.CHOSEN));
     }
 
     public boolean isIdTutorial(int activityId) {
         return timeSlots.stream()
-                .filter(ts -> ts.hasActivityId(activityId))
+                .filter(ts -> ts.hasActivityIdTimeSlot(activityId))
                 .anyMatch(TimeSlot::isTutorial);
     }
 
     public boolean isIdLab(int activityId) {
         return timeSlots.stream()
-                .filter(ts -> ts.hasActivityId(activityId))
+                .filter(ts -> ts.hasActivityIdTimeSlot(activityId))
                 .anyMatch(TimeSlot::isLab);
     }
 
@@ -88,7 +106,7 @@ public class Timetable {
 
     // Contains a timeslot with the given activityId
     public boolean hasSlotsForActivityId(int activityId) {
-        return timeSlots.stream().anyMatch(ts -> ts.hasActivityId(activityId));
+        return timeSlots.stream().anyMatch(ts -> ts.hasActivityIdTimeSlot(activityId));
     }
 
     public void removeSlotsForCourse(String courseCode) {
@@ -112,21 +130,23 @@ public class Timetable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        String headerLine = "==============================================================";
-        sb.append(headerLine).append("\n");
-        String title = "Timetable for " + studentEmail;
-        int totalWidth = headerLine.length();
-        int padding = (totalWidth - title.length()) / 2;
-        String centeredTitle = " ".repeat(Math.max(0, padding)) + title;
-        sb.append(centeredTitle).append("\n");
-        sb.append(headerLine).append("\n\n");
-        String tableLine = "+------------+---------------------+------------+------------+--------------+";
-        sb.append(tableLine).append("\n");
-        sb.append(String.format("| %-10s | %-19s | %-10s | %-10s | %-12s |%n",
-                "Day", "Time", "CourseCode", "ActivityId", "Type"));
-        sb.append(tableLine).append("\n");
 
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        sb.append("========================================================================\n");
+        sb.append(String.format("Timetable for %s\n", studentEmail));
+        sb.append("========================================================================\n\n");
+        String tableLine = "+------------+---------------------+----------------+-------------------------+\n";
+        sb.append("Timeslots:\n");
+        sb.append(tableLine);
+        sb.append(String.format("| %-10s | %-19s | %-14s | %-10s | %-10s |\n",
+                "Day", "Time", "CourseCode", "ActivityId", "Type"));
+        sb.append(tableLine);
+
+//        String tableLine = "+------------+---------------------+------------+------------+--------------+";
+//        sb.append("TimeSlots:\n");
+//        sb.append(tableLine);
+//        sb.append(String.format("| %-10s | %-19s | %-10s | %-10s | %-12s |\n",
+//                "Day", "Time", "CourseCode", "ActivityId", "Type"));
+//        sb.append(tableLine);
 
         List<TimeSlot> sortedSlots = timeSlots.stream()
                 .filter(TimeSlot::isChosen)
@@ -135,18 +155,9 @@ public class Timetable {
                 .collect(Collectors.toList());
 
         for (TimeSlot ts : sortedSlots) {
-            String day = ts.getDay().toString();
-            String time = ts.getStartTime().format(timeFormatter) + " - " + ts.getEndTime().format(timeFormatter);
-            String courseCode = ts.getCourseCode();
-            int activityId = ts.getActivityId();
-            String type = ts.isLecture() ? "Lecture" :
-                    ts.isLab() ? "Lab" :
-                            ts.isTutorial() ? "Tutorial" : "Unknown";
-            sb.append(String.format("| %-10s | %-19s | %-10s | %-10d | %-12s |%n",
-                    day, time, courseCode, activityId, type));
+            sb.append(ts.toString()).append("\n");
         }
-
-        sb.append(tableLine).append("\n");
+        sb.append(tableLine);
         return sb.toString();
     }
 

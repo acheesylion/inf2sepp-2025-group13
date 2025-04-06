@@ -64,7 +64,7 @@ public class Course {
 
         private Activity getActivity(int id) {
             for (Activity activity : activities) {
-                if (activity.getId() == id) {
+                if (activity.hasId(id)) {
                     return activity;
                 }
             }
@@ -80,14 +80,14 @@ public class Course {
         }
 
         public void removeActivities() {
-            // Implement the functionality to remove all activities
+            activities.clear();
         }
 
         public boolean hasCode(String code) {
             return this.courseCode.equals(code);
         }
 
-        public boolean hasActivityId(int id) {
+        public boolean hasActivityWithId(int id) {
             for (Activity activity : activities) {
                 if (activity.getId() == id) {
                     return true;
@@ -115,23 +115,8 @@ public class Course {
         public String getName() {
             return name;
         }
-        public String getDescription() {
-            return description;
-        }
-        public boolean isRequiresComputers() {
-            return requiresComputers;
-        }
-        public String getCourseOrganiserName() {
-            return courseOrganiserName;
-        }
         public String getCourseOrganiserEmail() {
             return courseOrganiserEmail;
-        }
-        public String getCourseSecretaryName() {
-            return courseSecretaryName;
-        }
-        public String getCourseSecretaryEmail() {
-            return courseSecretaryEmail;
         }
         public int getRequiredTutorials() {
             return requiredTutorials;
@@ -172,22 +157,19 @@ public class Course {
 
             // Print Course Details Header
             sb.append("========================================================================\n");
-            sb.append(String.format("Course: %s - %s\n", getCourseCode(), getName()));
-            sb.append(String.format("Description: %s\n", getDescription()));
-            sb.append(String.format("Organiser: %s <%s>\n", getCourseOrganiserName(), getCourseOrganiserEmail()));
-            sb.append(String.format("Secretary: %s <%s>\n", getCourseSecretaryName(), getCourseSecretaryEmail()));
+            sb.append(String.format("Course: %s - %s\n", courseCode, name));
+            sb.append(String.format("Description: %s\n", description));
+            sb.append(String.format("Organiser: %s <%s>\n", courseOrganiserName, courseOrganiserEmail));
+            sb.append(String.format("Secretary: %s <%s>\n", courseSecretaryName, courseSecretaryEmail));
             sb.append("========================================================================\n\n");
 
             // Print Activities Header
-            String tableLine = "+------------+---------------------+------------+----------------+---------------------------+\n";
+            String tableLine = "+------------+---------------------+----------------+---------------------------+\n";
             sb.append("Activities:\n");
+            sb.append(tableLine).append("\n");
+            sb.append(String.format("| %-10s | %-19s | %-14s | %-25s |\n",
+                    "Day", "Time", "ActivityId", "Type"));
             sb.append(tableLine);
-            sb.append(String.format("| %-10s | %-19s | %-10s | %-14s | %-25s |\n",
-                    "Day", "Time", "CourseCode", "ActivityId", "Type"));
-            sb.append(tableLine);
-
-            // Formatter for time output
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
             // Sort activities by day and then start time.
             List<Activity> sortedActivities = activities.stream()
@@ -197,27 +179,7 @@ public class Course {
 
             // Print each activity
             for (Activity activity : sortedActivities) {
-                String day = activity.getDay().toString();
-                String time = activity.getStartTime().format(timeFormatter) + " - " + activity.getEndTime().format(timeFormatter);
-                String courseCode = getCourseCode();
-                int activityId = activity.getId();
-                String type;
-                if (activity instanceof Lecture) {
-                    if (((Lecture) activity).getRecorded()) {
-                        type = "Lecture (recorded)";
-                    } else {
-                        type = "Lecture (unrecorded)";
-                    }
-
-                } else if (activity instanceof Lab) {
-                    type = "Lab (Capacity: " + ((Lab) activity).getCapacity() + ")";
-                } else if (activity instanceof Tutorial) {
-                    type = "Tutorial (Capacity: " + ((Tutorial) activity).getCapacity() + ")";
-                } else {
-                    type = "Unknown";
-                }
-                sb.append(String.format("| %-10s | %-19s | %-10s | %-14d | %-25s |\n",
-                        day, time, courseCode, activityId, type));
+                sb.append(activity.toString()).append("\n");
             }
             sb.append(tableLine);
 

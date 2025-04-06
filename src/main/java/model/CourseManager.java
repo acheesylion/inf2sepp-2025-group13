@@ -30,7 +30,6 @@ public class CourseManager {
         String courseCode = courseInfo.getCourseCode();
         String name = courseInfo.getName();
         String description = courseInfo.getDescription();
-        Boolean requiresComputers = courseInfo.getRequiresComputers();
         String courseOrganiserName = courseInfo.getCourseOrganiserName();
         String courseOrganiserEmail = courseInfo.getCourseOrganiserEmail();
         String courseSecretaryName = courseInfo.getCourseSecretaryName();
@@ -124,9 +123,14 @@ public class CourseManager {
     }
 
     public String[] removeCourse(String courseCode){
-        List<String> members = getCourseByCode(courseCode).getMembers();
-        members.add(getCourseByCode(courseCode).getCourseOrganiserEmail());
-        courses.removeIf(course -> course.getCourseCode().equalsIgnoreCase(courseCode));
+        Course courseToRemove = getCourseByCode(courseCode);
+        if (courseToRemove == null) {
+            return new String[0];
+        }
+        List<String> members = courseToRemove.getMembers();
+        members.add(courseToRemove.getCourseOrganiserEmail());
+        courseToRemove.removeActivities();
+        courses.removeIf(course -> courseToRemove.hasCode(courseCode));
         return (members.toArray(new String[0]));
     }
 

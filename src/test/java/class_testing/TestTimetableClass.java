@@ -185,6 +185,7 @@ public class TestTimetableClass {
         assertTrue(output.contains("103"), "Output should contain the tutorial activity id.");
         assertTrue(output.contains("Tutorial"), "Output should indicate 'Tutorial' type.");
     }
+
     @Test
     public void testCheckConflictsPriorityLecture() {
         // Tutorial at 8.30 - 9:00, Lecture at 9:30 - 10:00

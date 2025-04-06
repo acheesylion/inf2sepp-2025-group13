@@ -26,7 +26,8 @@ public class Lecture extends Activity {
 
     @Override
     public String toString() {
-        return super.toString() + ", recorded=" + recorded;
+        String typeInfo = recorded ? "Lecture (recorded)" : "Lecture (unrecorded)";
+        return getCommonRow() + String.format("| %-25s |", typeInfo);
     }
 
 }

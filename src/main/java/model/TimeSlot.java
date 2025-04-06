@@ -1,18 +1,31 @@
 package model;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class TimeSlot {
     private final Activity activity;
     public String courseCode;
     public TimeSlotStatus status;
+    public int activityId;
+    public LocalTime startTime;
+    public LocalTime endTime;
+    public DayOfWeek day;
+    public ActivityType type;
 
+    public TimeSlot(Activity activity, int activityId,
+                    LocalTime startTime, LocalTime endTime,
+                    DayOfWeek day, ActivityType type,
+                    String courseCode, TimeSlotStatus status) {
 
-    public TimeSlot(Activity activity, String courseCode, TimeSlotStatus status) {
         this.courseCode = courseCode;
         this.activity = activity;
+        this.activityId = activityId;
         this.status = status;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.day = day;
+        this.type = type;
     }
 
 
@@ -23,7 +36,7 @@ public class TimeSlot {
 
 
 
-    public boolean hasActivityId(int id) {return activity.getId() == id;}
+    public boolean hasActivityIdTimeSlot(int id) {return (activityId == id);}
     public boolean isChosen() {return this.status == TimeSlotStatus.CHOSEN;}
     public void setStatus(TimeSlotStatus status) {this.status = status;}
     public LocalTime getStartTime() {return activity.getStartTime();}
@@ -38,14 +51,11 @@ public class TimeSlot {
     // Provides a string representation of the TimeSlot
     @Override
     public String toString() {
-        return "TimeSlot{" +
-                "day=" + activity.getDay() +
-                ", startTime=" + activity.getStartTime() +
-                ", endTime=" + activity.getEndTime() +
-                ", courseCode='" + courseCode + '\'' +
-                ", activityId=" + activity.getId() +
-                ", status=" + status +
-                '}';
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String day = String.valueOf(this.day);
+        String time = startTime.format(timeFormatter) + " - " + endTime.format(timeFormatter);
+        return (String.format("| %-10s | %-19s | %-14s | %-10s | %-10s |",
+                day, time, courseCode, activityId, type));
     }
 
 
