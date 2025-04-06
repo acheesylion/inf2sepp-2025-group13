@@ -5,11 +5,26 @@ import external.EmailService;
 import model.*;
 import view.View;
 
+/**
+ * Controller responsible for displaying and handling user interaction with the main menu,
+ * based on the role of the currently logged-in user (Guest, Student, Teaching Staff, Admin Staff).
+ */
 public class MenuController extends Controller {
+    /**
+     * Constructs a MenuController with shared context, view, authentication, and email services.
+     *
+     * @param sharedContext the context shared between controllers
+     * @param view the view interface for displaying messages and menus
+     * @param auth the authentication service
+     * @param email the email service
+     */
     public MenuController(SharedContext sharedContext, View view, AuthenticationService auth, EmailService email) {
         super(sharedContext, view, auth, email);
     }
 
+    /**
+     * Enum representing main menu options for Guest users.
+     */
     public enum GuestMainMenuOption {
         LOGIN,
         CONSULT_FAQ,
@@ -17,7 +32,9 @@ public class MenuController extends Controller {
         VIEW_COURSES,
         VIEW_SPECIFIC_COURSE,
     }
-
+    /**
+     * Enum representing main menu options for Student users.
+     */
     public enum StudentMainMenuOption {
         LOGOUT,
         CONSULT_FAQ,
@@ -26,19 +43,26 @@ public class MenuController extends Controller {
         VIEW_SPECIFIC_COURSE,
         MANAGE_TIMETABLE,
     }
-
+    /**
+     * Enum representing main menu options for Teaching Staff users.
+     */
     public enum TeachingStaffMainMenuOption {
         LOGOUT,
         MANAGE_RECEIVED_QUERIES,
     }
-
+    /**
+     * Enum representing main menu options for Admin Staff users.
+     */
     public enum AdminStaffMainMenuOption {
         LOGOUT,
         MANAGE_QUERIES,
         MANAGE_FAQ,
         MANAGE_COURSES
     }
-
+    /**
+     * Displays the main menu and handles menu option selection based on user role.
+     * Loops until the user chooses to exit.
+     */
     public void mainMenu() {
         boolean endLoop = false;
         while (!endLoop) {
@@ -65,6 +89,11 @@ public class MenuController extends Controller {
         view.displayInfo("Bye bye!");
     }
 
+    /**
+     * Handles the main menu for Guest users.
+     *
+     * @return true if the user chooses to exit, false otherwise
+     */
     private boolean handleGuestMainMenu() {
         int optionNo = selectFromMenu(GuestMainMenuOption.values(), "Exit");
         if (optionNo == -1) {
@@ -82,6 +111,11 @@ public class MenuController extends Controller {
         return false;
     }
 
+    /**
+     * Handles the main menu for Student users.
+     *
+     * @return true if the user chooses to exit, false otherwise
+     */
     private boolean handleStudentMainMenu() {
         int optionNo = selectFromMenu(StudentMainMenuOption.values(), "Exit");
         if (optionNo == -1) {
@@ -98,7 +132,11 @@ public class MenuController extends Controller {
         }
         return false;
     }
-
+    /**
+     * Handles the main menu for Teaching Staff users.
+     *
+     * @return true if the user chooses to exit, false otherwise
+     */
     private boolean handleTeachingStaffMainMenu() {
         int optionNo = selectFromMenu(TeachingStaffMainMenuOption.values(), "Exit");
         if (optionNo == -1) {
@@ -112,6 +150,11 @@ public class MenuController extends Controller {
         return false;
     }
 
+    /**
+     * Handles the main menu for Admin Staff users.
+     *
+     * @return true if the user chooses to exit, false otherwise
+     */
     private boolean handleAdminStaffMainMenu() {
         int optionNo = selectFromMenu(AdminStaffMainMenuOption.values(), "Exit");
         if (optionNo == -1) {

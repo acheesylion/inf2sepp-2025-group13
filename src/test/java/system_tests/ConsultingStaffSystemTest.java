@@ -88,7 +88,6 @@ public class ConsultingStaffSystemTest extends TUITest {
         assertOutputContains("Email from test@example.com to " + course.getCourseOrganiserEmail());
         assertOutputContains("New inquiry from test@example.com");
         assertOutputContains("Subject: Issue with assignment");
-
     }
 
 //    @Test  //DOESNT WORK INFINITE
