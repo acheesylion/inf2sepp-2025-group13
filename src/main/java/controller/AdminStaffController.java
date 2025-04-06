@@ -15,6 +15,10 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller responsible for handling actions available to Admin users,
+ * such as Managing Courses and Manging the FAQ into the system.
+ */
 public class AdminStaffController extends StaffController {
     /**
      * Constructs an AdminStaffController instance.
