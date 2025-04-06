@@ -47,7 +47,7 @@ public class TestMockEmailService {
     @Test
     @DisplayName("")
     void testSendEmailWithInvalidRecipient() {
-        int status = emailService.sendEmail("trini@gmail.com", "invalid-email", "Test Subject", "Test Content");
+        int status = emailService.sendEmail("student1@hindeburg.ac.uk", "invalid-email", "Test Subject", "Test Content");
         assertEquals(STATUS_INVALID_RECIPIENT_EMAIL, status);
     }
 

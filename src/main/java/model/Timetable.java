@@ -125,12 +125,9 @@ public class Timetable {
                 .count();
     }
 
-
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
         sb.append("========================================================================\n");
         sb.append(String.format("Timetable for %s\n", studentEmail));
         sb.append("========================================================================\n\n");
@@ -140,13 +137,6 @@ public class Timetable {
         sb.append(String.format("| %-10s | %-19s | %-14s | %-10s | %-10s |\n",
                 "Day", "Time", "CourseCode", "ActivityId", "Type"));
         sb.append(tableLine);
-
-//        String tableLine = "+------------+---------------------+------------+------------+--------------+";
-//        sb.append("TimeSlots:\n");
-//        sb.append(tableLine);
-//        sb.append(String.format("| %-10s | %-19s | %-10s | %-10s | %-12s |\n",
-//                "Day", "Time", "CourseCode", "ActivityId", "Type"));
-//        sb.append(tableLine);
 
         List<TimeSlot> sortedSlots = timeSlots.stream()
                 .filter(TimeSlot::isChosen)

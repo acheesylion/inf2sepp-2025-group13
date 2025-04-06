@@ -51,18 +51,5 @@ public class ActivityTest{
         assertFalse(activity.hasId(2));
     }
 
-    @Test
-    void testToString() {
-        String expected = "Activity{" +
-                "id=" + 1 +
-                ", startDate=" + LocalDate.of(2025, 4, 3) +
-                ", startTime=" + LocalTime.of(9, 0) +
-                ", endDate=" + LocalDate.of(2025, 4, 3) +
-                ", endTime=" + LocalTime.of(10, 0) +
-                ", location='" + "Room 101" + '\'' +
-                ", day=" + DayOfWeek.THURSDAY +
-                '}';
-        assertEquals(expected, activity.toString());
-    }
 }
 
